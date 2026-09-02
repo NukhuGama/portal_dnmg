@@ -1,16 +1,20 @@
 import json
 import logging
+import time
 import urllib.request
 import urllib.error
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from datetime import timedelta, timezone as datetime_timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
+import pymysql
+from django.conf import settings
 from django.core.cache import cache
 from django.db import OperationalError
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_aware, localtime, make_aware, now
-from .models import WeatherStation, WeatherObservation, Municipality
+from .models import AwosMetarReport, WeatherStation, WeatherObservation, Municipality
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +157,11 @@ INITIAL_STATIONS_DATA = [
 ]
 
 class DNMGStationSyncService:
+    # A station is considered live only when its newest observation is no more
+    # than five hours old.  Keep this in the shared service so public and staff
+    # views cannot drift apart again.
+    ONLINE_WINDOW = timedelta(hours=5)
+
     # station-data supplies the full telemetry set (including tide-gauge and
     # buoy parameters) when requested with a Timor-Leste 24-hour window.
     API_BASE_URL = "https://ms-obs.dnmg.gov.tl/station-data/"
@@ -168,6 +177,19 @@ class DNMGStationSyncService:
     SYNC_LOCK_CACHE_KEY = "dnmg_station_sync_in_progress"
     TIMOR_LESTE_TIMEZONE = ZoneInfo("Asia/Dili")
     TELEMETRY_QUANTUM = Decimal("0.01")
+    WIND_SPEED_MS_TO_KMH = Decimal("3.6")
+    CHART_INTERVALS_BY_STATION_ID = {
+        15403: 30,
+        15404: 15,
+        15433: 15,
+        15434: 15,
+        15435: 15,
+        15436: 15,
+        15437: 15,
+    }
+    CHART_INTERVALS_BY_STATION_TYPE = {
+        WeatherStation.StationType.TIDE_GAUGE: 10,
+    }
     TELEMETRY_FIELDS = (
         "temperature", "humidity", "rainfall_mm", "wind_speed_kmh",
         "wind_direction", "pressure_hpa", "wave_height_m", "tide_level_mm",
@@ -209,6 +231,19 @@ class DNMGStationSyncService:
         except (InvalidOperation, TypeError, ValueError):
             return None
 
+    @classmethod
+    def parse_wind_measurement_kmh(cls, value):
+        """Convert an API wind-speed or wind-gust measurement from m/s to km/h."""
+        if value in (None, "", "none"):
+            return None
+        try:
+            return (Decimal(str(value)) * cls.WIND_SPEED_MS_TO_KMH).quantize(
+                cls.TELEMETRY_QUANTUM,
+                rounding=ROUND_HALF_UP,
+            )
+        except (InvalidOperation, TypeError, ValueError):
+            return None
+
     @staticmethod
     def parse_coordinate(value):
         """Keep the API coordinate precision; coordinates are not telemetry readings."""
@@ -221,8 +256,13 @@ class DNMGStationSyncService:
 
     @staticmethod
     def update_station_coordinates(station, latitude, longitude):
-        """Avoid an SQLite write when the API coordinates have not changed."""
+        """Update provider-managed coordinates without overwriting DNMG entries."""
+        if station.coordinate_source == WeatherStation.CoordinateSource.MANUAL:
+            return
         if latitude is None or longitude is None:
+            return
+        if not (-90 <= latitude <= 90 and -180 <= longitude <= 180):
+            logger.warning("Ignoring out-of-range provider coordinates for station %s", station.external_id)
             return
         if station.latitude == latitude and station.longitude == longitude:
             return
@@ -375,14 +415,16 @@ class DNMGStationSyncService:
 
     @classmethod
     def purge_api_observations(cls):
-        """Remove observations previously created by the automatic station-data sync only."""
+        """Remove non-AWOS observations created by the automatic station-data sync only."""
         cls.clear_live_api_cache()
-        deleted_count, _ = WeatherObservation.objects.filter(recorded_by__isnull=True).delete()
+        deleted_count, _ = WeatherObservation.objects.filter(
+            recorded_by__isnull=True,
+        ).exclude(station__station_type=WeatherStation.StationType.AWOS).delete()
         return deleted_count
 
     @staticmethod
-    def store_api_observation(station, recorded_at, **values):
-        """Create or update one API observation, preventing duplicates on repeated syncs."""
+    def store_automatic_observation(station, recorded_at, **values):
+        """Create or update one provider observation, preventing repeated-sync duplicates."""
         observations = WeatherObservation.objects.filter(
             station=station,
             recorded_at=recorded_at,
@@ -488,6 +530,7 @@ class DNMGStationSyncService:
                     "municipality": station_meta["municipality"],
                     "latitude": station_meta["latitude"],
                     "longitude": station_meta["longitude"],
+                    "coordinate_source": WeatherStation.CoordinateSource.PROVIDER,
                     "status": WeatherStation.Status.ACTIVE,
                 }
             )
@@ -609,9 +652,9 @@ class DNMGStationSyncService:
             ('temperature', temperature_keys, cls.parse_decimal),
             ('humidity', ('relative_humidity',), cls.parse_decimal),
             ('pressure_hpa', pressure_keys, cls.parse_decimal),
-            ('wind_speed_kmh', ('wind_speed',), cls.parse_decimal),
+            ('wind_speed_kmh', ('wind_speed',), cls.parse_wind_measurement_kmh),
             ('wind_direction', ('wind_direction',), cls.degrees_to_compass),
-            ('wind_gust_kmh', ('maximum_wind_gust_speed',), cls.parse_decimal),
+            ('wind_gust_kmh', ('maximum_wind_gust_speed',), cls.parse_wind_measurement_kmh),
             ('rainfall_mm', ('total_precipitation_or_total_water_equivalent',), cls.parse_decimal),
             ('tide_level_mm', ('tide_level', 'Tide_level'), cls.parse_decimal),
             ('wave_height_m', ('significant_wave_height',), cls.parse_decimal),
@@ -637,27 +680,27 @@ class DNMGStationSyncService:
         }
         for timestamp, values in history_by_timestamp.items():
             telemetry = {**blank_telemetry, **values}
-            cls.store_api_observation(
+            cls.store_automatic_observation(
                 station,
                 timestamp,
                 **telemetry,
                 condition_text="Live Monitoring",
             )
 
-        return cls.store_api_observation(
+        return cls.store_automatic_observation(
             station,
             max(timestamps),
             temperature=temperature,
             humidity=cls.parse_decimal(humidity_value),
             rainfall_mm=rainfall,
-            wind_speed_kmh=cls.parse_decimal(wind_speed_value),
+            wind_speed_kmh=cls.parse_wind_measurement_kmh(wind_speed_value),
             wind_direction=cls.degrees_to_compass(wind_direction_value),
             pressure_hpa=cls.parse_decimal(pressure_value),
             wave_height_m=wave_height,
             tide_level_mm=tide_level,
             peak_period_s=cls.parse_decimal(peak_period_value),
             solar_radiation=solar_rad,
-            wind_gust_kmh=cls.parse_decimal(wind_gust_value),
+            wind_gust_kmh=cls.parse_wind_measurement_kmh(wind_gust_value),
             sea_surface_temp=cls.parse_decimal(sea_temp_value),
             battery_voltage=cls.parse_decimal(battery_value),
             condition_text=condition,
@@ -801,7 +844,7 @@ class DNMGStationSyncService:
 
                 # Create a marker observation with the real last-known timestamp (all telemetry None)
                 # This ensures the 24h OFFLINE check uses the real station last-data time
-                return cls.store_api_observation(
+                return cls.store_automatic_observation(
                     station,
                     api_recorded_at,
                     temperature=None, humidity=None, rainfall_mm=None,
@@ -837,12 +880,12 @@ class DNMGStationSyncService:
 
             # Wind
             ws_val = get_daily_val(daily, "wind_speed", "latest")
-            wind_speed = cls.parse_decimal(ws_val)
+            wind_speed = cls.parse_wind_measurement_kmh(ws_val)
             wd_deg = get_daily_val(daily, "wind_direction", "latest")
             wind_dir = cls.degrees_to_compass(wd_deg)
 
             wg_val = get_daily_val(daily, "maximum_wind_gust_speed", "latest")
-            wind_gust = cls.parse_decimal(wg_val)
+            wind_gust = cls.parse_wind_measurement_kmh(wg_val)
 
             # Precipitation
             precip_today = precip.get("today_mm")
@@ -905,7 +948,7 @@ class DNMGStationSyncService:
             wind_dir = wind_dir or time_series_observation.wind_direction
 
         # Save one observation for the API timestamp; repeated requests update it.
-        obs = cls.store_api_observation(
+        obs = cls.store_automatic_observation(
             station,
             api_recorded_at,
             temperature=temperature,
@@ -980,7 +1023,7 @@ class DNMGStationSyncService:
         is_online = bool(
             latest_observation
             and latest_observation.recorded_at
-            and current_time - latest_observation.recorded_at <= timedelta(hours=24)
+            and current_time - latest_observation.recorded_at <= cls.ONLINE_WINDOW
         )
         local_updated_at = localtime(latest_observation.recorded_at) if latest_observation else None
         return {
@@ -992,38 +1035,76 @@ class DNMGStationSyncService:
         }
 
     @staticmethod
-    def get_chart_observations(observations, interval_minutes=30, include_irregular=False):
-        """Return chart observations without hiding irregular station telemetry.
+    def get_chart_observations(observations, interval_minutes=15, end_time=None):
+        """Build fixed display buckets without changing stored observation times.
 
-        Normal station feeds keep the established exact 30-minute samples. AWS
-        stations can opt in to their complete API history: if any reading falls
-        outside that schedule, every available reading is returned and plotted
-        at its actual timestamp.
+        A category chart gives every point equal horizontal spacing. Returning a
+        complete configured grid prevents irregular updates from looking as
+        though they arrived at regular intervals. Each bucket retains its newest
+        source observation; empty buckets remain ``None`` so the chart draws a
+        visible gap instead of implying data that was never received.
         """
-        timestamped_observations = []
-        interval_observations = []
+        if end_time is None:
+            end_time = now()
+        local_end_time = localtime(end_time).replace(second=0, microsecond=0)
+        local_end_time -= timedelta(minutes=local_end_time.minute % interval_minutes)
+        bucket_count = (24 * 60) // interval_minutes
+        first_bucket = local_end_time - timedelta(
+            minutes=interval_minutes * (bucket_count - 1)
+        )
+
+        observations_by_bucket = {}
         for observation in observations:
             if not observation.recorded_at:
                 continue
             local_recorded_at = localtime(observation.recorded_at)
-            pair = (local_recorded_at, observation)
-            timestamped_observations.append(pair)
-            if (
-                local_recorded_at.minute % interval_minutes == 0
-                and local_recorded_at.second == 0
-                and local_recorded_at.microsecond == 0
-            ):
-                interval_observations.append(pair)
-        if include_irregular and len(interval_observations) != len(timestamped_observations):
-            return timestamped_observations
-        return interval_observations
+            bucket_time = local_recorded_at.replace(
+                minute=local_recorded_at.minute - (local_recorded_at.minute % interval_minutes),
+                second=0,
+                microsecond=0,
+            )
+            if first_bucket <= bucket_time <= local_end_time:
+                observations_by_bucket[bucket_time] = observation
+
+        return [
+            (
+                first_bucket + timedelta(minutes=interval_minutes * index),
+                observations_by_bucket.get(
+                    first_bucket + timedelta(minutes=interval_minutes * index)
+                ),
+            )
+            for index in range(bucket_count)
+        ]
+
+    @classmethod
+    def uses_fifteen_minute_chart(cls, station):
+        """Return whether this station uses the public 15-minute chart grid."""
+        return cls.chart_interval_minutes(station) == 15
+
+    @classmethod
+    def chart_interval_minutes(cls, station):
+        """Return the station-specific public chart interval, if configured."""
+        return (
+            cls.CHART_INTERVALS_BY_STATION_TYPE.get(station.station_type)
+            or cls.CHART_INTERVALS_BY_STATION_ID.get(station.external_id)
+        )
+
+    @staticmethod
+    def get_raw_chart_observations(observations):
+        """Return every received observation at its original local timestamp."""
+        return [
+            (localtime(observation.recorded_at), observation)
+            for observation in observations
+            if observation.recorded_at
+        ]
 
     @classmethod
     def get_dashboard_stations_data(cls):
         """
         Returns all 15 stations grouped by station category (AWS, Tide Gauge, Buoy)
         with coordinates and latest live observation data for the dashboard.
-        Evaluates 24-hour status rule: ONLINE if data is within last 24 hours, OFFLINE otherwise.
+        Evaluates the shared five-hour status rule: ONLINE if data is within
+        the last five hours, OFFLINE otherwise.
         All timestamps converted to Timor-Leste local time (Asia/Dili, GMT+9).
         """
         stations = WeatherStation.objects.all().order_by('external_id')
@@ -1078,6 +1159,248 @@ class DNMGStationSyncService:
             'buoy_stations': buoy_list,
             'total_count': len(aws_list) + len(tide_list) + len(buoy_list),
             'synced_count': online_counter
+        }
+
+
+class AwosDiliSyncService:
+    """Copy the small Dili AWOS working set from its read-only MariaDB source.
+
+    AWOS timestamps are UTC. Django stores aware timestamps in UTC and renders
+    them in ``TIME_ZONE`` (Asia/Dili), so this service never changes a source
+    timestamp to local wall-clock time before persistence.
+    """
+
+    STATION_CODE = "WPDL"
+    STATION_DEFAULTS = {
+        "name": "Dili Airport AWOS",
+        "municipality": Municipality.DILI,
+        "latitude": Decimal("-8.546600"),
+        "longitude": Decimal("125.525000"),
+        "elevation": Decimal("8.00"),
+        "station_type": WeatherStation.StationType.AWOS,
+        "status": WeatherStation.Status.ACTIVE,
+    }
+    NUMERIC_VARIABLES = {
+        "temperature": ("1Min", "AT10Ma"),
+        "humidity": ("1Min", "RH10Ma"),
+        "dew_point_c": ("1Min", "DP10Ma"),
+        "pressure_hpa": ("1Min", "QNH10Ma"),
+        "wind_speed_kmh": ("10Sec", "WS10Ma_A"),
+        "wind_direction": ("10Sec", "WD10Ma_A"),
+        "wind_gust_kmh": ("10Sec", "WS10Mg_A"),
+        "visibility_m": ("1Min", "Vis10Ma_A"),
+        "runway_visual_range_m": ("1Min", "RVR10Ma_A"),
+    }
+    METAR_VARIABLE = ("Metar", "_Metar")
+    # Campbell's aviation wind variables use knots. Persist their equivalent
+    # in km/h so the shared WeatherObservation model and public station map
+    # keep one consistent unit; the airport page converts them back to knots.
+    WIND_SPEED_KNOTS_TO_KMH = Decimal("1.852")
+    QUANTUM = Decimal("0.01")
+
+    @classmethod
+    def is_configured(cls):
+        return bool(
+            settings.AWOS_DILI_DATABASE_URL
+            and settings.AWOS_DILI_USER
+            and settings.AWOS_DILI_PASSWORD
+        )
+
+    @classmethod
+    def connection_options(cls):
+        """Return safe PyMySQL options for the configured AWOS source."""
+        if not cls.is_configured():
+            raise ValueError("Dili AWOS MariaDB credentials are not configured.")
+        database_url = urlparse(settings.AWOS_DILI_DATABASE_URL)
+        if database_url.scheme not in {"mysql", "mariadb"}:
+            raise ValueError("AWOS_DILI_DATABASE_URL must start with mysql:// or mariadb://")
+        database_name = database_url.path.strip("/")
+        if not database_url.hostname or not database_name:
+            raise ValueError("AWOS_DILI_DATABASE_URL must include a host and database name.")
+        if database_url.username or database_url.password:
+            raise ValueError("Put AWOS credentials in AWOS_DILI_USER and AWOS_DILI_PASSWORD, not the URL.")
+        return {
+            "host": database_url.hostname,
+            "port": database_url.port or 3306,
+            "user": settings.AWOS_DILI_USER,
+            "password": settings.AWOS_DILI_PASSWORD,
+            "database": database_name,
+            "autocommit": True,
+            "connect_timeout": 10,
+            "read_timeout": 10,
+            "write_timeout": 10,
+            "cursorclass": pymysql.cursors.DictCursor,
+        }
+
+    @classmethod
+    def fetch_active_values(cls):
+        """Fetch only the selected WPDL records from the AWOS ``active`` table."""
+        requested_variables = tuple(cls.NUMERIC_VARIABLES.values()) + (cls.METAR_VARIABLE,)
+        placeholders = ", ".join(["(%s, %s)"] * len(requested_variables))
+        parameters = [cls.STATION_CODE]
+        for group_name, variable_name in requested_variables:
+            parameters.extend((group_name, variable_name))
+        query = (
+            "SELECT GroupName, VariableName, UpdateDate, CurrentValue, CurrentQuality, CurrentASCII "
+            "FROM active WHERE StationName = %s "
+            f"AND (GroupName, VariableName) IN ({placeholders})"
+        )
+        connection = pymysql.connect(**cls.connection_options())
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, parameters)
+                return {
+                    (row["GroupName"], row["VariableName"]): row
+                    for row in cursor.fetchall()
+                }
+        finally:
+            connection.close()
+
+    @classmethod
+    def parse_decimal(cls, value):
+        if value is None:
+            return None
+        try:
+            return Decimal(str(value)).quantize(cls.QUANTUM, rounding=ROUND_HALF_UP)
+        except (InvalidOperation, TypeError, ValueError):
+            return None
+
+    @classmethod
+    def source_timestamp(cls, value):
+        """Treat MariaDB's naive AWOS datetimes as UTC source timestamps."""
+        if value is None:
+            return None
+        if not is_aware(value):
+            value = make_aware(value, datetime_timezone.utc)
+        return value.astimezone(datetime_timezone.utc)
+
+    @classmethod
+    def latest_observation_timestamp(cls, values):
+        timestamps = [
+            cls.source_timestamp(row.get("UpdateDate"))
+            for variable in cls.NUMERIC_VARIABLES.values()
+            if (row := values.get(variable)) is not None
+        ]
+        timestamps = [timestamp for timestamp in timestamps if timestamp is not None]
+        if not timestamps:
+            return None
+        # AWOS wind values update every ten seconds. Store one portal snapshot
+        # per UTC minute, as agreed, rather than reproducing that high-volume stream.
+        return max(timestamps).replace(second=0, microsecond=0)
+
+    @classmethod
+    def get_station(cls):
+        return WeatherStation.objects.get_or_create(
+            code=cls.STATION_CODE,
+            defaults=cls.STATION_DEFAULTS,
+        )[0]
+
+    @classmethod
+    def observation_values(cls, values):
+        def numeric(field_name):
+            row = values.get(cls.NUMERIC_VARIABLES[field_name])
+            return cls.parse_decimal(row.get("CurrentValue")) if row else None
+
+        def wind_speed_kmh(field_name):
+            row = values.get(cls.NUMERIC_VARIABLES[field_name])
+            if not row or row.get("CurrentValue") is None:
+                return None
+            try:
+                return (Decimal(str(row["CurrentValue"])) * cls.WIND_SPEED_KNOTS_TO_KMH).quantize(
+                    cls.QUANTUM,
+                    rounding=ROUND_HALF_UP,
+                )
+            except (InvalidOperation, TypeError, ValueError):
+                return None
+
+        wind_direction_degrees = numeric("wind_direction")
+        return {
+            "temperature": numeric("temperature"),
+            "humidity": numeric("humidity"),
+            "dew_point_c": numeric("dew_point_c"),
+            "pressure_hpa": numeric("pressure_hpa"),
+            "wind_speed_kmh": wind_speed_kmh("wind_speed_kmh"),
+            "wind_direction": DNMGStationSyncService.degrees_to_compass(wind_direction_degrees),
+            "wind_gust_kmh": wind_speed_kmh("wind_gust_kmh"),
+            "visibility_m": numeric("visibility_m"),
+            "runway_visual_range_m": numeric("runway_visual_range_m"),
+            "condition_text": "AWOS Live Monitoring",
+        }
+
+    @classmethod
+    def wind_kmh_to_knots(cls, value):
+        """Convert a stored AWOS wind value to the aviation display unit."""
+        if value is None:
+            return None
+        try:
+            return (Decimal(str(value)) / cls.WIND_SPEED_KNOTS_TO_KMH).quantize(
+                Decimal("0.1"),
+                rounding=ROUND_HALF_UP,
+            )
+        except (InvalidOperation, TypeError, ValueError):
+            return None
+
+    @classmethod
+    def store_metar(cls, station, values):
+        row = values.get(cls.METAR_VARIABLE)
+        if not row:
+            return None
+        raw_report = (row.get("CurrentASCII") or "").replace("\r", " ").replace("\n", " ").strip()
+        reported_at = cls.source_timestamp(row.get("UpdateDate"))
+        if not raw_report or not raw_report.startswith("METAR ") or reported_at is None:
+            return None
+        report, _ = AwosMetarReport.objects.update_or_create(
+            station=station,
+            reported_at=reported_at,
+            defaults={"raw_report": raw_report},
+        )
+        return report
+
+    @classmethod
+    def purge_expired_records(cls, station):
+        observation_cutoff = now() - timedelta(hours=settings.AWOS_DILI_OBSERVATION_RETENTION_HOURS)
+        metar_cutoff = now() - timedelta(days=settings.AWOS_DILI_METAR_RETENTION_DAYS)
+        observations_deleted, _ = WeatherObservation.objects.filter(
+            station=station,
+            recorded_by__isnull=True,
+            recorded_at__lt=observation_cutoff,
+        ).delete()
+        reports_deleted, _ = AwosMetarReport.objects.filter(
+            station=station,
+            reported_at__lt=metar_cutoff,
+        ).delete()
+        return observations_deleted, reports_deleted
+
+    @classmethod
+    def sync(cls):
+        """Synchronize one current AWOS snapshot and its latest METAR report."""
+        if not cls.is_configured():
+            return {"status": "disabled"}
+        try:
+            active_values = cls.fetch_active_values()
+        except (pymysql.MySQLError, ValueError, OSError) as error:
+            logger.warning("Unable to read Dili AWOS MariaDB: %s", error)
+            return {"status": "failed", "reason": str(error)}
+
+        recorded_at = cls.latest_observation_timestamp(active_values)
+        if recorded_at is None:
+            return {"status": "no_data"}
+
+        station = cls.get_station()
+        observation = DNMGStationSyncService.store_automatic_observation(
+            station,
+            recorded_at,
+            **cls.observation_values(active_values),
+        )
+        report = cls.store_metar(station, active_values)
+        observations_deleted, reports_deleted = cls.purge_expired_records(station)
+        return {
+            "status": "synced",
+            "station": station,
+            "observation": observation,
+            "metar": report,
+            "observations_deleted": observations_deleted,
+            "metar_reports_deleted": reports_deleted,
         }
 
 
@@ -1145,3 +1468,148 @@ class DNMG10DayForecastService:
             data = cache.get(stale_cache_key)
 
         return data
+
+
+class METNorwayForecastService:
+    """Cached municipal point forecasts from MET Norway Locationforecast.
+
+    The provider supplies model guidance, not DNMG observations. Requests are
+    made only by the scheduled backend refresh, with the required identifying
+    User-Agent and provider-controlled expiry respected in the cache.
+    """
+
+    API_URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact"
+    USER_AGENT = "DNMG Portal/1.0 (+https://dnmg.gov.tl; info@dnmg.gov.tl)"
+    REQUEST_TIMEOUT = 8
+    CACHE_KEY = "met_norway_municipality_hourly_forecast_v3"
+    STALE_CACHE_TIMEOUT = 6 * 60 * 60
+    DEFAULT_CACHE_TIMEOUT = 60 * 60
+    TIMOR_LESTE_TIMEZONE = ZoneInfo("Asia/Dili")
+
+    # Municipal reference points include Atauro, which is present in the public
+    # municipality boundary data but does not yet have a WeatherStation choice.
+    MUNICIPALITY_LOCATIONS = (
+        ("Aileu", -8.728, 125.566, 913),
+        ("Ainaro", -8.993, 125.509, 827),
+        ("Atauro", -8.255, 125.582, 28),
+        ("Baucau", -8.471, 126.458, 510),
+        ("Bobonaro", -9.020, 125.327, 841),
+        ("Cova Lima", -9.177, 125.150, 202),
+        ("Dili", -8.557, 125.578, 12),
+        ("Ermera", -8.752, 125.400, 734),
+        ("Lautem", -8.444, 126.894, 50),
+        ("Liquica", -8.588, 125.341, 12),
+        ("Manatuto", -8.514, 126.012, 20),
+        ("Manufahi", -9.012, 125.759, 320),
+        ("Oecusse", -9.198, 124.354, 15),
+        ("Viqueque", -8.872, 126.364, 39),
+    )
+
+    @classmethod
+    def get_cached_forecast(cls, allow_stale=True):
+        cached = cache.get(cls.CACHE_KEY)
+        if not cached:
+            return []
+        if cached["expires_at"] > time.time() or allow_stale:
+            return cached["conditions"]
+        return []
+
+    @staticmethod
+    def _number(value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    @classmethod
+    def _cache_timeout(cls, headers):
+        expires = headers.get("Expires") if headers else None
+        if not expires:
+            return cls.DEFAULT_CACHE_TIMEOUT
+        try:
+            timeout = int(parsedate_to_datetime(expires).timestamp() - time.time())
+        except (TypeError, ValueError, IndexError, OverflowError):
+            return cls.DEFAULT_CACHE_TIMEOUT
+        return max(60, timeout)
+
+    @classmethod
+    def _normalise_condition(cls, municipality, payload):
+        times = payload.get("properties", {}).get("timeseries", [])
+        if not times:
+            return None
+
+        parsed_times = []
+        for entry in times:
+            parsed_time = parse_datetime(entry.get("time", ""))
+            if parsed_time is None:
+                continue
+            if not is_aware(parsed_time):
+                parsed_time = make_aware(parsed_time, datetime_timezone.utc)
+            parsed_times.append((parsed_time, entry))
+
+        if not parsed_times:
+            return None
+
+        forecast = parsed_times[0][1]
+        details = forecast.get("data", {}).get("instant", {}).get("details", {})
+        rain = forecast.get("data", {}).get("next_1_hours", {}).get("details", {})
+        temperature = cls._number(details.get("air_temperature"))
+        humidity = cls._number(details.get("relative_humidity"))
+        wind_speed = cls._number(details.get("wind_speed"))
+        precipitation = cls._number(rain.get("precipitation_amount"))
+        forecast_time = parse_datetime(forecast.get("time", ""))
+        if forecast_time is None:
+            return None
+
+        return {
+            "name": municipality,
+            "temperature": round(temperature, 1) if temperature is not None else None,
+            "humidity": round(humidity, 1) if humidity is not None else None,
+            "rainfall": round(precipitation, 1) if precipitation is not None else None,
+            "wind_speed": round(wind_speed * 3.6, 1) if wind_speed is not None else None,
+            "forecast_time": localtime(
+                now(), cls.TIMOR_LESTE_TIMEZONE
+            ).replace(minute=0, second=0, microsecond=0).strftime("%H:%M"),
+        }
+
+    @classmethod
+    def fetch_municipality_forecast(cls):
+        cached = cache.get(cls.CACHE_KEY)
+        if cached and cached["expires_at"] > time.time():
+            return cached["conditions"]
+
+        conditions = []
+        cache_timeout = cls.DEFAULT_CACHE_TIMEOUT
+        for municipality, latitude, longitude, altitude in cls.MUNICIPALITY_LOCATIONS:
+            query = urlencode({
+                "lat": latitude,
+                "lon": longitude,
+                "altitude": altitude,
+            })
+            request = urllib.request.Request(
+                f"{cls.API_URL}?{query}",
+                headers={"User-Agent": cls.USER_AGENT},
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=cls.REQUEST_TIMEOUT) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                    cache_timeout = min(cache_timeout, cls._cache_timeout(response.headers))
+            except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as exc:
+                logger.warning("MET Norway forecast unavailable for %s: %s", municipality, exc)
+                continue
+
+            condition = cls._normalise_condition(municipality, payload)
+            if condition:
+                conditions.append(condition)
+
+        if conditions:
+            cache.set(
+                cls.CACHE_KEY,
+                {
+                    "conditions": conditions,
+                    "expires_at": time.time() + cache_timeout,
+                },
+                cache_timeout + cls.STALE_CACHE_TIMEOUT,
+            )
+            return conditions
+        return cached["conditions"] if cached else []

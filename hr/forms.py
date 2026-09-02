@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
+from core.widgets import AdminFileInput
 from .models import (
     Employee, EmployeeEducation, EmployeeDocument, Department, DepartmentSection,
     StaffLevel, DownloadableFile, DownloadCategory,
@@ -81,7 +82,7 @@ class EmployeeForm(forms.ModelForm):
         widgets = {
             'employee_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. DNMG-2024-001')}),
             'user_account': forms.Select(attrs={'class': 'form-select'}),
-            'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'photo': AdminFileInput(attrs={'class': 'form-control'}),
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'gender': forms.Select(attrs={'class': 'form-select'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
@@ -135,7 +136,7 @@ class EmployeeDocumentForm(RestrictedUploadFormMixin, forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. Employment Contract 2024')}),
             'document_type': forms.Select(attrs={'class': 'form-select'}),
-            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'file': AdminFileInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -320,7 +321,7 @@ class DownloadableFileForm(RestrictedUploadFormMixin, forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-select'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'tags': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. annual, report, 2024')}),
-            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'file': AdminFileInput(attrs={'class': 'form-control'}),
             'file_type': forms.Select(attrs={'class': 'form-select'}),
             'version': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. 1.0')}),
             'access_level': forms.Select(attrs={'class': 'form-select'}),

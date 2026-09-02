@@ -15,6 +15,15 @@ die() {
     exit 1
 }
 
+require_truthy_setting() {
+    local setting_name=$1
+    local setting_value=${!setting_name:-}
+    case "${setting_value,,}" in
+        1|true|yes|on) ;;
+        *) die "$setting_name must be enabled in .env.production." ;;
+    esac
+}
+
 command -v docker >/dev/null || die "Docker is required."
 command -v git >/dev/null || die "Git is required."
 [[ -f "$project_root/.env.production" ]] || die "Create $project_root/.env.production first."
@@ -28,6 +37,18 @@ source "$project_root/.env.production"
 set +a
 [[ -n ${DB_NAME:-} && -n ${DB_USER:-} && -n ${DB_PASSWORD:-} && -n ${DB_HOST:-} ]] \
     || die "DB_NAME, DB_USER, DB_PASSWORD, and DB_HOST must be set in .env.production."
+[[ ${DJANGO_DEBUG:-} == "false" ]] || die "DJANGO_DEBUG must be false in .env.production."
+case "${DJANGO_SECRET_KEY:-}" in
+    ""|django-insecure*|replace-with-*)
+        die "Set a unique DJANGO_SECRET_KEY in .env.production."
+        ;;
+esac
+[[ -n ${DJANGO_ALLOWED_HOSTS:-} ]] || die "DJANGO_ALLOWED_HOSTS must be set in .env.production."
+[[ -n ${DJANGO_CSRF_TRUSTED_ORIGINS:-} ]] || die "DJANGO_CSRF_TRUSTED_ORIGINS must be set in .env.production."
+require_truthy_setting DJANGO_SECURE_SSL_REDIRECT
+require_truthy_setting DJANGO_SESSION_COOKIE_SECURE
+require_truthy_setting DJANGO_CSRF_COOKIE_SECURE
+[[ ${MEDIA_HOST_PATH:-} = /* ]] || die "MEDIA_HOST_PATH must be an absolute production path."
 backup_root=${BACKUP_ROOT:-/srv/dnmg_portal_data/backups}
 media_source=${MEDIA_SOURCE:-${MEDIA_HOST_PATH:-$project_root/media}}
 pg_dump_host=${PG_DUMP_HOST:-$DB_HOST}
@@ -37,6 +58,8 @@ backup_dir="$backup_root/$timestamp"
 cd "$project_root"
 git diff --quiet || die "The production checkout has uncommitted tracked changes. Commit or stash them first."
 git diff --cached --quiet || die "The production checkout has staged changes. Commit or unstage them first."
+[[ -z "$(git ls-files --others --exclude-standard)" ]] \
+    || die "The production checkout has untracked files. Commit intended code or move runtime files outside the checkout."
 
 umask 077
 mkdir -p "$backup_dir"
@@ -78,7 +101,7 @@ Backups created in: $backup_dir
 
 Next checks:
   curl -f http://127.0.0.1:8000/healthz/
-  docker compose --env-file .env.production -f docker-compose.production.yml logs -f web sync
+  docker compose --env-file .env.production -f docker-compose.production.yml logs -f web sync awos-sync
 
 Reload host Nginx after deploying nginx.conf. Do not expose /media/hr/documents/
 or /media/hr/downloads/ directly.

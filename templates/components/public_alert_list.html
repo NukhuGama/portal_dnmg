@@ -1,0 +1,83 @@
+{% load i18n %}
+
+{% if alert_items %}
+    {% if compact %}
+    <section class="site-alerts site-alerts--compact"
+             aria-label="{% translate 'Active early warnings' %}"
+             data-alert-slider-root
+             data-alert-autoplay="{% if alert_items|length > 1 %}true{% else %}false{% endif %}"
+             data-alert-interval="8000">
+        <div class="container">
+            <a class="site-alerts__summary" href="{% url 'weather:public_warning_list' %}">
+                <span class="site-alerts__summary-icon">
+                    <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                </span>
+                <span>
+                    {% blocktranslate trimmed count counter=alert_items|length %}
+                        {{ counter }} active alert
+                    {% plural %}
+                        {{ counter }} active alerts
+                    {% endblocktranslate %}
+                </span>
+            </a>
+
+            <div class="site-alerts__list"
+                 role="list"
+                 tabindex="0"
+                 data-alert-slider
+                 aria-label="{% translate 'Active early warning notices' %}">
+                {% for alert in alert_items %}
+                    {% include 'components/public_alert_card.html' with alert=alert slider_item=True only %}
+                {% endfor %}
+            </div>
+
+            <div class="site-alerts__controls" aria-label="{% translate 'Alert slider controls' %}">
+                <span class="site-alerts__position" data-alert-position>
+                    1 / {{ alert_items|length }}
+                </span>
+                <button type="button"
+                        class="site-alerts__control"
+                        data-alert-previous
+                        aria-label="{% translate 'Previous alert' %}">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="site-alerts__control"
+                        data-alert-next
+                        aria-label="{% translate 'Next alert' %}">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <section class="site-alerts"
+             aria-labelledby="{{ alert_heading_id|default:'site-alerts-heading' }}">
+        <div class="container">
+            <div class="site-alerts__header">
+                <div>
+                    <p class="site-alerts__eyebrow">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {% translate "Official DNMG alert" %}
+                    </p>
+                    <h2 id="{{ alert_heading_id|default:'site-alerts-heading' }}">
+                        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                        {% translate "Active early warnings" %}
+                    </h2>
+                </div>
+                <a class="site-alerts__all-link"
+                   href="{% url 'weather:public_warning_list' %}">
+                    {% translate "View all warnings" %}
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="site-alerts__list" role="list">
+                {% for alert in alert_items %}
+                    {% include 'components/public_alert_card.html' with alert=alert only %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+{% endif %}

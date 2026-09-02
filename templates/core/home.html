@@ -5,63 +5,51 @@
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/seismic-home-summary.css' %}">{% endblock %}
 
 {% block content %}
-<!-- Welcome Hero Banner -->
-<section class="bg-gradient-primary text-white py-5 mb-5 position-relative overflow-hidden">
-    <!-- Vector decorations representing atmosphere curves -->
-    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: radial-gradient(circle at 80% 20%, #ffffff 0%, transparent 40%); pointer-events: none;"></div>
-    <div class="container py-3 position-relative">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-8">
-                <h1 class="display-8 fw-bold mb-2 text-uppercase" style="font-family: var(--font-heading); letter-spacing: 0.5px;">
-                    {% translate "National Portal for Meteorological, Climate and Geophysical Information" %}
-                </h1>
-                <p class="lead text-white-50 mb-0">
-                    {% translate "Official weather forecasts, climate summaries, marine advisories, and seismic warnings for the Democratic Republic of Timor-Leste." %}
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <div class="badge bg-warning text-dark py-2.5 px-3 rounded-pill fw-bold text-uppercase fs-7 shadow-sm">
-                    <span class="pulse-indicator me-1"></span>
-                    {% translate "System Operational" %}
+<section class="portal-hero" aria-labelledby="portal-hero-title">
+    <div class="portal-hero__overlay"></div>
+    <div class="container portal-hero__content">
+        <div class="row align-items-end g-4">
+            <div class="col-xl-8">
+                <!-- <p class="portal-eyebrow text-white-50 mb-3"><i class="bi bi-broadcast-pin me-2"></i>{% translate "Timor-Leste national monitoring network" %}</p> -->
+                <h1 id="portal-hero-title">{% translate "National Portal for Meteorological, Climate and Geophysical Information" %}</h1>
+                <p class="portal-hero__lead mb-4">{% translate "Official weather forecasts, climate summaries, marine advisories, and seismic warnings for the Democratic Republic of Timor-Leste." %}</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'weather:forecast_map' %}" class="btn btn-warning fw-semibold px-3"><i class="bi bi-cloud-sun me-2"></i>{% translate "Forecast map" %}</a>
+                    <a href="{% url 'weather:interactive_map' %}" class="btn btn-outline-light px-3"><i class="bi bi-activity me-2"></i>{% translate "Live Observations" %}</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<div class="container mb-5">
-    <!-- Priority safety area: every active warning remains visible above dashboard summaries. -->
-    {% if alerts %}
-        <section class="home-priority-alerts mb-4" aria-labelledby="home_alerts_heading">
-            <div class="home-priority-alerts__heading">
-                <h2 id="home_alerts_heading" class="h5 fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>{% blocktranslate with count=alerts|length %}Active Safety Alerts ({{ count }}){% endblocktranslate %}</h2>
-                <span class="badge text-bg-danger rounded-pill"><i class="bi bi-broadcast me-1"></i>{% translate "Priority information" %}</span>
+<div class="container public-home mb-5">
+    <section class="municipality-conditions" data-municipality-slider aria-labelledby="municipality-conditions-title">
+        <div class="municipality-conditions__header">
+            <div>
+                <p class="portal-section-kicker"><i class="bi bi-cloud-sun me-2"></i>{% translate "MET Norway / ECMWF" %}</p>
+                <h2 id="municipality-conditions-title">{% translate "Current Conditions by Municipality" %}</h2>
+                <p class="municipality-conditions__hint mb-0" id="municipality-conditions-help">{% translate "Swipe or use the arrows to browse municipalities." %}</p>
             </div>
-            <div id="activeAlertsCarousel" class="carousel slide home-priority-alerts__carousel" data-bs-ride="carousel" data-bs-interval="7000" aria-label="{% translate 'Active safety alerts' %}">
-                <div class="carousel-inner">
-                    {% for alert in alerts %}
-                        <div class="carousel-item{% if forloop.first %} active{% endif %}">
-                            <article class="card border-0 shadow-sm rounded-3 alert-severity-{{ alert.severity }} glass-card home-priority-alert">
-                                <div class="card-body p-3 px-md-5">
-                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                                        <h3 class="h6 fw-bold text-dark mb-0">{{ alert.title }}</h3>
-                                        <span class="badge {% if alert.severity == 'danger' %}bg-danger{% else %}bg-warning text-dark{% endif %} rounded-pill font-monospace small px-2.5">{{ alert.period }}</span>
-                                    </div>
-                                    <p class="small text-muted mb-1"><strong>{% translate "Affected Areas:" %}</strong> {{ alert.region }}</p>
-                                    <p class="small mb-0 text-dark-muted">{{ alert.description }}</p>
-                                </div>
-                            </article>
-                        </div>
-                    {% endfor %}
-                </div>
-                {% if alerts|length > 1 %}
-                    <button class="carousel-control-prev" type="button" data-bs-target="#activeAlertsCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">{% translate "Previous alert" %}</span></button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#activeAlertsCarousel" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">{% translate "Next alert" %}</span></button>
-                    <div class="carousel-indicators home-priority-alerts__indicators">{% for alert in alerts %}<button type="button" data-bs-target="#activeAlertsCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="{% blocktranslate with number=forloop.counter %}Alert {{ number }}{% endblocktranslate %}"></button>{% endfor %}</div>
-                {% endif %}
+            <div class="municipality-conditions__controls">
+                <button type="button" class="btn btn-outline-secondary" data-condition-scroll="previous" aria-label="{% translate 'Previous municipalities' %}"><i class="bi bi-arrow-left"></i></button>
+                <button type="button" class="btn btn-outline-secondary" data-condition-scroll="next" aria-label="{% translate 'Next municipalities' %}"><i class="bi bi-arrow-right"></i></button>
             </div>
-        </section>
-    {% endif %}
+        </div>
+        <div class="municipality-conditions__rail" data-municipality-rail tabindex="0" role="region" aria-roledescription="carousel" aria-label="{% translate 'Municipality hourly forecasts' %}" aria-describedby="municipality-conditions-help">
+            {% for item in municipality_conditions %}
+                <article class="municipality-condition" data-municipality-slide>
+                    <div class="municipality-condition__header"><h3>{{ item.name }}</h3>
+                        <!-- <time>{% blocktranslate with forecast_time=item.forecast_time %}{{ forecast_time }} TL forecast{% endblocktranslate %}</time> -->
+                    </div>
+                    <div class="municipality-condition__primary-value">{{ item.temperature|default_if_none:"--" }}<span>°C</span></div>
+                    <!-- <p>{% translate "Hourly model forecast" %}</p> -->
+                    <div class="municipality-condition__details"><span><i class="bi bi-droplet"></i>{{ item.humidity|default_if_none:"--" }}%</span><span><i class="bi bi-cloud-rain"></i>{{ item.rainfall|default_if_none:"--" }} mm</span><span><i class="bi bi-wind"></i>{{ item.wind_speed|default_if_none:"--" }} km/h</span></div>
+                </article>
+            {% empty %}
+                <p class="text-muted small mb-0">{% translate "Municipality forecast data is loading." %}</p>
+            {% endfor %}
+        </div>
+    </section>
 
     <section class="home-seismic-summary home-secondary-dashboard mb-4" data-seismic-home-summary data-api-url="{% url 'seismic:home_summary' %}" data-loading-message="{% translate 'Loading recent earthquake activity…' %}" data-unavailable-message="{% translate 'Earthquake information is temporarily unavailable.' %}" data-no-events-message="{% translate 'No nearby earthquakes were reported for the current period.' %}" aria-labelledby="home_seismic_heading">
         <div class="home-seismic-summary__header">
@@ -167,12 +155,13 @@
                     <div class="home-stations-header d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                         <div>
                             <h5 class="fw-bold text-dark mb-0"><i class="bi bi-map-fill me-2 text-primary"></i>{% translate "National Meteorological Station Network" %}</h5>
-                            <small class="text-muted">{% translate "Live telemetry from 15 active network stations across Timor-Leste" %}</small>
+                            <small class="text-muted">{% blocktranslate with count=station_count %}{{ count }} stations in the DNMG network{% endblocktranslate %}</small>
                         </div>
                         <!-- Filter Category Buttons -->
                         <div class="btn-group btn-group-sm home-station-filters" role="group" id="map_filter_group">
-                            <button type="button" class="btn btn-primary active" data-filter="ALL">{% translate "All" %} (15)</button>
+                            <button type="button" class="btn btn-primary active" data-filter="ALL">{% translate "All" %} ({{ station_count }})</button>
                             <button type="button" class="btn btn-outline-primary" data-filter="AWS">{% translate "AWS" %}</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="AWOS">{% translate "AWOS" %}</button>
                             <button type="button" class="btn btn-outline-primary" data-filter="TIDE_GAUGE">{% translate "Tide Gauge" %}</button>
                             <button type="button" class="btn btn-outline-primary" data-filter="BUOY">{% translate "Marine Buoy" %}</button>
                         </div>
@@ -257,7 +246,7 @@
                 <div class="card-body">
                     <div class="badge bg-warning-subtle text-warning-emphasis mb-2">CRISH</div>
                     <h5 class="fw-bold text-dark mb-2">{% translate "Climate Risk Info for Public Health" %}</h5>
-                    <p class="small text-muted">{% translate "Climate Risk Information System for Public Health: Early Warning and Health Resilience for Diarrhea, Dengue, and ARI(Accute Respiratory Infection)" %}</p>
+                    <p class="small text-muted">{% translate "Climate Risk Information System for Public Health: Early Warning and Health Resilience for Diarrhea, Dengue, and ARI (Acute Respiratory Infection)." %}</p>
                 </div>
             </div>
         </div>
@@ -266,7 +255,7 @@
                 <div class="card-body">
                     <div class="badge bg-success-subtle text-success mb-2">ADSS</div>
                     <h5 class="fw-bold text-dark mb-2">{% translate "Agricultural DSS" %}</h5>
-                    <p class="small text-muted">{% translate "Agro-meteorological advisories for  rice, and corn farming seasonal planning." %}</p>
+                    <p class="small text-muted">{% translate "Agro-meteorological advisories for rice and corn farming seasonal planning." %}</p>
                 </div>
             </div>
         </div>
@@ -332,14 +321,15 @@
 
 {% block extra_js %}
 <script src="{% static 'js/seismic-home-summary.js' %}"></script>
+<script src="{% static 'js/municipality-slider.js' %}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Initialize Leaflet map centered on Timor-Leste
         var map = L.map('tl_map').setView([-8.65, 125.75], 8);
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+            subdomains: ['a', 'b', 'c'],
             maxZoom: 20
         }).addTo(map);
 
@@ -359,8 +349,8 @@
                 iconHtml = '<i class="bi bi-life-preserver text-white fs-6"></i>';
                 bgClass = isOnline ? 'bg-dark' : 'bg-danger';
             } else if (type === 'AWOS') {
-                iconHtml = '<i class="bi bi-airplane-engines text-white fs-6"></i>';
-                bgClass = isOnline ? 'bg-purple' : 'bg-danger';
+                iconHtml = '<i class="bi bi-airplane-engines text-dark fs-6"></i>';
+                bgClass = isOnline ? 'bg-warning' : 'bg-danger';
             } else {
                 iconHtml = '<i class="bi bi-cloud-sun text-white fs-6"></i>';
                 bgClass = isOnline ? 'bg-primary' : 'bg-danger';
@@ -479,9 +469,9 @@
         // -----------------------------------------------
         var homeForecastMap = L.map('home_forecast_map', { zoomControl: false, scrollWheelZoom: false }).setView([-8.75, 125.85], 8);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+            subdomains: ['a', 'b', 'c'],
             maxZoom: 18
         }).addTo(homeForecastMap);
 

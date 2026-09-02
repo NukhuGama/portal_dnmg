@@ -19,7 +19,7 @@ urlpatterns = [
     path('users/<int:pk>/force-logout/', views.UserForceLogoutView.as_view(), name='user_force_logout'),
     path('users/<int:pk>/reset-password/', views.UserPasswordResetAdminView.as_view(), name='user_reset_password'),
 
-    # Granular role and permission management (Django superuser only)
+    # Granular role and permission management (permission-based access)
     path('roles/', views.RoleListView.as_view(), name='role_list'),
     path('roles/create/', views.RoleCreateView.as_view(), name='role_create'),
     path('roles/<int:pk>/', views.RoleDetailView.as_view(), name='role_detail'),

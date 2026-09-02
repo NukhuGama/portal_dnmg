@@ -210,10 +210,12 @@
             <div id="live_station_search_status" class="visually-hidden" aria-live="polite"></div>
         </form>
         <div id="live_filter_pill" class="bottom-map-filter-pill d-flex align-items-center gap-1">
-            <button class="btn btn-sm btn-primary rounded-pill px-3 filter-pill-btn active" data-type="ALL">{% translate "ALL" %}</button>
-            <button class="btn btn-sm btn-light rounded-pill px-3 filter-pill-btn" data-type="AWS">{% translate "AWS" %}</button>
-            <button class="btn btn-sm btn-light rounded-pill px-3 filter-pill-btn" data-type="TIDE_GAUGE">{% translate "Tide Gauge" %}</button>
-            <button class="btn btn-sm btn-light rounded-pill px-3 filter-pill-btn" data-type="BUOY">{% translate "Buoy" %}</button>
+            <button type="button" class="btn btn-sm {% if selected_station_type == 'ALL' %}btn-primary active{% else %}btn-light{% endif %} rounded-pill px-3 filter-pill-btn" data-type="ALL" aria-pressed="{% if selected_station_type == 'ALL' %}true{% else %}false{% endif %}">{% translate "ALL" %}</button>
+            <button type="button" class="btn btn-sm {% if selected_station_type == 'AWS' %}btn-primary active{% else %}btn-light{% endif %} rounded-pill px-3 filter-pill-btn" data-type="AWS" aria-pressed="{% if selected_station_type == 'AWS' %}true{% else %}false{% endif %}">{% translate "AWS" %}</button>
+            <button type="button" class="btn btn-sm {% if selected_station_type == 'AWOS' %}btn-primary active{% else %}btn-light{% endif %} rounded-pill px-3 filter-pill-btn" data-type="AWOS" aria-pressed="{% if selected_station_type == 'AWOS' %}true{% else %}false{% endif %}">{% translate "AWOS" %}</button>
+            <button type="button" class="btn btn-sm {% if selected_station_type == 'MARINE' %}btn-primary active{% else %}btn-light{% endif %} rounded-pill px-3 filter-pill-btn" data-type="MARINE" aria-pressed="{% if selected_station_type == 'MARINE' %}true{% else %}false{% endif %}">{% translate "Marine" %}</button>
+            <button type="button" class="btn btn-sm {% if selected_station_type == 'TIDE_GAUGE' %}btn-primary active{% else %}btn-light{% endif %} rounded-pill px-3 filter-pill-btn" data-type="TIDE_GAUGE" aria-pressed="{% if selected_station_type == 'TIDE_GAUGE' %}true{% else %}false{% endif %}">{% translate "Tide Gauge" %}</button>
+            <button type="button" class="btn btn-sm {% if selected_station_type == 'BUOY' %}btn-primary active{% else %}btn-light{% endif %} rounded-pill px-3 filter-pill-btn" data-type="BUOY" aria-pressed="{% if selected_station_type == 'BUOY' %}true{% else %}false{% endif %}">{% translate "Buoy" %}</button>
         </div>
         {% endif %}
 
@@ -410,7 +412,7 @@
     var chartTemp, chartPressure, chartThird;
     var markersLayer, forecastGeojsonLayer;
     var allStationFeatures = [];
-    var activeStationType = "ALL";
+    var activeStationType = "{{ selected_station_type|default:'ALL'|escapejs }}";
     var stationSearchQuery = "";
 
     function closeStationPanel() {
@@ -421,9 +423,9 @@
         // Initialize Leaflet Map
         map = L.map('gis_map_canvas').setView([-8.65, 125.75], 9);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+            subdomains: ['a', 'b', 'c'],
             maxZoom: 20
         }).addTo(map);
 
@@ -434,25 +436,31 @@
             var ctxT = document.getElementById('tempChart').getContext('2d');
             chartTemp = new Chart(ctxT, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Temp', data: [], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+                data: { labels: [], datasets: [{ label: 'Temp', data: [], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0, spanGaps: false, pointRadius: 1.5, pointHoverRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { afterBody: chartSourceTimestampTooltip } } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } } } }
             });
 
             var ctxP = document.getElementById('pressureChart').getContext('2d');
             chartPressure = new Chart(ctxP, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Pressure', data: [], borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+                data: { labels: [], datasets: [{ label: 'Pressure', data: [], borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0, spanGaps: false, pointRadius: 1.5, pointHoverRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { afterBody: chartSourceTimestampTooltip } } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } } } }
             });
 
             var ctxTh = document.getElementById('thirdChart').getContext('2d');
             chartThird = new Chart(ctxTh, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Value', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+                data: { labels: [], datasets: [{ label: 'Value', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.1)', fill: true, tension: 0, spanGaps: false, pointRadius: 1.5, pointHoverRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { afterBody: chartSourceTimestampTooltip } } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } } } }
             });
         }
         initCharts();
+
+        function chartSourceTimestampTooltip(items) {
+            if (!items.length) return '';
+            var sourceTimestamp = items[0].dataset.sourceTimestamps?.[items[0].dataIndex];
+            return sourceTimestamp ? 'Observed: ' + sourceTimestamp + ' (GMT+9)' : '';
+        }
 
         // Icon Generator for Stations
         function getStationIcon(type, isOnline) {
@@ -465,6 +473,9 @@
             } else if (type === 'BUOY') {
                 iconHtml = '<i class="bi bi-life-preserver text-white fs-6"></i>';
                 bgClass = isOnline ? 'bg-dark' : 'bg-danger';
+            } else if (type === 'AWOS') {
+                iconHtml = '<i class="bi bi-airplane-engines text-dark fs-6"></i>';
+                bgClass = isOnline ? 'bg-warning' : 'bg-danger';
             } else {
                 iconHtml = '<i class="bi bi-cloud-sun text-white fs-6"></i>';
                 bgClass = isOnline ? 'bg-primary' : 'bg-danger';
@@ -503,16 +514,11 @@
             var obs = props.observation || {};
             var history = props.history || {};
             var isBuoy = props.station_type === 'BUOY';
-            var usesActualTimestamps = Boolean(props.history_uses_actual_timestamps);
-            // var timestampLabel = usesActualTimestamps
-                // ? "{% translate 'API timestamps' %}"
-                // : "30 min ({% translate 'API timestamps' %})";
             document.getElementById('panel_chart1_label').innerText = (
                 isBuoy
                     ? "{% translate 'Sea Surface Temperature [°C]' %}"
                     : "{% translate 'Air Temperature [°C]' %}"
             );
-            // + " — " + timestampLabel;
 
             document.getElementById('panel_station_title').innerText = "STATION: " + props.name.toUpperCase();
             document.getElementById('panel_lon').innerText = formatCoordinate(props.longitude) + "°";
@@ -571,18 +577,22 @@
             }
 
             var timeLabels = history.timestamps || ['Aug 4', 'Aug 5'];
+            var sourceTimestamps = history.source_timestamps || [];
             chartTemp.data.labels = timeLabels;
-            chartTemp.data.datasets[0].data = history.temp && history.temp.length ? history.temp : [displayedTemperature];
+            chartTemp.data.datasets[0].data = history.temp || [];
+            chartTemp.data.datasets[0].sourceTimestamps = sourceTimestamps;
             chartTemp.update();
 
             chartPressure.data.labels = timeLabels;
             chartPressure.data.datasets[0].data = isBuoy
-                ? (history.peak_period && history.peak_period.length ? history.peak_period : [obs.peak_period])
-                : (history.pressure && history.pressure.length ? history.pressure : [obs.pressure]);
+                ? (history.peak_period || [])
+                : (history.pressure || []);
+            chartPressure.data.datasets[0].sourceTimestamps = sourceTimestamps;
             chartPressure.update();
 
             chartThird.data.labels = timeLabels;
             chartThird.data.datasets[0].data = thirdData;
+            chartThird.data.datasets[0].sourceTimestamps = sourceTimestamps;
             chartThird.update();
 
             panel.classList.add('open');
@@ -604,7 +614,10 @@
         function getVisibleStations() {
             return allStationFeatures.filter(function(feat) {
                 var props = feat.properties;
-                return (activeStationType === "ALL" || props.station_type === activeStationType) && stationMatchesSearch(props);
+                var matchesStationType = activeStationType === "ALL"
+                    || props.station_type === activeStationType
+                    || (activeStationType === "MARINE" && ["TIDE_GAUGE", "BUOY"].includes(props.station_type));
+                return matchesStationType && stationMatchesSearch(props);
             });
         }
 
@@ -640,7 +653,8 @@
                     if (data && data.features) {
                         allStationFeatures = data.features;
                         renderMarkers();
-                        var defaultSt = allStationFeatures.find(function(f) { return f.properties.name.toLowerCase().includes('manatuto'); }) || allStationFeatures[0];
+                        var visibleStations = getVisibleStations();
+                        var defaultSt = visibleStations.find(function(f) { return f.properties.name.toLowerCase().includes('manatuto'); }) || visibleStations[0];
                         if (defaultSt) updateStationPanel(defaultSt.properties);
                     }
                 });
@@ -650,10 +664,19 @@
                     document.querySelectorAll('.filter-pill-btn').forEach(function(b) {
                         b.classList.remove('btn-primary', 'active');
                         b.classList.add('btn-light');
+                        b.setAttribute('aria-pressed', 'false');
                     });
                     this.classList.remove('btn-light');
                     this.classList.add('btn-primary', 'active');
+                    this.setAttribute('aria-pressed', 'true');
                     activeStationType = this.getAttribute('data-type');
+                    var filteredMapUrl = new URL(window.location.href);
+                    if (activeStationType === 'ALL') {
+                        filteredMapUrl.searchParams.delete('station_type');
+                    } else {
+                        filteredMapUrl.searchParams.set('station_type', activeStationType);
+                    }
+                    window.history.replaceState({}, '', filteredMapUrl);
                     renderMarkers();
                 });
             });

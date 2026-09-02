@@ -3,16 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Portal DNMG\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-09 12:14+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-08-28 00:00+0900\n"
+"Last-Translator: Portal DNMG\n"
+"Language-Team: Portuguese\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -288,10 +287,8 @@ msgstr "Boletins"
 #: templates/cms/admin_bulletin_list.html:10
 #: templates/cms/public_bulletin_detail.html:4
 #: templates/cms/public_bulletin_detail.html:13
-#, fuzzy
-#| msgid "Bulletins"
 msgid "Official Bulletins"
-msgstr "Boletins"
+msgstr "Boletins Oficiais"
 
 #: cms/models.py:220 templates/cms/admin_career_list.html:78
 msgid "Open"
@@ -1100,10 +1097,8 @@ msgid "Log Out"
 msgstr "Sair"
 
 #: templates/base.html:139 templates/base.html:508
-#, fuzzy
-#| msgid "Staff Login"
 msgid "Login"
-msgstr "Login do Pessoal"
+msgstr "Login"
 
 #: templates/base.html:186
 msgid "Forecast"
@@ -1173,36 +1168,36 @@ msgstr ""
 msgid ""
 "The official digital meteorological and geophysical information service "
 "portal for the Democratic Republic of Timor-Leste."
-msgstr ""
+msgstr "O portal oficial de serviços digitais de informações meteorológicas e geofísicas da República Democrática de Timor-Leste."
 
 #: templates/base.html:610
 msgid "Quick Links"
-msgstr ""
+msgstr "Acessos Rápidos"
 
 #: templates/base.html:614 templates/weather/forecast_list.html:4
 #: templates/weather/forecast_list.html:10 weather/models.py:226
 msgid "Weather Forecasts"
-msgstr ""
+msgstr "Previsão do tempo"
 
 #: templates/base.html:616
 msgid "Severe Weather Warnings"
-msgstr ""
+msgstr "Alertas Meteorológicos"
 
 #: templates/base.html:618
 msgid "Live Weather Stations"
-msgstr ""
+msgstr "Estações Meteorológicas em Tempo Real"
 
 #: templates/base.html:620
 msgid "Public Downloads"
-msgstr ""
+msgstr "Downloads Públicos"
 
 #: templates/base.html:628
 msgid "Contact Information"
-msgstr ""
+msgstr "Contato"
 
 #: templates/base.html:648
 msgid "Government of Timor-Leste"
-msgstr ""
+msgstr "Governo de Timor-Leste"
 
 #: templates/cms/admin_bulletin_list.html:5
 #, fuzzy
@@ -1909,11 +1904,11 @@ msgstr ""
 
 #: templates/core/home.html:157
 msgid "National Meteorological Station Network"
-msgstr ""
+msgstr "Rede Nacional de Estações Meteorológicas"
 
 #: templates/core/home.html:158
 msgid "Live telemetry from 15 active network stations across Timor-Leste"
-msgstr ""
+msgstr "Telemetria em tempo real de 15 estações ativas da rede em todo o Timor-Leste"
 
 #: templates/core/home.html:162 templates/hr/employee_list.html:80
 #, fuzzy
@@ -1987,52 +1982,50 @@ msgstr ""
 
 #: templates/core/home.html:271
 msgid "Decision Support Systems (DSS)"
-msgstr ""
+msgstr "Sistemas de Apoio à Decisão (DSS)"
 
 #: templates/core/home.html:272
 msgid ""
 "Specialized meteorological decision suites for disaster management, ocean "
-"safety, climate impact, and agriculture."
-msgstr ""
+"safety, climate impact for public health, and agriculture."
+msgstr "Soluções meteorológicas especializadas de apoio à decisão para a gestão de desastres, segurança oceânica, impacto climático na saúde pública e agricultura."
 
 #: templates/core/home.html:278
 msgid "Disaster Risk Reduction"
-msgstr ""
+msgstr "Redução do Risco de Desastres"
 
 #: templates/core/home.html:279
 msgid ""
 "Early warning integration for flash floods, landslides, and heavy rainfall "
 "risks."
-msgstr ""
+msgstr "Integração de alertas precoces para riscos de inundações repentinas, deslizamentos de terra e chuvas intensas."
 
 #: templates/core/home.html:287
 msgid "Ocean State Forecasting"
-msgstr ""
+msgstr "Previsão do Estado do Oceano"
 
 #: templates/core/home.html:288
 msgid ""
 "High-resolution wave, tide, and coastal surge forecasting for shipping lanes."
-msgstr ""
+msgstr "Previsão de alta resolução de ondas, marés e maré de tempestade costeira para rotas de navegação."
 
 #: templates/core/home.html:296
 msgid "Climate Risk Info for Public Health"
-msgstr ""
+msgstr "Informações sobre Risco Climático para a Saúde Pública"
 
 #: templates/core/home.html:297
 msgid ""
-"Climate Risk Information System for Public Health: vector-borne disease "
-"early warning, heat stress indexes, and health resilience models."
-msgstr ""
+"Climate Risk Information System for Public Health: Early Warning and Health "
+"Resilience for Diarrhea, Dengue, and ARI (Acute Respiratory Infection)."
+msgstr "Sistema de Informações sobre Risco Climático para a Saúde Pública: Alerta Precoce e Resiliência em Saúde para Diarreia, Dengue e ARI (Infeção Respiratória Aguda)."
 
 #: templates/core/home.html:305
 msgid "Agricultural DSS"
-msgstr ""
+msgstr "DSS Agrícola"
 
 #: templates/core/home.html:306
-msgid ""
-"Agro-meteorological advisories for coffee, rice, and corn farming seasonal "
-"planning."
-msgstr ""
+msgid "Agro-meteorological advisories for rice and corn farming seasonal planning."
+msgstr "Avisos agrometeorológicos para o planeamento sazonal do cultivo de arroz e milho."
 
 #: templates/core/home.html:317
 msgid "About DNMG Timor-Leste"
@@ -3489,11 +3482,37 @@ msgstr ""
 msgid "Current telemetry from the national weather-station network."
 msgstr ""
 
-#: templates/weather/interactive_map.html:163
-#, fuzzy
-#| msgid "Observations"
+#: templates/core/home.html:18 templates/weather/interactive_map.html:181
 msgid "Live Observations"
-msgstr "Observações"
+msgstr "Observações em tempo real"
+
+#: templates/core/home.html:17
+msgid "Forecast map"
+msgstr "Mapa de previsão"
+
+#: templates/core/home.html:29
+msgid "MET Norway / ECMWF"
+msgstr "MET Norway / ECMWF"
+
+#: templates/core/home.html:30
+msgid "Current Conditions by Municipality"
+msgstr "Condições Atuais por Município"
+
+#: templates/core/home.html:31
+msgid "Swipe or use the arrows to browse municipalities."
+msgstr "Deslize ou use as setas para navegar pelos municípios."
+
+#: templates/core/home.html:94
+msgid "USGS monitoring"
+msgstr "Monitoramento do USGS"
+
+#: templates/core/home.html:95
+msgid "Recent Earthquakes Near Timor-Leste"
+msgstr "Terremotos Recentes Próximos de Timor-Leste"
+
+#: templates/core/home.html:96
+msgid "A compact update; explore the Seismic page for the map, filters, and full analysis."
+msgstr "Uma atualização resumida; explore a página Sísmica para consultar o mapa, os filtros e a análise completa."
 
 #: templates/weather/interactive_map.html:167
 #, fuzzy
@@ -4296,3 +4315,467 @@ msgstr ""
 
 #~ msgid "Total Accounts"
 #~ msgstr "Contas Totais"
+
+#: weather/models.py templates/base.html templates/weather/public_official_forecast_list.html
+msgid "1-Day Forecast"
+msgstr "Previsão de 1 Dia"
+
+#: weather/models.py templates/base.html templates/weather/public_official_forecast_list.html
+msgid "3-Day Forecast"
+msgstr "Previsão de 3 Dias"
+
+#: weather/models.py templates/base.html templates/weather/public_official_forecast_list.html
+msgid "7-Day Forecast"
+msgstr "Previsão de 7 Dias"
+
+#: templates/base.html
+msgid "10-Day Forecast Map"
+msgstr "Mapa de Previsão de 10 Dias"
+
+#: weather/models.py templates/weather/official_forecast_list.html
+msgid "Official Forecast"
+msgstr "Previsão Oficial"
+
+#: weather/models.py templates/weather/official_forecast_list.html
+msgid "Official Forecasts"
+msgstr "Previsões Oficiais"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Official Weather Forecasts"
+msgstr "Previsões Meteorológicas Oficiais"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Meteorologist-approved information"
+msgstr "Informação aprovada por meteorologistas"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Published operational forecasts from the National Directorate of Meteorology and Geophysics."
+msgstr "Previsões operacionais publicadas pela Direção Nacional de Meteorologia e Geofísica."
+
+#: templates/weather/public_official_forecast_list.html templates/weather/public_official_forecast_detail.html
+msgid "All official forecasts"
+msgstr "Todas as previsões oficiais"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "No official forecasts are currently published for this period."
+msgstr "Não existem previsões oficiais publicadas atualmente para este período."
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Please check the 10-day forecast map for automated model guidance."
+msgstr "Consulte o mapa de previsão de 10 dias para orientação do modelo automatizado."
+
+#: templates/weather/public_official_forecast_detail.html
+msgid "Forecast details and notes"
+msgstr "Detalhes e notas da previsão"
+
+#: templates/weather/public_official_forecast_detail.html
+msgid "Download supporting file"
+msgstr "Descarregar ficheiro de apoio"
+
+#: templates/weather/official_forecast_list.html templates/weather/official_forecast_form.html
+msgid "Official Forecast Management"
+msgstr "Gestão de Previsões Oficiais"
+
+#: templates/weather/official_forecast_form.html
+msgid "Drafts are visible only to staff. Publishing or archiving requires the forecast publication permission."
+msgstr "Os rascunhos são visíveis apenas para a equipa. Publicar ou arquivar requer a permissão de publicação de previsões."
+
+#: templates/weather/official_forecast_form.html
+msgid "General Conditions"
+msgstr "Condições Gerais"
+
+#: templates/weather/official_forecast_form.html
+msgid "Wind Conditions"
+msgstr "Condições do Vento"
+
+#: templates/weather/official_forecast_form.html
+msgid "Sea Conditions"
+msgstr "Condições do Mar"
+
+#: templates/weather/official_forecast_form.html
+msgid "Important Message"
+msgstr "Mensagem Importante"
+
+#: templates/weather/official_forecast_form.html templates/weather/public_official_forecast_detail.html
+msgid "Forecast image gallery"
+msgstr "Galeria de Imagens da Previsão"
+
+#: templates/weather/official_forecast_form.html
+msgid "Add another image"
+msgstr "Adicionar outra imagem"
+
+#: templates/weather/official_forecast_form.html
+msgid "Supporting files"
+msgstr "Ficheiros de Apoio"
+
+#: templates/weather/official_forecast_form.html
+msgid "Add another file"
+msgstr "Adicionar outro ficheiro"
+
+#: templates/weather/official_forecast_form.html
+msgid "Enter a web or email link"
+msgstr "Introduza uma ligação web ou de e-mail"
+
+#: templates/weather/public_official_forecast_detail.html
+msgid "Additional meteorologist notes"
+msgstr "Notas adicionais do meteorologista"
+
+#: templates/base.html
+msgid "Account options"
+msgstr "Opções da conta"
+
+#: templates/weather/official_forecast_form.html
+msgid "Optional"
+msgstr "Opcional"
+
+#: templates/widgets/admin_file_input.html
+msgid "Current file"
+msgstr "Ficheiro atual"
+
+#: templates/widgets/admin_file_input.html
+msgid "Remove current file"
+msgstr "Remover ficheiro atual"
+
+#: templates/admin_base.html
+msgid "Close navigation"
+msgstr "Fechar navegação"
+
+#: templates/components/public_navigation.html
+msgid "Primary navigation"
+msgstr "Navegação principal"
+
+#: templates/components/public_navigation.html
+msgid "Weather"
+msgstr "Meteorologia"
+
+#: templates/components/public_navigation.html
+msgid "Weather overview"
+msgstr "Visão geral da meteorologia"
+
+#: templates/components/public_navigation.html
+msgid "Observations & maps"
+msgstr "Observações e mapas"
+
+#: templates/components/public_navigation.html
+msgid "Current conditions"
+msgstr "Condições atuais"
+
+#: templates/components/public_navigation.html
+msgid "Live observations map"
+msgstr "Mapa de observações em tempo real"
+
+#: templates/components/public_navigation.html
+msgid "10-day forecast map"
+msgstr "Mapa de previsão para 10 dias"
+
+#: templates/components/public_navigation.html
+msgid "1-day forecast"
+msgstr "Previsão para 1 dia"
+
+#: templates/components/public_navigation.html
+msgid "3-day forecast"
+msgstr "Previsão para 3 dias"
+
+#: templates/components/public_navigation.html
+msgid "7-day forecast"
+msgstr "Previsão para 7 dias"
+
+#: templates/components/public_navigation.html
+msgid "Alerts & publications"
+msgstr "Alertas e publicações"
+
+#: templates/components/public_navigation.html
+msgid "Early warnings"
+msgstr "Alertas precoces"
+
+#: templates/components/public_navigation.html
+msgid "Weather bulletins"
+msgstr "Boletins meteorológicos"
+
+#: templates/components/public_navigation.html
+msgid "Radar"
+msgstr "Radar"
+
+#: templates/components/public_navigation.html
+msgid "Climate overview"
+msgstr "Visão geral do clima"
+
+#: templates/components/public_navigation.html
+msgid "Monitoring & data"
+msgstr "Monitorização e dados"
+
+#: templates/components/public_navigation.html
+msgid "Climate Monitoring"
+msgstr "Monitorização Climática"
+
+#: templates/components/public_navigation.html
+msgid "Historical climate"
+msgstr "Clima histórico"
+
+#: templates/components/public_navigation.html
+msgid "Climate data"
+msgstr "Dados climáticos"
+
+#: templates/components/public_navigation.html
+msgid "Outlooks & publications"
+msgstr "Perspetivas e publicações"
+
+#: templates/components/public_navigation.html
+msgid "Seasonal outlooks"
+msgstr "Perspetivas sazonais"
+
+#: templates/components/public_navigation.html
+msgid "Reports & bulletins"
+msgstr "Relatórios e boletins"
+
+#: templates/components/public_navigation.html
+msgid "Climate change information"
+msgstr "Informação sobre alterações climáticas"
+
+#: templates/components/public_navigation.html
+msgid "Air Quality"
+msgstr "Qualidade do Ar"
+
+#: templates/components/public_navigation.html
+msgid "Air-quality overview"
+msgstr "Visão geral da qualidade do ar"
+
+#: templates/components/public_navigation.html
+msgid "Current monitoring"
+msgstr "Monitorização atual"
+
+#: templates/components/public_navigation.html
+msgid "Current Air Quality"
+msgstr "Qualidade Atual do Ar"
+
+#: templates/components/public_navigation.html
+msgid "AQI map & stations"
+msgstr "Mapa AQI e estações"
+
+#: templates/components/public_navigation.html
+msgid "Main pollutants"
+msgstr "Principais poluentes"
+
+#: templates/components/public_navigation.html
+msgid "Guidance & outlook"
+msgstr "Orientações e perspetivas"
+
+#: templates/components/public_navigation.html
+msgid "Health advice"
+msgstr "Conselhos de saúde"
+
+#: templates/components/public_navigation.html
+msgid "Air-quality forecast"
+msgstr "Previsão da qualidade do ar"
+
+#: templates/components/public_navigation.html
+msgid "Historical data & reports"
+msgstr "Dados históricos e relatórios"
+
+#: templates/components/public_navigation.html
+msgid "Marine"
+msgstr "Marítimo"
+
+#: templates/components/public_navigation.html
+msgid "Marine overview"
+msgstr "Visão geral marítima"
+
+#: templates/components/public_navigation.html
+msgid "Forecasts & conditions"
+msgstr "Previsões e condições"
+
+#: templates/components/public_navigation.html
+msgid "Marine Forecast"
+msgstr "Marine Forecast"
+
+#: templates/components/public_navigation.html
+msgid "Coastal & ocean conditions"
+msgstr "Condições costeiras e oceânicas"
+
+#: templates/components/public_navigation.html
+msgid "Wave & wind forecast"
+msgstr "Previsão de ondas e vento"
+
+#: templates/components/public_navigation.html
+msgid "Tide information"
+msgstr "Informação sobre marés"
+
+#: templates/components/public_navigation.html
+msgid "Observation network"
+msgstr "Rede de observação"
+
+#: templates/components/public_navigation.html
+msgid "Live marine observations"
+msgstr "Observações marítimas em tempo real"
+
+#: templates/components/public_navigation.html
+msgid "Tide gauge stations"
+msgstr "Estações maregráficas"
+
+#: templates/components/public_navigation.html
+msgid "Marine buoy stations"
+msgstr "Estações de boias marítimas"
+
+#: templates/components/public_navigation.html
+msgid "Safety & specialist tools"
+msgstr "Segurança e ferramentas especializadas"
+
+#: templates/components/public_navigation.html
+msgid "Warnings & bulletins"
+msgstr "Avisos e boletins"
+
+#: templates/components/public_navigation.html
+msgid "External"
+msgstr "Externo"
+
+#: templates/components/public_navigation.html
+msgid "Aviation"
+msgstr "Aviação"
+
+#: templates/components/public_navigation.html
+msgid "Aviation overview"
+msgstr "Visão geral da aviação"
+
+#: templates/components/public_navigation.html
+msgid "Airports"
+msgstr "Aeroportos"
+
+#: templates/components/public_navigation.html
+msgid "Dili — P.N. Lobato"
+msgstr "Díli — P.N. Lobato"
+
+#: templates/components/public_navigation.html
+msgid "Suai — K.R. Xanana Gusmão"
+msgstr "Suai — K.R. Xanana Gusmão"
+
+#: templates/components/public_navigation.html
+msgid "Oecusse — Rota do Sândalo"
+msgstr "Oecusse — Rota do Sândalo"
+
+#: templates/components/public_navigation.html
+msgid "Weather products"
+msgstr "Produtos meteorológicos"
+
+#: templates/components/public_navigation.html
+msgid "Live airport weather"
+msgstr "Meteorologia aeroportuária em tempo real"
+
+#: templates/components/public_navigation.html
+msgid "METAR & TAF"
+msgstr "METAR e TAF"
+
+#: templates/components/public_navigation.html
+msgid "Visibility & wind"
+msgstr "Visibilidade e vento"
+
+#: templates/components/public_navigation.html
+msgid "Warnings & reports"
+msgstr "Avisos e relatórios"
+
+#: templates/components/public_navigation.html
+msgid "Earthquake Explorer"
+msgstr "Explorador de sismos"
+
+#: templates/components/public_navigation.html
+msgid "Earthquake monitoring"
+msgstr "Monitorização de sismos"
+
+#: templates/components/public_navigation.html
+msgid "Recent earthquakes"
+msgstr "Sismos recentes"
+
+#: templates/components/public_navigation.html
+msgid "Map & event explorer"
+msgstr "Mapa e explorador de eventos"
+
+#: templates/components/public_navigation.html
+msgid "Event details & summary"
+msgstr "Detalhes e resumo do evento"
+
+#: templates/components/public_navigation.html
+msgid "Publications"
+msgstr "Publicações"
+
+#: templates/components/public_navigation.html
+msgid "Seismic bulletins"
+msgstr "Boletins sísmicos"
+
+#: templates/components/public_navigation.html
+msgid "Data & Maps"
+msgstr "Dados e Mapas"
+
+#: templates/components/public_navigation.html
+msgid "Data & maps overview"
+msgstr "Visão geral de dados e mapas"
+
+#: templates/components/public_navigation.html
+msgid "Interactive maps"
+msgstr "Mapas interativos"
+
+#: templates/components/public_navigation.html
+msgid "Seismic map & data"
+msgstr "Mapa e dados sísmicos"
+
+#: templates/components/public_navigation.html
+msgid "Data resources"
+msgstr "Recursos de dados"
+
+#: templates/components/public_navigation.html
+msgid "Air-quality data"
+msgstr "Dados da qualidade do ar"
+
+#: templates/components/public_navigation.html
+msgid "Downloads & publications"
+msgstr "Downloads e publicações"
+
+#: templates/components/public_navigation.html
+msgid "Data/API Information"
+msgstr "Informação de Dados/API"
+
+#: templates/components/public_navigation.html
+msgid "News & Notices"
+msgstr "Notícias e Avisos"
+
+#: templates/components/public_navigation.html
+msgid "News, announcements & media"
+msgstr "Notícias, anúncios e comunicação social"
+
+#: templates/components/public_navigation.html
+msgid "Official notices"
+msgstr "Avisos oficiais"
+
+#: templates/components/public_navigation.html
+msgid "Public advisories"
+msgstr "Avisos públicos"
+
+#: templates/components/public_navigation.html
+msgid "DSS Systems"
+msgstr "Sistemas DSS"
+
+#: templates/components/public_navigation.html
+msgid "DSS overview"
+msgstr "Visão geral dos DSS"
+
+#: templates/components/public_navigation.html
+msgid "Decision-support systems"
+msgstr "Sistemas de apoio à decisão"
+
+#: templates/components/public_navigation.html
+msgid "About DNMG overview"
+msgstr "Visão geral da DNMG"
+
+#: templates/components/public_navigation.html
+msgid "Organization"
+msgstr "Organização"
+
+#: templates/components/public_navigation.html
+msgid "Structure & departments"
+msgstr "Estrutura e departamentos"
+
+#: templates/components/public_navigation.html
+msgid "Contact & opportunities"
+msgstr "Contactos e oportunidades"
+
+#: templates/base.html
+msgid "Admin Portal"
+msgstr "Portal de Administração"

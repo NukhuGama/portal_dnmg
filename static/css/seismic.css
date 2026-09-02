@@ -18,7 +18,10 @@
 .seismic-card .card-header { background: var(--seismic-surface); border-bottom: 1px solid var(--seismic-border); }
 .seismic-filter-label { color: var(--seismic-muted); display: block; font-size: .75rem; font-weight: 700; letter-spacing: .04em; margin-bottom: .45rem; text-transform: uppercase; }
 .scope-toggle .btn-check:checked + .btn { background: var(--seismic-ink); border-color: var(--seismic-ink); color: #fff; }
+.seismic-map-wrap { position: relative; }
 .seismic-map { background: #e7eef1; height: 510px; }
+.seismic-territory-key { align-items: center; background: rgba(255, 255, 255, .94); border: 1px solid rgba(8, 127, 140, .35); border-radius: .55rem; bottom: .8rem; color: #155e75; display: inline-flex; font-size: .78rem; font-weight: 700; gap: .45rem; left: .8rem; padding: .45rem .65rem; position: absolute; z-index: 500; }
+.seismic-territory-key i { background: rgba(116, 192, 195, .35); border: 2px dashed #087f8c; display: inline-block; height: .8rem; width: 1.05rem; }
 .seismic-count { color: var(--seismic-muted); font-size: .875rem; }
 .seismic-legend, .seismic-risk-options { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
 .seismic-legend-item, .seismic-risk-option { align-items: center; color: #46545e; display: inline-flex; font-size: .8rem; gap: .35rem; white-space: nowrap; }

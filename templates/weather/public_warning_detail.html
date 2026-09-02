@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ warning.title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-hero warning-hero warning-hero--{{ warning.severity }} text-white">
+    <div class="container">
+        <p class="portal-eyebrow text-white-50 mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>{% translate "Official DNMG advisory" %}</p>
+        <div class="warning-hero__heading">
+            <h1>{{ warning.title }}</h1>
+            <span class="severity-badge severity-badge--{{ warning.severity }} severity-badge--hero">{{ warning.get_severity_display }}</span>
+        </div>
+        <p class="lead mb-0">{{ warning.region }}</p>
+    </div>
+</section>
+<div class="container warning-detail-page py-5">
+    <article class="warning-detail warning-detail--{{ warning.severity }}">
+        <div class="warning-detail__meta">
+            <span><i class="bi bi-geo-alt-fill"></i>{% translate "Affected area:" %} {{ warning.region }}</span>
+            <span><i class="bi bi-clock-fill"></i>{% blocktranslate with starts=warning.valid_from ends=warning.valid_to %}Valid from {{ starts }} until {{ ends }}{% endblocktranslate %}</span>
+        </div>
+        <div class="warning-detail__content">{{ warning.description|linebreaks }}</div>
+    </article>
+    <div class="warning-detail__actions mt-4"><a class="btn btn-outline-primary" href="{% url 'weather:public_warning_list' %}"><i class="bi bi-arrow-left me-1"></i>{% translate "All early warnings" %}</a></div>
+</div>
+{% endblock %}

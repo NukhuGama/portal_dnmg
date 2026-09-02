@@ -45,6 +45,27 @@ services:
       start_period: 5m
       retries: 3
 
+  awos-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["/bin/sh", "/app/scripts/awos-sync-loop.sh"]
+    env_file:
+      - .env.production
+    environment:
+      DJANGO_DEBUG: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${MEDIA_HOST_PATH:-./media}:/app/media
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os, sys, time; from pathlib import Path; p = Path('/tmp/dnmg-last-successful-awos-sync'); max_age = max(int(os.getenv('AWOS_SYNC_INTERVAL_SECONDS', '300')) * 2, 180); sys.exit(0 if p.exists() and time.time() - p.stat().st_mtime <= max_age else 1)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 3m
+      retries: 3
+
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes"]

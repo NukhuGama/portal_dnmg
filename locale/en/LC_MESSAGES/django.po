@@ -1903,15 +1903,6 @@ msgstr ""
 msgid "About DNMG Timor-Leste"
 msgstr ""
 
-#: templates/core/home.html:319
-msgid ""
-"The National Directorate of Meteorology and Geophysics (Direção Nacional de "
-"Meteorologia e Geofísica - DNMG) operates under the Ministry of Transport "
-"and Communications of Timor-Leste. We provide vital weather, oceanographic, "
-"and seismic monitoring services to protect lives, property, and national "
-"infrastructure."
-msgstr ""
-
 #: templates/core/home.html:324
 msgid "Learn More"
 msgstr ""

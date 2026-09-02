@@ -94,7 +94,9 @@
                     <td>{{ obs.rainfall_mm|default:"0.00"|floatformat:2 }} mm</td>
                     <td>{{ obs.wind_speed_kmh|default:"--"|floatformat:2 }} km/h {{ obs.wind_direction }}</td>
                     <td><span class="badge bg-light text-dark border">{{ obs.condition_text|default:"--" }}</span></td>
-                    <td class="small text-muted">{{ obs.recorded_by.username|default:"System / AWS" }}</td>
+                    <td class="small text-muted">
+                        {% if obs.recorded_by %}{{ obs.recorded_by.username }}{% else %}{% translate "System" %} / {{ obs.station.get_station_type_display }}{% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>

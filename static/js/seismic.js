@@ -111,13 +111,27 @@
     }
 
     class MapRenderer {
-        constructor(element) {
+        constructor(element, boundaryUrl) {
             this.map = L.map(element, { zoomControl: true, tap: true }).setView(TIMOR_LESTE, 6);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 19 }).addTo(this.map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors', subdomains: ['a', 'b', 'c'], maxZoom: 19 }).addTo(this.map);
+            this.addTimorLesteBoundary(boundaryUrl);
             this.ringLayer = L.layerGroup().addTo(this.map);
             this.markerLayer = L.layerGroup().addTo(this.map);
             this.markers = new Map(); this.recentRingRenderer = new RecentEventRingRenderer(this.ringLayer);
             L.circleMarker(TIMOR_LESTE, { radius: 7, color: '#12354b', weight: 2, fillColor: '#fff', fillOpacity: 1 }).bindTooltip('Timor-Leste', { direction: 'top' }).addTo(this.map);
+        }
+        addTimorLesteBoundary(boundaryUrl) {
+            if (!boundaryUrl) return;
+            fetch(boundaryUrl)
+                .then((response) => { if (!response.ok) throw new Error(`Boundary request failed: ${response.status}`); return response.json(); })
+                .then((boundary) => L.geoJSON(boundary, {
+                    style: { color: '#087f8c', weight: 2.2, opacity: .95, fillColor: '#74c0c3', fillOpacity: .12, dashArray: '5 4' },
+                    onEachFeature: (feature, layer) => {
+                        const name = feature.properties && feature.properties.shapeName;
+                        if (name) layer.bindTooltip(name, { sticky: true, opacity: .9 });
+                    }
+                }).addTo(this.map))
+                .catch((error) => console.warn('Timor-Leste boundary unavailable:', error));
         }
         static positions(events) {
             const groups = new Map(), positions = new Map();
@@ -189,7 +203,7 @@
             this.riskLevels = riskLevelsElement ? JSON.parse(riskLevelsElement.textContent) : [];
             const riskCodes = [...root.querySelectorAll('[data-filter-risk]')].map((input) => input.value);
             this.state = new FilterState({ scope: 'timor-leste', startDate: root.dataset.defaultStartDate, endDate: root.dataset.defaultEndDate, magnitudeMin: '', magnitudeMax: '', depthMin: '', depthMax: '', distanceMin: '', distanceMax: '', location: '', textSearch: '', riskCodes });
-            this.map = new MapRenderer(root.querySelector('#seismic_map')); this.table = new TableRenderer(root.querySelector('#seismic_table'), root.querySelector('#seismic_empty'), (id) => this.map.focus(id)); this.statistics = new StatisticsRenderer(root, this.riskLevels);
+            this.map = new MapRenderer(root.querySelector('#seismic_map'), root.dataset.boundaryUrl); this.table = new TableRenderer(root.querySelector('#seismic_table'), root.querySelector('#seismic_empty'), (id) => this.map.focus(id)); this.statistics = new StatisticsRenderer(root, this.riskLevels);
             this.count = root.querySelector('#seismic_count'); this.error = root.querySelector('#seismic_error'); this.bind(); this.load({ fit: true });
         }
         bind() {

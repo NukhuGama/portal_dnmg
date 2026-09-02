@@ -7,6 +7,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y gettext && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN groupadd --gid 1000 django && useradd --uid 1000 --gid django --create-home django
 
 COPY requirements.txt ./
@@ -16,9 +20,11 @@ RUN python -m pip install --upgrade pip && \
 
 COPY --chown=django:django . ./
 
-# Static assets are part of the immutable application image. WhiteNoise serves
-# them from STATIC_ROOT in the Gunicorn process.
-RUN python manage.py collectstatic --noinput
+# Translations and static assets are part of the immutable application image.
+# Compiling catalogs here ensures reviewed .po edits are included in every
+# local and production build without relying on a server-side manual step.
+RUN python manage.py compilemessages && \
+    python manage.py collectstatic --noinput
 
 USER django
 

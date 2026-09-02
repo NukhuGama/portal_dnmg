@@ -3,16 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Portal DNMG\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-09 12:14+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-08-28 00:00+0900\n"
+"Last-Translator: Portal DNMG\n"
+"Language-Team: Tetun\n"
+"Language: tet\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -183,7 +182,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "File Title"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: cms/models.py:115
 msgid "News Article Attachment"
@@ -201,7 +200,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Image Caption"
-msgstr "Estasaun Sira"
+msgstr "Estasaun"
 
 #: cms/models.py:136
 #, fuzzy
@@ -241,7 +240,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Marine Bulletin"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: cms/models.py:169
 msgid "Seismic Event Summary"
@@ -255,14 +254,14 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Bulletin Title"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: cms/models.py:178 templates/cms/bulletin_form.html:29
 #: templates/cms/public_bulletin_list.html:23
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Bulletin Type"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: cms/models.py:182 templates/cms/bulletin_form.html:33
 msgid "PDF Document File"
@@ -270,7 +269,7 @@ msgstr ""
 
 #: cms/models.py:184 templates/cms/bulletin_form.html:41
 msgid "Summary / Overview"
-msgstr ""
+msgstr "Sumariu / Rezumu"
 
 #: cms/models.py:192 hr/models.py:251 templates/cms/admin_bulletin_list.html:65
 msgid "Uploaded By"
@@ -280,17 +279,15 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Official Bulletin"
-msgstr "Buletin Sira"
+msgstr "Buletin "
 
 #: cms/models.py:200 templates/admin_base.html:125
 #: templates/cms/admin_bulletin_list.html:4
 #: templates/cms/admin_bulletin_list.html:10
 #: templates/cms/public_bulletin_detail.html:4
 #: templates/cms/public_bulletin_detail.html:13
-#, fuzzy
-#| msgid "Bulletins"
 msgid "Official Bulletins"
-msgstr "Buletin Sira"
+msgstr "Buletin Ofisiál"
 
 #: cms/models.py:220 templates/cms/admin_career_list.html:78
 msgid "Open"
@@ -344,7 +341,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Location"
-msgstr "Estasaun Sira"
+msgstr "Estasaun"
 
 #: cms/models.py:238 hr/forms.py:99 hr/models.py:104
 #: templates/cms/career_form.html:37 templates/cms/public_career_detail.html:77
@@ -381,7 +378,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Status"
-msgstr "Estasaun Sira"
+msgstr "Estasaun"
 
 #: cms/models.py:256 templates/cms/admin_career_list.html:66
 msgid "Posted By"
@@ -399,13 +396,13 @@ msgstr ""
 #, fuzzy
 #| msgid "Job Opening Editor"
 msgid "Job Opening Attachment"
-msgstr "Editor Vaga Sira"
+msgstr "Anexu ba vaga servisu"
 
 #: cms/models.py:290
 #, fuzzy
 #| msgid "Job Opening Editor"
 msgid "Job Opening Attachments"
-msgstr "Editor Vaga Sira"
+msgstr "Anexu ba vaga servisu "
 
 #: cms/views.py:110
 msgid ""
@@ -461,15 +458,8 @@ msgstr ""
 
 #: core/views.py:48
 msgid "Presidente Nicolau Lobato International Airport (Dili)"
-msgstr ""
-
-#: core/views.py:49
-msgid "Updated 10 minutes ago"
-msgstr ""
-
-#: core/views.py:110
-msgid "General"
-msgstr ""
+msgstr "Aeroportu Internasional Prezidente Nicolau Lobato(Dili)"
+#msgstr ""
 
 #: core/views.py:116
 msgid "DNMG Installs New Automated Weather Stations in Ermera"
@@ -840,13 +830,13 @@ msgstr ""
 #, fuzzy
 #| msgid "Downloads"
 msgid "Download Category"
-msgstr "Download Sira"
+msgstr "Download Kategoria"
 
 #: hr/models.py:205
 #, fuzzy
 #| msgid "Downloads"
 msgid "Download Categories"
-msgstr "Download Sira"
+msgstr "Download Kategoria"
 
 #: hr/models.py:216
 msgid "PDF Document"
@@ -902,13 +892,13 @@ msgstr "Download Sira"
 #, fuzzy
 #| msgid "Downloads"
 msgid "Downloadable File"
-msgstr "Download Sira"
+msgstr "Download File"
 
 #: hr/models.py:258
 #, fuzzy
 #| msgid "Downloads"
 msgid "Downloadable Files"
-msgstr "Download Sira"
+msgstr "Download File"
 
 #: hr/permissions.py:23
 msgid "You do not have permission to access the HR Management system."
@@ -1028,7 +1018,7 @@ msgstr ""
 
 #: templates/admin_base.html:137
 msgid "Career / Jobs"
-msgstr "Kareira / Vaga Sira"
+msgstr "Kareira / Vaga "
 
 #: templates/admin_base.html:154 templates/core/about_dnmg.html:64
 #: templates/weather/warning_list.html:4 weather/models.py:268
@@ -1091,7 +1081,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Downloads"
 msgid "Downloads Hub"
-msgstr "Download Sira"
+msgstr "Download Hub"
 
 #: templates/admin_base.html:327
 msgid "Public Website"
@@ -1103,10 +1093,8 @@ msgid "Log Out"
 msgstr "Sai husi Sistema"
 
 #: templates/base.html:139 templates/base.html:508
-#, fuzzy
-#| msgid "Staff Login"
 msgid "Login"
-msgstr "Login Funsonáriu"
+msgstr "Login"
 
 #: templates/base.html:186
 msgid "Forecast"
@@ -1132,7 +1120,7 @@ msgstr "Notísia"
 
 #: templates/base.html:298
 msgid "Bulletins"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: templates/base.html:313
 msgid "Alerts"
@@ -1187,7 +1175,7 @@ msgstr "Konekta Direta"
 #: templates/base.html:614 templates/weather/forecast_list.html:4
 #: templates/weather/forecast_list.html:10 weather/models.py:226
 msgid "Weather Forecasts"
-msgstr "Previsaun Tempu"
+msgstr "Previzaun Tempu"
 
 #: templates/base.html:616
 msgid "Severe Weather Warnings"
@@ -1213,7 +1201,7 @@ msgstr "Governu Timor-Leste"
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Official Reports & Bulletins"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: templates/cms/admin_bulletin_list.html:11
 msgid ""
@@ -1224,7 +1212,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Upload Bulletin"
-msgstr "Buletin Sira"
+msgstr "Upload Bulletin"
 
 #: templates/cms/admin_bulletin_list.html:29
 msgid "Search title, description, uploader..."
@@ -1234,7 +1222,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "All Bulletin Types"
-msgstr "Buletin Sira"
+msgstr "Tipu Bulletin"
 
 #: templates/cms/admin_bulletin_list.html:46
 #: templates/cms/admin_career_list.html:46
@@ -1275,17 +1263,17 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Actions"
-msgstr "Estasaun Sira"
+msgstr "Asaun"
 
 #: templates/cms/admin_bulletin_list.html:78
 #, fuzzy
 #| msgid "Downloads"
 msgid "Download PDF"
-msgstr "Download Sira"
+msgstr "Download PDF"
 
 #: templates/cms/admin_bulletin_list.html:81
 msgid "No file"
-msgstr ""
+msgstr "Laiha File"
 
 #: templates/cms/admin_bulletin_list.html:87
 #: templates/cms/admin_career_list.html:91
@@ -1311,7 +1299,7 @@ msgstr ""
 #: templates/cms/admin_career_list.html:4
 #: templates/cms/admin_career_list.html:10
 msgid "Career & Job Openings"
-msgstr "Kareira & Vaga Sira"
+msgstr "Kareira & Vaga "
 
 #: templates/cms/admin_career_list.html:5 templates/cms/admin_news_list.html:5
 msgid "Portal Content Management System"
@@ -1368,7 +1356,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Edit Bulletin"
-msgstr "Buletin Sira"
+msgstr "Edit Buletin"
 
 #: templates/cms/bulletin_form.html:5
 msgid "Official Bulletin Upload"
@@ -1400,7 +1388,7 @@ msgstr "Kansela"
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Save Bulletin"
-msgstr "Buletin Sira"
+msgstr "Buletin"
 
 #: templates/cms/career_form.html:4 templates/cms/career_form.html:14
 msgid "Edit Job Opening"
@@ -1412,7 +1400,7 @@ msgstr "Vaga Foun"
 
 #: templates/cms/career_form.html:5
 msgid "Job Opening Editor"
-msgstr "Editor Vaga Sira"
+msgstr "Editor Vaga"
 
 #: templates/cms/career_form.html:16
 msgid "Post New Job Opportunity"
@@ -1478,7 +1466,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Bullet list"
-msgstr "Buletin Sira"
+msgstr "Lista Buletin"
 
 #: templates/cms/news_form.html:44
 msgid "Heading"
@@ -1529,21 +1517,21 @@ msgstr ""
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Official bulletin document"
-msgstr "Buletin Sira"
+msgstr "Dokumentu Ofisiál Buletin"
 
 #: templates/cms/public_bulletin_detail.html:39
 msgid "Open or download the complete PDF."
-msgstr ""
+msgstr "Loke ka download PDF kompletu"
 
 #: templates/cms/public_bulletin_detail.html:43
 msgid "Open PDF"
-msgstr ""
+msgstr "Loke PDF"
 
 #: templates/cms/public_bulletin_detail.html:50
 #, fuzzy
 #| msgid "Bulletins"
 msgid "Back to Bulletins"
-msgstr "Buletin Sira"
+msgstr "Fila ba Buletin"
 
 #: templates/cms/public_bulletin_list.html:4
 msgid "Official Bulletins & Documents"
@@ -1581,7 +1569,7 @@ msgstr ""
 
 #: templates/cms/public_career_detail.html:4
 msgid "Careers"
-msgstr "Kareira Sira"
+msgstr "Kareira"
 
 #: templates/cms/public_career_detail.html:10
 msgid "Back to Careers"
@@ -1597,11 +1585,11 @@ msgstr ""
 
 #: templates/cms/public_career_list.html:4
 msgid "Careers & Job Opportunities"
-msgstr "Kareira & Oportunidade Empregu Sira"
+msgstr "Kareira & Oportunidade Empregu"
 
 #: templates/cms/public_career_list.html:11
 msgid "Careers & Opportunities"
-msgstr "Kareira & Oportunidade Sira"
+msgstr "Kareira & Oportunidade"
 
 #: templates/cms/public_career_list.html:12
 msgid ""
@@ -1640,11 +1628,11 @@ msgstr "Haree Detallu & Aplika"
 
 #: templates/cms/public_career_list.html:90
 msgid "No open job positions at this time."
-msgstr "Seidauk iha vaga mamuk iha tempu ne'e."
+msgstr "Seidauk iha vaga iha tempu ne'e."
 
 #: templates/cms/public_career_list.html:91
 msgid "Please check back later for new career opportunities."
-msgstr "Favór hare'e fali iha tempu oin ba oportunidade kareira foun."
+msgstr "Favór hare'e fali oportunidade vaga foun iha tempu oin mai."
 
 #: templates/cms/public_news_detail.html:49
 msgid "Supporting document"
@@ -1707,7 +1695,7 @@ msgstr "Tuirmai"
 
 #: templates/core/about_dnmg.html:10
 msgid "National Directorate of Meteorology and Geophysics"
-msgstr "Direção Nasional Meteorolojia no Jeofízika"
+msgstr "Direção Nacional de Meteorolojia e Geofísica"
 
 #: templates/core/about_dnmg.html:21
 msgid "Our Mission"
@@ -1914,11 +1902,11 @@ msgstr ""
 
 #: templates/core/home.html:157
 msgid "National Meteorological Station Network"
-msgstr ""
+msgstr "Rede Estasaun Meteorolójika Nasionál"
 
 #: templates/core/home.html:158
 msgid "Live telemetry from 15 active network stations across Timor-Leste"
-msgstr ""
+msgstr "Telemetria direta husi estasaun rede 15 ne'ebé ativu iha Timor-Leste tomak"
 
 #: templates/core/home.html:162 templates/hr/employee_list.html:80
 #, fuzzy
@@ -1992,54 +1980,50 @@ msgstr ""
 
 #: templates/core/home.html:271
 msgid "Decision Support Systems (DSS)"
-msgstr ""
+msgstr "Sistema Apoiu ba Desizaun (DSS)"
 
 #: templates/core/home.html:272
 msgid ""
 "Specialized meteorological decision suites for disaster management, ocean "
-"safety, climate impact, and agriculture."
-msgstr ""
+"safety, climate impact for public health, and agriculture."
+msgstr "Sistema desizaun meteorolójiku espesializadu ba jestaun dezastre, seguransa tasi, impaktu klima ba saúde públika, no agrikultura."
 
 #: templates/core/home.html:278
 msgid "Disaster Risk Reduction"
-msgstr ""
+msgstr "Redusaun Risku Dezastre"
 
 #: templates/core/home.html:279
 msgid ""
 "Early warning integration for flash floods, landslides, and heavy rainfall "
 "risks."
-msgstr ""
+msgstr "Integrasaun avizu sedu ba risku inundasaun lalais, rai monu, no udan bo'ot."
 
 #: templates/core/home.html:287
-#, fuzzy
-#| msgid "Weather Forecasts"
 msgid "Ocean State Forecasting"
-msgstr "Previsaun Tempu"
+msgstr "Previzaun Kondisaun Tasi"
 
 #: templates/core/home.html:288
 msgid ""
 "High-resolution wave, tide, and coastal surge forecasting for shipping lanes."
-msgstr ""
+msgstr "Previzaun rezolusaun aas kona-ba onda, mare, no surtu kostal ba dalan navegasaun."
 
 #: templates/core/home.html:296
 msgid "Climate Risk Info for Public Health"
-msgstr ""
+msgstr "Informasaun Risku Klima ba Saúde Públika"
 
 #: templates/core/home.html:297
 msgid ""
-"Climate Risk Information System for Public Health: vector-borne disease "
-"early warning, heat stress indexes, and health resilience models."
-msgstr ""
+"Climate Risk Information System for Public Health: Early Warning and Health "
+"Resilience for Diarrhea, Dengue, and ARI (Acute Respiratory Infection)."
+msgstr "Sistema Informasaun Risku Klima ba Saúde Públika: Alerta Sedu no Reziliénsia Saúde ba Diarreia, Dengue, no ARI (Infesaun Respiratória Aguda)."
 
 #: templates/core/home.html:305
 msgid "Agricultural DSS"
-msgstr ""
+msgstr "DSS Agríkola"
 
 #: templates/core/home.html:306
-msgid ""
-"Agro-meteorological advisories for coffee, rice, and corn farming seasonal "
-"planning."
-msgstr ""
+msgid "Agro-meteorological advisories for rice and corn farming seasonal planning."
+msgstr "Avizu agrometeorolójiku ba planeamentu estasionál kultivasaun hare no batar."
 
 #: templates/core/home.html:317
 #, fuzzy
@@ -2398,7 +2382,7 @@ msgstr ""
 
 #: templates/hr/download_list.html:61
 msgid "Downloads"
-msgstr "Download Sira"
+msgstr "Download"
 
 #: templates/hr/download_list.html:62
 msgid "Uploaded"
@@ -2418,7 +2402,7 @@ msgstr "Login Funsonáriu"
 #, fuzzy
 #| msgid "Downloads"
 msgid "Download"
-msgstr "Download Sira"
+msgstr "Download"
 
 #: templates/hr/download_list.html:100
 #, fuzzy
@@ -2874,7 +2858,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "AWS Stations"
-msgstr "Estasaun Sira"
+msgstr "Estasaun AWS"
 
 #: templates/users/dashboard.html:118
 msgid "Tide Gauges"
@@ -2900,7 +2884,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Station Name"
-msgstr "Estasaun Sira"
+msgstr "Naran Estasaun "
 
 #: templates/users/dashboard.html:152 templates/users/dashboard.html:251
 #: templates/users/dashboard.html:328
@@ -2992,7 +2976,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Battery Status"
-msgstr "Estasaun Sira"
+msgstr "Estatus Bateria"
 
 #: templates/users/dashboard.html:388
 msgid "No Marine Buoy stations found."
@@ -3030,7 +3014,7 @@ msgstr "Jere Uzuáriu"
 #, fuzzy
 #| msgid "Stations"
 msgid "Manage Stations"
-msgstr "Estasaun Sira"
+msgstr "Maneja Estasaun"
 
 #: templates/users/dashboard.html:477
 #, fuzzy
@@ -3397,7 +3381,7 @@ msgstr "Previzaun Tempu"
 #, fuzzy
 #| msgid "Weather Forecasts"
 msgid "Publish Municipal Weather Forecast"
-msgstr "Previsaun Tempu"
+msgstr "Previzaun Tempu"
 
 #: templates/weather/forecast_form.html:29
 #: templates/weather/forecast_list.html:77 weather/models.py:199
@@ -3497,11 +3481,37 @@ msgstr ""
 msgid "Current telemetry from the national weather-station network."
 msgstr ""
 
-#: templates/weather/interactive_map.html:163
-#, fuzzy
-#| msgid "Observations"
+#: templates/core/home.html:18 templates/weather/interactive_map.html:181
 msgid "Live Observations"
-msgstr "Observasaun Dadus"
+msgstr "Observasaun Direta"
+
+#: templates/core/home.html:17
+msgid "Forecast map"
+msgstr "Mapa Previzaun"
+
+#: templates/core/home.html:29
+msgid "MET Norway / ECMWF"
+msgstr "MET Norway / ECMWF"
+
+#: templates/core/home.html:30
+msgid "Current Conditions by Municipality"
+msgstr "Kondisaun Agora tuir Munisípiu"
+
+#: templates/core/home.html:31
+msgid "Swipe or use the arrows to browse municipalities."
+msgstr "Swipe ka uza sinal rama-oan atu haree munisípiu sira."
+
+#: templates/core/home.html:94
+msgid "USGS monitoring"
+msgstr "Monitorizasaun USGS"
+
+#: templates/core/home.html:95
+msgid "Recent Earthquakes Near Timor-Leste"
+msgstr "Rai-nakdoko Foin Daudauk  Besik Timor-Leste"
+
+#: templates/core/home.html:96
+msgid "A compact update; explore the Seismic page for the map, filters, and full analysis."
+msgstr "Atualizasaun badak; esplora pajina Sismika atu haree mapa, filtru sira, no analize kompleta."
 
 #: templates/weather/interactive_map.html:167
 #, fuzzy
@@ -3694,7 +3704,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Edit Station"
-msgstr "Estasaun Sira"
+msgstr "Edit Estasaun"
 
 #: templates/weather/station_form.html:4
 #, fuzzy
@@ -3718,13 +3728,13 @@ msgstr "Estasaun Tempu Diretu"
 #, fuzzy
 #| msgid "Stations"
 msgid "Station Code"
-msgstr "Estasaun Sira"
+msgstr "Kodigu Estasaun "
 
 #: templates/weather/station_form.html:39 weather/models.py:65
 #, fuzzy
 #| msgid "Stations"
 msgid "Station Type"
-msgstr "Estasaun Sira"
+msgstr "Tipu Estasaun"
 
 #: templates/weather/station_form.html:51
 msgid "Elevation (meters)"
@@ -3744,7 +3754,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Stations"
 msgid "Save Station"
-msgstr "Estasaun Sira"
+msgstr "Rai Estasaun"
 
 #: templates/weather/station_list.html:5
 msgid "Automated Weather Stations (AWS) & Monitoring Sites"
@@ -3773,7 +3783,7 @@ msgstr "Buka tuir naran, uzuáriu ka email..."
 #, fuzzy
 #| msgid "Stations"
 msgid "All Station Types"
-msgstr "Estasaun Sira"
+msgstr "Tipu Estasaun"
 
 #: templates/weather/station_list.html:85
 msgid "Coordinates"
@@ -4205,7 +4215,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Weather Forecasts"
 msgid "Weather Forecast"
-msgstr "Previsaun Tempu"
+msgstr "Previzaun Tempu"
 
 #: weather/models.py:234
 msgid "Information / Advisory"
@@ -4310,3 +4320,467 @@ msgstr ""
 
 #~ msgid "Total Accounts"
 #~ msgstr "Totál Konta"
+
+#: weather/models.py templates/base.html templates/weather/public_official_forecast_list.html
+msgid "1-Day Forecast"
+msgstr "Previzaun Loron 1"
+
+#: weather/models.py templates/base.html templates/weather/public_official_forecast_list.html
+msgid "3-Day Forecast"
+msgstr "Previzaun Loron 3"
+
+#: weather/models.py templates/base.html templates/weather/public_official_forecast_list.html
+msgid "7-Day Forecast"
+msgstr "Previzaun Loron 7"
+
+#: templates/base.html
+msgid "10-Day Forecast Map"
+msgstr "Mapa Previzaun Loron 10"
+
+#: weather/models.py templates/weather/official_forecast_list.html
+msgid "Official Forecast"
+msgstr "Previzaun Ofisiál"
+
+#: weather/models.py templates/weather/official_forecast_list.html
+msgid "Official Forecasts"
+msgstr "Previzaun Ofisiál sira"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Official Weather Forecasts"
+msgstr "Previzaun Tempu Ofisiál sira"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Meteorologist-approved information"
+msgstr "Informasaun ne'ebé meteorolojista aprova"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Published operational forecasts from the National Directorate of Meteorology and Geophysics."
+msgstr "Previzaun operasionál ne'ebé Direção Nacional Meteorolojia e Geofísika publika."
+
+#: templates/weather/public_official_forecast_list.html templates/weather/public_official_forecast_detail.html
+msgid "All official forecasts"
+msgstr "Previzaun ofisiál hotu"
+
+#: templates/weather/public_official_forecast_list.html
+msgid "No official forecasts are currently published for this period."
+msgstr "La iha previzaun ofisiál ne'ebé publika ba períodu ida-ne'e."
+
+#: templates/weather/public_official_forecast_list.html
+msgid "Please check the 10-day forecast map for automated model guidance."
+msgstr "Favor haree mapa previzaun loron 10 ba orientasaun modelu automatizadu."
+
+#: templates/weather/public_official_forecast_detail.html
+msgid "Forecast details and notes"
+msgstr "Detallu no nota previzaun"
+
+#: templates/weather/public_official_forecast_detail.html
+msgid "Download supporting file"
+msgstr "Download ficheiru apoiante"
+
+#: templates/weather/official_forecast_list.html templates/weather/official_forecast_form.html
+msgid "Official Forecast Management"
+msgstr "Jestaun Previzaun Ofisiál"
+
+#: templates/weather/official_forecast_form.html
+msgid "Drafts are visible only to staff. Publishing or archiving requires the forecast publication permission."
+msgstr "Raskunu sira vizível deit ba funsionáriu sira. Publika ka arkiva presiza permisaun publikasaun previzaun."
+
+#: templates/weather/official_forecast_form.html
+msgid "General Conditions"
+msgstr "Kondisaun Jerál"
+
+#: templates/weather/official_forecast_form.html
+msgid "Wind Conditions"
+msgstr "Kondisaun Anin"
+
+#: templates/weather/official_forecast_form.html
+msgid "Sea Conditions"
+msgstr "Kondisaun Tasi"
+
+#: templates/weather/official_forecast_form.html
+msgid "Important Message"
+msgstr "Mensajen Importante"
+
+#: templates/weather/official_forecast_form.html templates/weather/public_official_forecast_detail.html
+msgid "Forecast image gallery"
+msgstr "Galeria Imajen Previzaun"
+
+#: templates/weather/official_forecast_form.html
+msgid "Add another image"
+msgstr "Aumenta imajen seluk"
+
+#: templates/weather/official_forecast_form.html
+msgid "Supporting files"
+msgstr "Fixeiru apoiante"
+
+#: templates/weather/official_forecast_form.html
+msgid "Add another file"
+msgstr "Aumenta fixeiru seluk"
+
+#: templates/weather/official_forecast_form.html
+msgid "Enter a web or email link"
+msgstr "Hatama ligasaun web ka email"
+
+#: templates/weather/public_official_forecast_detail.html
+msgid "Additional meteorologist notes"
+msgstr "Nota adisionál husi meteorolojista"
+
+#: templates/base.html
+msgid "Account options"
+msgstr "Opsaun konta"
+
+#: templates/weather/official_forecast_form.html
+msgid "Optional"
+msgstr "Opsionál"
+
+#: templates/widgets/admin_file_input.html
+msgid "Current file"
+msgstr "Ficheiru atuál"
+
+#: templates/widgets/admin_file_input.html
+msgid "Remove current file"
+msgstr "Hasai ficheiru atuál"
+
+#: templates/admin_base.html
+msgid "Close navigation"
+msgstr "Taka navigasaun"
+
+#: templates/components/public_navigation.html
+msgid "Primary navigation"
+msgstr "Navegasaun prinsipál"
+
+#: templates/components/public_navigation.html
+msgid "Weather"
+msgstr "Tempu"
+
+#: templates/components/public_navigation.html
+msgid "Weather overview"
+msgstr "Rezumu kona-ba Kondisaun Tempu"
+
+#: templates/components/public_navigation.html
+msgid "Observations & maps"
+msgstr "Observasaun no mapa"
+
+#: templates/components/public_navigation.html
+msgid "Current conditions"
+msgstr "Kondisaun atuál"
+
+#: templates/components/public_navigation.html
+msgid "Live observations map"
+msgstr "Mapa observasaun direta"
+
+#: templates/components/public_navigation.html
+msgid "10-day forecast map"
+msgstr "Mapa previzaun loron 10"
+
+#: templates/components/public_navigation.html
+msgid "1-day forecast"
+msgstr "Previzaun loron 1"
+
+#: templates/components/public_navigation.html
+msgid "3-day forecast"
+msgstr "Previzaun loron 3"
+
+#: templates/components/public_navigation.html
+msgid "7-day forecast"
+msgstr "Previzaun loron 7"
+
+#: templates/components/public_navigation.html
+msgid "Alerts & publications"
+msgstr "Alerta no publikasaun"
+
+#: templates/components/public_navigation.html
+msgid "Early warnings"
+msgstr "Avizu sedu"
+
+#: templates/components/public_navigation.html
+msgid "Weather bulletins"
+msgstr "Buletin meteorolojia"
+
+#: templates/components/public_navigation.html
+msgid "Radar"
+msgstr "Radar"
+
+#: templates/components/public_navigation.html
+msgid "Climate overview"
+msgstr "Rezumu Jerál kona-ba Klima"
+
+#: templates/components/public_navigation.html
+msgid "Monitoring & data"
+msgstr "Monitorizasaun no dadus"
+
+#: templates/components/public_navigation.html
+msgid "Climate Monitoring"
+msgstr "Monitorizasaun Klima"
+
+#: templates/components/public_navigation.html
+msgid "Historical climate"
+msgstr "Klima istóriku"
+
+#: templates/components/public_navigation.html
+msgid "Climate data"
+msgstr "Dadus klima"
+
+#: templates/components/public_navigation.html
+msgid "Outlooks & publications"
+msgstr "Perspetiva no publikasaun"
+
+#: templates/components/public_navigation.html
+msgid "Seasonal outlooks"
+msgstr "Perspetiva sazonal sira"
+
+#: templates/components/public_navigation.html
+msgid "Reports & bulletins"
+msgstr "Relatóriu no buletin sira"
+
+#: templates/components/public_navigation.html
+msgid "Climate change information"
+msgstr "Informasaun mudansa klimátika"
+
+#: templates/components/public_navigation.html
+msgid "Air Quality"
+msgstr "Kualidade Ar"
+
+#: templates/components/public_navigation.html
+msgid "Air-quality overview"
+msgstr "Rezumu Jerál kona-ba Kualidade ar"
+
+#: templates/components/public_navigation.html
+msgid "Current monitoring"
+msgstr "Monitorizasaun atuál"
+
+#: templates/components/public_navigation.html
+msgid "Current Air Quality"
+msgstr "Kualidade Ar Atuál"
+
+#: templates/components/public_navigation.html
+msgid "AQI map & stations"
+msgstr "Mapa AQI no estasaun sira"
+
+#: templates/components/public_navigation.html
+msgid "Main pollutants"
+msgstr "Poluente prinsipál sira"
+
+#: templates/components/public_navigation.html
+msgid "Guidance & outlook"
+msgstr "Orientasaun no perspetiva"
+
+#: templates/components/public_navigation.html
+msgid "Health advice"
+msgstr "Konsellu saúde"
+
+#: templates/components/public_navigation.html
+msgid "Air-quality forecast"
+msgstr "Previzaun kualidade ar"
+
+#: templates/components/public_navigation.html
+msgid "Historical data & reports"
+msgstr "Dadus istóriku no relatóriu sira"
+
+#: templates/components/public_navigation.html
+msgid "Marine"
+msgstr "Marítima"
+
+#: templates/components/public_navigation.html
+msgid "Marine overview"
+msgstr "Rezumu Jerál kona-ba Marítima"
+
+#: templates/components/public_navigation.html
+msgid "Forecasts & conditions"
+msgstr "Previzaun no kondisaun sira"
+
+#: templates/components/public_navigation.html
+msgid "Marine Forecast"
+msgstr ""
+
+#: templates/components/public_navigation.html
+msgid "Coastal & ocean conditions"
+msgstr "Kondisaun kostal no tasi"
+
+#: templates/components/public_navigation.html
+msgid "Wave & wind forecast"
+msgstr "Previzaun onda no anin"
+
+#: templates/components/public_navigation.html
+msgid "Tide information"
+msgstr "Informasaun mare"
+
+#: templates/components/public_navigation.html
+msgid "Observation network"
+msgstr "Rede observasaun"
+
+#: templates/components/public_navigation.html
+msgid "Live marine observations"
+msgstr "Observasaun marítima direta"
+
+#: templates/components/public_navigation.html
+msgid "Tide gauge stations"
+msgstr "Estasaun Sukat Nivel Tasi (Tide Gauge)"
+
+#: templates/components/public_navigation.html
+msgid "Marine buoy stations"
+msgstr "Estasaun Boia Marítima(Marine Buoy)"
+
+#: templates/components/public_navigation.html
+msgid "Safety & specialist tools"
+msgstr "Seguransa no ferramenta espesialista"
+
+#: templates/components/public_navigation.html
+msgid "Warnings & bulletins"
+msgstr "Avizu no buletin sira"
+
+#: templates/components/public_navigation.html
+msgid "External"
+msgstr "External"
+
+#: templates/components/public_navigation.html
+msgid "Aviation"
+msgstr "Aviasaun"
+
+#: templates/components/public_navigation.html
+msgid "Aviation overview"
+msgstr "Rezumu Jerál kona-ba Aviasaun"
+
+#: templates/components/public_navigation.html
+msgid "Airports"
+msgstr "Aeroportu sira"
+
+#: templates/components/public_navigation.html
+msgid "Dili — P.N. Lobato"
+msgstr "Dili — P.N. Lobato"
+
+#: templates/components/public_navigation.html
+msgid "Suai — K.R. Xanana Gusmão"
+msgstr "Suai — K.R. Xanana Gusmão"
+
+#: templates/components/public_navigation.html
+msgid "Oecusse — Rota do Sândalo"
+msgstr "Oecusse — Rota do Sândalo"
+
+#: templates/components/public_navigation.html
+msgid "Weather products"
+msgstr "Produtu meteorolojia"
+
+#: templates/components/public_navigation.html
+msgid "Live airport weather"
+msgstr "Kondisaun tempu aeroportu direta"
+
+#: templates/components/public_navigation.html
+msgid "METAR & TAF"
+msgstr "METAR no TAF"
+
+#: templates/components/public_navigation.html
+msgid "Visibility & wind"
+msgstr "Vizibilidade no anin"
+
+#: templates/components/public_navigation.html
+msgid "Warnings & reports"
+msgstr "Avizu no relatóriu sira"
+
+#: templates/components/public_navigation.html
+msgid "Earthquake Explorer"
+msgstr "Esploradór Rai-Nakdoko"
+
+#: templates/components/public_navigation.html
+msgid "Earthquake monitoring"
+msgstr "Monitorizasaun Rai-Nakdoko"
+
+#: templates/components/public_navigation.html
+msgid "Recent earthquakes"
+msgstr "Rai-Nakdoko Foin-Lalais"
+
+#: templates/components/public_navigation.html
+msgid "Map & event explorer"
+msgstr "Mapa no esploradór eventu"
+
+#: templates/components/public_navigation.html
+msgid "Event details & summary"
+msgstr "Detallu no rezumu eventu"
+
+#: templates/components/public_navigation.html
+msgid "Publications"
+msgstr "Publikasaun"
+
+#: templates/components/public_navigation.html
+msgid "Seismic bulletins"
+msgstr "Buletin seízmiku"
+
+#: templates/components/public_navigation.html
+msgid "Data & Maps"
+msgstr "Dadus no Mapa"
+
+#: templates/components/public_navigation.html
+msgid "Data & maps overview"
+msgstr "Rezumu Jerál kona-ba Dadus no Mapa"
+
+#: templates/components/public_navigation.html
+msgid "Interactive maps"
+msgstr "Mapa Interativu"
+
+#: templates/components/public_navigation.html
+msgid "Seismic map & data"
+msgstr "Mapa no dadus seízmiku"
+
+#: templates/components/public_navigation.html
+msgid "Data resources"
+msgstr "Rekursu dadus"
+
+#: templates/components/public_navigation.html
+msgid "Air-quality data"
+msgstr "Dadus kualidade ar"
+
+#: templates/components/public_navigation.html
+msgid "Downloads & publications"
+msgstr "Download no publikasaun"
+
+#: templates/components/public_navigation.html
+msgid "Data/API Information"
+msgstr "Informasaun Dadus/API"
+
+#: templates/components/public_navigation.html
+msgid "News & Notices"
+msgstr "Notísia no Avizu"
+
+#: templates/components/public_navigation.html
+msgid "News, announcements & media"
+msgstr "Notísia, anúnsiu no média"
+
+#: templates/components/public_navigation.html
+msgid "Official notices"
+msgstr "Avizu ofisiál"
+
+#: templates/components/public_navigation.html
+msgid "Public advisories"
+msgstr "Avizu públiku"
+
+#: templates/components/public_navigation.html
+msgid "DSS Systems"
+msgstr "Sistema DSS"
+
+#: templates/components/public_navigation.html
+msgid "DSS overview"
+msgstr "Rezumu Jerál kona-ba DSS"
+
+#: templates/components/public_navigation.html
+msgid "Decision-support systems"
+msgstr "Sistema apoiu ba desizaun sira"
+
+#: templates/components/public_navigation.html
+msgid "About DNMG overview"
+msgstr "Rezumu Jerál kona-ba DNMG"
+
+#: templates/components/public_navigation.html
+msgid "Organization"
+msgstr "Organizasaun"
+
+#: templates/components/public_navigation.html
+msgid "Structure & departments"
+msgstr "Estrutura no departamentu"
+
+#: templates/components/public_navigation.html
+msgid "Contact & opportunities"
+msgstr "Kontaktu no oportunidade"
+
+#: templates/base.html
+msgid "Admin Portal"
+msgstr "Portal Administrasaun"

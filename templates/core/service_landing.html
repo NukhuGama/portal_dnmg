@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load i18n tz %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-hero py-5 text-white" aria-labelledby="service-title">
+    <div class="container">
+        <p class="portal-eyebrow text-white-50 mb-2"><i class="bi {{ icon }} me-2"></i>{% translate "DNMG public service" %}</p>
+        <h1 id="service-title" class="mb-3">{{ title }}</h1>
+        <p class="lead mb-0">{{ description }}</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    {% if airports %}
+    <section class="airport-directory mb-5" aria-labelledby="airports-title">
+        <div class="airport-directory__header">
+            <div>
+                <p class="portal-section-kicker mb-1"><i class="bi bi-geo-alt-fill me-2"></i>{% translate "Airport network" %}</p>
+                <h2 id="airports-title" class="h4 mb-1">{% translate "Airports served by aviation weather information" %}</h2>
+                <p class="text-muted mb-0">{% translate "Select an airport below to identify the relevant aviation location and products." %}</p>
+            </div>
+        </div>
+        <div class="row g-3 mt-1">
+            {% for airport in airports %}
+            <div class="col-12 col-md-6 col-xl-4">
+                <article id="{{ airport.id }}" class="airport-card h-100">
+                    <span class="airport-card__icon" aria-hidden="true"><i class="bi bi-airplane-fill"></i></span>
+                    <div class="airport-card__content">
+                        <p class="airport-card__location"><i class="bi bi-geo-alt"></i>{{ airport.location }}</p>
+                        <h3>{{ airport.name }}</h3>
+                        {% if airport.official_name %}<p class="airport-card__official-name">{{ airport.official_name }}</p>{% endif %}
+                        <a href="{{ airport.detail_url }}">{% translate "View aviation products" %}<i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if service_key == 'data-maps' %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-4"><a class="service-link-card" href="{% url 'weather:interactive_map' %}"><i class="bi bi-broadcast-pin"></i><span><strong>{% translate "Live observations map" %}</strong><small>{% translate "Weather stations and current telemetry" %}</small></span><i class="bi bi-arrow-right"></i></a></div>
+        <div class="col-md-6 col-lg-4"><a class="service-link-card" href="{% url 'weather:forecast_map' %}"><i class="bi bi-map"></i><span><strong>{% translate "10-Day Forecast Map" %}</strong><small>{% translate "Municipality forecast visualization" %}</small></span><i class="bi bi-arrow-right"></i></a></div>
+        <div class="col-md-6 col-lg-4"><a class="service-link-card" href="{% url 'seismic:earthquakes' %}"><i class="bi bi-activity"></i><span><strong>{% translate "Earthquake map" %}</strong><small>{% translate "Recent earthquake explorer" %}</small></span><i class="bi bi-arrow-right"></i></a></div>
+    </div>
+    {% endif %}
+
+    {% if service_key != 'aviation' %}
+    <section class="service-availability" aria-labelledby="availability-title">
+        <div class="service-availability__icon"><i class="bi bi-info-circle"></i></div>
+        <div>
+            <h2 id="availability-title">{% translate "Service availability" %}</h2>
+            <p class="mb-0">{% translate "This service area is prepared for DNMG operational data. Products will be published here when their verified data source and publication workflow are available." %}</p>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if sections and service_key != 'aviation' %}
+    <section class="mt-5" aria-labelledby="products-title">
+        <h2 id="products-title" class="h4 mb-3">{% translate "Products and information" %}</h2>
+        <div class="row g-3">
+            {% for section in sections %}
+            <div class="col-sm-6 col-lg-4">
+                <article id="{{ section.id }}" class="service-product-card h-100">
+                    <i class="bi {{ icon }}" aria-hidden="true"></i>
+                    <h3>{{ section.title }}</h3>
+                    <p>{% translate "Not currently published." %}</p>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

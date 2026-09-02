@@ -4,7 +4,9 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from core.widgets import AdminFileInput
 from .models import Role, PortalPermission
+from .permissions import can_assign_role, effective_authority_level
 
 User = get_user_model()
 
@@ -39,7 +41,7 @@ class UserProfileForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+            'profile_picture': AdminFileInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -78,7 +80,7 @@ class UserCreateForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             'access_role': forms.Select(attrs={'class': 'form-select'}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+            'profile_picture': AdminFileInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -102,8 +104,7 @@ class UserCreateForm(forms.ModelForm):
             # A delegated user may only assign a role that does not exceed their
             # own permission set, preventing privilege escalation.
             allowed = [role.pk for role in queryset.prefetch_related('permissions')
-                       if all(self.request_user.has_portal_permission(permission.code)
-                              for permission in role.permissions.all())]
+                       if can_assign_role(self.request_user, role)]
             queryset = queryset.filter(pk__in=allowed)
         field.queryset = queryset
 
@@ -135,7 +136,7 @@ class UserEditForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             'access_role': forms.Select(attrs={'class': 'form-select'}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+            'profile_picture': AdminFileInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
@@ -157,16 +158,23 @@ class UserEditForm(forms.ModelForm):
             queryset = Role.objects.filter(Q(is_active=True) | Q(pk=self.instance.access_role_id))
         if not self.request_user.is_superuser:
             allowed = [role.pk for role in queryset.prefetch_related('permissions')
-                       if all(self.request_user.has_portal_permission(permission.code)
-                              for permission in role.permissions.all())]
+                       if can_assign_role(self.request_user, role)]
             queryset = queryset.filter(pk__in=allowed)
         field.queryset = queryset
 
 
 class RoleForm(forms.ModelForm):
+    authority_level = forms.TypedChoiceField(
+        choices=Role.AuthorityLevel.choices,
+        coerce=int,
+        required=False,
+        empty_value=Role.AuthorityLevel.STANDARD,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
+
     class Meta:
         model = Role
-        fields = ['name', 'description', 'is_active', 'permissions']
+        fields = ['name', 'description', 'authority_level', 'is_active', 'permissions']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. Weather Officer')}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
@@ -175,8 +183,30 @@ class RoleForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user', None)
         super().__init__(*args, **kwargs)
-        self.fields['permissions'].queryset = PortalPermission.objects.order_by('module', 'code')
+        permissions = PortalPermission.objects.order_by('module', 'code')
+        if self.request_user and not self.request_user.is_superuser:
+            allowed_ids = [permission.pk for permission in permissions
+                           if self.request_user.has_portal_permission(permission.code)]
+            permissions = permissions.filter(pk__in=allowed_ids)
+        self.fields['permissions'].queryset = permissions
+        self.fields['authority_level'].required = False
+        self.fields['authority_level'].initial = Role.AuthorityLevel.STANDARD
+        if self.request_user and not self.request_user.is_superuser:
+            self.fields['authority_level'].choices = [
+                choice for choice in self.fields['authority_level'].choices
+                if choice[0] != '' and int(choice[0]) <= effective_authority_level(self.request_user)
+            ]
+
+    def clean_authority_level(self):
+        level = self.cleaned_data.get('authority_level')
+        if level in (None, ''):
+            level = Role.AuthorityLevel.STANDARD
+        level = int(level)
+        if self.request_user and level > effective_authority_level(self.request_user):
+            raise ValidationError(_('You cannot create or assign a role above your own authority level.'))
+        return level
 
 
 class PortalPermissionForm(forms.ModelForm):

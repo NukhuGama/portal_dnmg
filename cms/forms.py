@@ -1,64 +1,20 @@
+from pathlib import Path
+
 from django import forms
 from django.core.exceptions import ValidationError
-from pathlib import Path
-from html import escape
-from html.parser import HTMLParser
-import re
 from django.utils.translation import gettext_lazy as _
-from .models import Category, NewsArticle, OfficialBulletin, JobOpening, JobOpeningAttachment
 
+from core.widgets import AdminFileInput
 
-class ArticleHTMLSanitizer(HTMLParser):
-    """Allow the small, presentation-focused HTML subset produced by the article editor."""
-    allowed_tags = {'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'blockquote', 'h2', 'h3', 'figure', 'figcaption', 'img', 'a'}
-    allowed_attributes = {
-        'a': {'href', 'title'},
-        'figure': {'class', 'data-upload-key', 'data-attachment-upload-key'},
-        'img': {'src', 'alt'},
-        'p': {'class'},
-    }
-    void_tags = {'br', 'img'}
+from .models import (
+    Category,
+    JobOpening,
+    JobOpeningAttachment,
+    NewsArticle,
+    OfficialBulletin,
+)
+from .sanitizers import sanitize_article_html, sanitize_job_html
 
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.parts = []
-
-    def handle_starttag(self, tag, attrs):
-        if tag not in self.allowed_tags:
-            return
-        cleaned = []
-        for name, value in attrs:
-            if name not in self.allowed_attributes.get(tag, set()) or value is None:
-                continue
-            if name == 'href' and not re.match(r'^(https?://|mailto:|/)', value, re.IGNORECASE):
-                continue
-            if name == 'src' and not value.startswith('/media/'):
-                continue
-            if name in {'data-upload-key', 'data-attachment-upload-key'} and not re.fullmatch(r'[A-Za-z0-9_-]{1,64}', value):
-                continue
-            cleaned.append(f' {name}="{escape(value, quote=True)}"')
-        self.parts.append(f'<{tag}{"".join(cleaned)}>')
-
-    def handle_endtag(self, tag):
-        if tag in self.allowed_tags and tag not in self.void_tags:
-            self.parts.append(f'</{tag}>')
-
-    def handle_data(self, data):
-        self.parts.append(escape(data))
-
-    def get_html(self):
-        return ''.join(self.parts)
-
-
-def sanitize_article_html(value):
-    sanitizer = ArticleHTMLSanitizer()
-    sanitizer.feed(value or '')
-    sanitizer.close()
-    html = sanitizer.get_html().strip()
-    if not re.search(r'<(p|h2|h3|ul|ol|blockquote|figure)\b', html):
-        paragraphs = [segment.strip() for segment in html.split('\n\n') if segment.strip()]
-        html = ''.join(f'<p>{paragraph.replace(chr(10), "<br>")}</p>' for paragraph in paragraphs)
-    return html
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -77,9 +33,17 @@ class NewsArticleForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Article Title')}),
             'category': forms.Select(attrs={'class': 'form-select'}),
-            'excerpt': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': _('Short summary...')}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10, 'placeholder': _('Write news article content here...')}),
-            'featured_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'excerpt': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': _('Short summary...'),
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 10,
+                'placeholder': _('Write news article content here...'),
+            }),
+            'featured_image': AdminFileInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
             'published_at': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
         }
@@ -96,9 +60,12 @@ class OfficialBulletinForm(forms.ModelForm):
         model = OfficialBulletin
         fields = ['title', 'bulletin_type', 'pdf_file', 'summary', 'publication_date']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Monthly Climate Outlook - July 2026')}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': _('Monthly Climate Outlook - July 2026'),
+            }),
             'bulletin_type': forms.Select(attrs={'class': 'form-select'}),
-            'pdf_file': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf'}),
+            'pdf_file': AdminFileInput(attrs={'class': 'form-control', 'accept': '.pdf'}),
             'summary': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'publication_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
@@ -113,16 +80,43 @@ class JobOpeningForm(forms.ModelForm):
             'application_deadline', 'status',
         ]
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. Meteorologist / Senior Officer')}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': _('e.g. Meteorologist / Senior Officer'),
+            }),
             'department': forms.Select(attrs={'class': 'form-select'}),
             'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Dili, Timor-Leste')}),
             'employment_type': forms.Select(attrs={'class': 'form-select'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 8, 'placeholder': _('Full job description...')}),
-            'requirements': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': _('Qualifications, skills, experience...')}),
-            'how_to_apply': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': _('Instructions on how to apply...')}),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 8,
+                'placeholder': _('Full job description...'),
+            }),
+            'requirements': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': _('Qualifications, skills, experience...'),
+            }),
+            'how_to_apply': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': _('Instructions on how to apply...'),
+            }),
             'application_deadline': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
         }
+
+    def clean_description(self):
+        description = sanitize_job_html(self.cleaned_data.get('description', ''))
+        if not description:
+            raise ValidationError(_('The job description cannot be empty.'))
+        return description
+
+    def clean_requirements(self):
+        return sanitize_job_html(self.cleaned_data.get('requirements', ''))
+
+    def clean_how_to_apply(self):
+        return sanitize_job_html(self.cleaned_data.get('how_to_apply', ''))
 
 
 class JobOpeningAttachmentForm(forms.ModelForm):
@@ -134,7 +128,7 @@ class JobOpeningAttachmentForm(forms.ModelForm):
         model = JobOpeningAttachment
         fields = ['file', 'title']
         widgets = {
-            'file': forms.FileInput(attrs={
+            'file': AdminFileInput(attrs={
                 'class': 'form-control',
                 'accept': '.pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.rtf,.txt,.csv,.zip',
             }),

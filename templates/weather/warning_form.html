@@ -46,7 +46,6 @@
                             <label class="form-label fw-semibold">{% translate "Valid Until" %}</label>
                             {{ form.valid_to }}
                         </div>
-                        <div class="col-12"><p class="form-text mb-0">{% translate "A broadcast warning is shown on the public Home page only between its Valid From and Valid Until times." %}</p></div>
                         {% if object %}
                             {% if object.is_active and user|has_portal_permission:'early_warnings.archive' or not object.is_active and user|has_portal_permission:'early_warnings.publish' %}
                         <div class="col-12">

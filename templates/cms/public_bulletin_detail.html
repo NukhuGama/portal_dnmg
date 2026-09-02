@@ -4,10 +4,10 @@
 {% block title %}{{ bulletin.title }} | {% translate "Official Bulletins" %} | DNMG{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container public-bulletin-detail py-5">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-            <nav aria-label="breadcrumb" class="mb-4">
+            <nav aria-label="breadcrumb" class="public-bulletin-detail__breadcrumb mb-4">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'core:home' %}">{% translate "Home" %}</a></li>
                     <li class="breadcrumb-item"><a href="{% url 'cms:public_bulletin_list' %}">{% translate "Official Bulletins" %}</a></li>
@@ -19,7 +19,7 @@
                 <div class="border-bottom pb-3 mb-4">
                     <span class="badge bg-info text-dark px-3 py-2 fs-6 mb-3">{{ bulletin.get_bulletin_type_display }}</span>
                     <h1 class="fw-bold text-dark mb-3">{{ bulletin.title }}</h1>
-                    <div class="text-muted small">
+                    <div class="public-bulletin-detail__metadata text-muted small">
                         <i class="bi bi-calendar3 me-1"></i>{{ bulletin.publication_date|date:"F d, Y" }}
                         <span class="mx-2">&bull;</span>
                         <i class="bi bi-person me-1"></i>{{ bulletin.uploaded_by.get_full_name|default:bulletin.uploaded_by.username|default:"DNMG Staff" }}
@@ -31,7 +31,7 @@
                 {% endif %}
 
                 {% if bulletin.pdf_file|media_available %}
-                <div class="alert alert-light border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-0">
+                <div class="public-bulletin-detail__download alert alert-light border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-0">
                     <div class="d-flex align-items-center gap-3">
                         <i class="bi bi-file-earmark-pdf-fill text-danger fs-2"></i>
                         <div>

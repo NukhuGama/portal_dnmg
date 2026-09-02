@@ -1,0 +1,28 @@
+{% load i18n %}
+{{ field.as_hidden }}
+<div class="article-editor admin-rich-editor border rounded overflow-hidden" data-rich-editor-container>
+    <div class="article-editor-toolbar d-flex flex-wrap align-items-center gap-1 p-2 border-bottom bg-light" role="toolbar" aria-label="{% translate 'Text formatting' %}">
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="bold" title="{% translate 'Bold' %}" aria-label="{% translate 'Bold' %}"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="italic" title="{% translate 'Italic' %}" aria-label="{% translate 'Italic' %}"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+        <span class="vr mx-1" aria-hidden="true"></span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="insertUnorderedList" title="{% translate 'Bullet list' %}" aria-label="{% translate 'Bullet list' %}"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="insertOrderedList" title="{% translate 'Numbered list' %}" aria-label="{% translate 'Numbered list' %}"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+        <span class="vr mx-1" aria-hidden="true"></span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="formatBlock" data-editor-value="h2" title="{% translate 'Section heading' %}" aria-label="{% translate 'Section heading' %}">H2</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="formatBlock" data-editor-value="h3" title="{% translate 'Subheading' %}" aria-label="{% translate 'Subheading' %}">H3</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="formatBlock" data-editor-value="p" title="{% translate 'Normal paragraph' %}" aria-label="{% translate 'Normal paragraph' %}"><i class="bi bi-text-paragraph" aria-hidden="true"></i></button>
+        <span class="vr mx-1" aria-hidden="true"></span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-link title="{% translate 'Insert link' %}" aria-label="{% translate 'Insert link' %}"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+    </div>
+    <div id="{{ editor_id }}"
+         class="article-editor-surface admin-rich-editor__surface"
+         contenteditable="true"
+         role="textbox"
+         aria-multiline="true"
+         aria-labelledby="{{ field.id_for_label }}_label"
+         data-rich-editor
+         data-rich-editor-target="#{{ field.id_for_label }}"
+         data-link-prompt="{% translate 'Enter a web or email link' %}"
+         data-placeholder="{{ placeholder }}"></div>
+</div>
+{% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}

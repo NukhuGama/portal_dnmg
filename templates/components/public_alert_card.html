@@ -1,0 +1,30 @@
+{% load i18n %}
+<a class="site-alert-card site-alert-card--{{ alert.severity }}"
+   href="{% url 'weather:public_warning_detail' alert.pk %}"
+   role="listitem"
+   {% if slider_item %}data-alert-slide{% endif %}>
+    <span class="site-alert-card__icon" aria-hidden="true">
+        <i class="bi {% if alert.severity == 'danger' %}bi-exclamation-octagon-fill{% elif alert.severity == 'warning' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+    </span>
+    <span class="site-alert-card__content">
+        <span class="site-alert-card__heading">
+            <span class="site-alert-card__title">{{ alert.title }}</span>
+            <span class="severity-badge severity-badge--{{ alert.severity }}">
+                {% if alert.severity == 'danger' %}
+                    {% translate "Severe / Red" %}
+                {% elif alert.severity == 'warning' %}
+                    {% translate "Warning / Orange" %}
+                {% else %}
+                    {% translate "Advisory / Blue" %}
+                {% endif %}
+            </span>
+        </span>
+        <span class="site-alert-card__meta">
+            <i class="bi bi-geo-alt"></i>{{ alert.region }} ·
+            {% blocktranslate with until=alert.valid_to %}Valid until {{ until }}{% endblocktranslate %}
+        </span>
+    </span>
+    <span class="site-alert-card__action">
+        {% translate "View details" %}<i class="bi bi-arrow-right"></i>
+    </span>
+</a>

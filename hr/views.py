@@ -1,4 +1,3 @@
-from datetime import date
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -599,7 +598,7 @@ class ContractRenewView(HRManagementRequiredMixin, View):
             old_end = employee.contract_end_date
             employee.contract_end_date = form.cleaned_data['new_contract_end_date']
             if form.cleaned_data.get('notes'):
-                employee.notes = (employee.notes or '') + f"\n[{date.today()}] Contract renewed: {form.cleaned_data['notes']}"
+                employee.notes = (employee.notes or '') + f"\n[{timezone.localdate()}] Contract renewed: {form.cleaned_data['notes']}"
             employee.save()
             HRAuditService.log(
                 request, 'HR_CONTRACT_RENEWED',
@@ -721,7 +720,7 @@ class HRReportExportView(HRManagementRequiredMixin, View):
             'selected_only': bool(selected_ids),
         })
 
-        filename_base = f"dnmg_hr_export_{date.today()}"
+        filename_base = f"dnmg_hr_export_{timezone.localdate()}"
 
         if export_format == 'excel':
             response = HttpResponse(

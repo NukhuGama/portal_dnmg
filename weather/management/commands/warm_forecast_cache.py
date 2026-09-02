@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from weather.services import DNMG10DayForecastService
+from weather.services import DNMG10DayForecastService, METNorwayForecastService
 
 
 class Command(BaseCommand):
@@ -10,4 +10,7 @@ class Command(BaseCommand):
         forecast = DNMG10DayForecastService.fetch_forecast(variable='tp', model='ECMWF-IFS')
         if forecast is None:
             raise CommandError('The forecast API returned no data and no stale cache is available.')
-        self.stdout.write(self.style.SUCCESS('Forecast cache is warm.'))
+        municipality_forecast = METNorwayForecastService.fetch_municipality_forecast()
+        if not municipality_forecast:
+            self.stderr.write('MET Norway municipality forecast is currently unavailable.')
+        self.stdout.write(self.style.SUCCESS('Forecast caches are warm.'))

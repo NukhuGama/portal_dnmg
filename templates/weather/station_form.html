@@ -42,10 +42,18 @@
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">{% translate "Latitude" %}</label>
                             {{ form.latitude }}
+                            {% if form.latitude.errors %}<div class="text-danger small">{{ form.latitude.errors }}</div>{% endif %}
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">{% translate "Longitude" %}</label>
                             {{ form.longitude }}
+                            {% if form.longitude.errors %}<div class="text-danger small">{{ form.longitude.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Coordinate Source" %}</label>
+                            {{ form.coordinate_source }}
+                            <div class="form-text">{% translate "Use Manual to keep these coordinates set by Admin DNMG during live-data syncs." %}</div>
+                            {% if form.coordinate_source.errors %}<div class="text-danger small">{{ form.coordinate_source.errors }}</div>{% endif %}
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold">{% translate "Elevation (meters)" %}</label>

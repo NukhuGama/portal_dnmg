@@ -1,0 +1,15 @@
+{% load i18n %}
+{% if widget.is_initial and widget.current_url %}
+    <div class="form-text mb-1">
+        <i class="bi bi-paperclip" aria-hidden="true"></i>
+        {% translate "Current file" %}:
+        <a href="{{ widget.current_url }}" target="_blank" rel="noopener">{{ widget.display_name }}</a>
+    </div>
+{% endif %}
+<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+{% if widget.is_initial and not widget.required %}
+    <div class="form-check mt-1">
+        <input class="form-check-input" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}">
+        <label class="form-check-label small" for="{{ widget.checkbox_id }}">{% translate "Remove current file" %}</label>
+    </div>
+{% endif %}

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% load i18n static portal_tags %}
+{% load i18n static portal_tags cms_tags %}
 
 {% block title %}{{ job.title }} | {% translate "Careers" %} | DNMG{% endblock %}
 
 {% block content %}
-<div class="bg-primary text-white py-5 mb-5 shadow-sm">
+<section class="public-page-hero text-white py-5 mb-5">
     <div class="container">
         <a href="{% url 'cms:public_career_list' %}" class="btn btn-outline-light btn-sm mb-3">
             <i class="bi bi-arrow-left me-1"></i>{% translate "Back to Careers" %}
@@ -25,30 +25,30 @@
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <div class="container mb-5">
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm p-4 mb-4">
                 <h4 class="fw-bold text-dark mb-3"><i class="bi bi-file-text me-2 text-primary"></i>{% translate "Job Description" %}</h4>
-                <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;">
-                    {{ job.description }}
+                <div class="text-secondary lh-lg mb-4 job-rich-content">
+                    {{ job.description|job_rich_text }}
                 </div>
 
                 {% if job.requirements %}
                 <hr class="my-4">
                 <h4 class="fw-bold text-dark mb-3"><i class="bi bi-check2-square me-2 text-primary"></i>{% translate "Requirements & Qualifications" %}</h4>
-                <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;">
-                    {{ job.requirements }}
+                <div class="text-secondary lh-lg mb-4 job-rich-content">
+                    {{ job.requirements|job_rich_text }}
                 </div>
                 {% endif %}
 
                 {% if job.how_to_apply %}
                 <hr class="my-4">
                 <h4 class="fw-bold text-dark mb-3"><i class="bi bi-send me-2 text-primary"></i>{% translate "How to Apply" %}</h4>
-                <div class="alert alert-info border-0 shadow-sm text-dark lh-lg" style="white-space: pre-line;">
-                    {{ job.how_to_apply }}
+                <div class="alert alert-info border-0 shadow-sm text-dark lh-lg job-rich-content">
+                    {{ job.how_to_apply|job_rich_text }}
                 </div>
                 {% endif %}
 

@@ -1,0 +1,171 @@
+{% load i18n %}
+<ul class="navbar-nav portal-navigation mx-auto mb-2 mb-lg-0" aria-label="{% translate 'Primary navigation' %}">
+    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}"><i class="bi bi-house-door" aria-hidden="true"></i><span>{% translate "Home" %}</span></a></li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.app_name == 'weather' %}active{% endif %}" href="{% url 'weather:public_overview' %}" id="weatherMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-cloud-sun" aria-hidden="true"></i><span>{% translate "Weather" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="weatherMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'weather:public_overview' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Weather overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Observations & maps" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:public_current_conditions' %}"><span><i class="bi bi-thermometer-half me-2" aria-hidden="true"></i>{% translate "Current conditions" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:interactive_map' %}"><span><i class="bi bi-broadcast-pin me-2" aria-hidden="true"></i>{% translate "Live observations map" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:forecast_map' %}"><span><i class="bi bi-map me-2" aria-hidden="true"></i>{% translate "10-day forecast map" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Official Forecasts" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:public_official_forecast_list' %}?period=1-day"><span><i class="bi bi-calendar-day me-2" aria-hidden="true"></i>{% translate "1-day forecast" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:public_official_forecast_list' %}?period=3-day"><span><i class="bi bi-calendar3 me-2" aria-hidden="true"></i>{% translate "3-day forecast" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:public_official_forecast_list' %}?period=7-day"><span><i class="bi bi-calendar-week me-2" aria-hidden="true"></i>{% translate "7-day forecast" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Alerts & publications" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:public_warning_list' %}"><span><i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>{% translate "Early warnings" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'cms:public_bulletin_list' %}"><span><i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>{% translate "Weather bulletins" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:radar' %}"><span><i class="bi bi-radar me-2" aria-hidden="true"></i>{% translate "Radar" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'climate' %}active{% endif %}" href="{% url 'core:climate' %}" id="climateMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-thermometer-sun" aria-hidden="true"></i><span>{% translate "Climate" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="climateMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:climate' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Climate overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Monitoring & data" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:climate' %}#climate-monitoring"><span><i class="bi bi-activity me-2" aria-hidden="true"></i>{% translate "Climate Monitoring" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:climate' %}#historical-climate"><span><i class="bi bi-clock-history me-2" aria-hidden="true"></i>{% translate "Historical climate" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:climate' %}#climate-data"><span><i class="bi bi-database me-2" aria-hidden="true"></i>{% translate "Climate data" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Outlooks & publications" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:climate' %}#seasonal-outlooks"><span><i class="bi bi-calendar3 me-2" aria-hidden="true"></i>{% translate "Seasonal outlooks" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:climate' %}#climate-reports"><span><i class="bi bi-file-earmark-bar-graph me-2" aria-hidden="true"></i>{% translate "Reports & bulletins" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:climate' %}#climate-change-information"><span><i class="bi bi-globe2 me-2" aria-hidden="true"></i>{% translate "Climate change information" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'air_quality' %}active{% endif %}" href="{% url 'core:air_quality' %}" id="airQualityMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-lungs" aria-hidden="true"></i><span>{% translate "Air Quality" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="airQualityMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:air_quality' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Air-quality overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Current monitoring" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:air_quality' %}#current-air-quality"><span><i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>{% translate "Current Air Quality" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:air_quality' %}#aqi-map"><span><i class="bi bi-map me-2" aria-hidden="true"></i>{% translate "AQI map & stations" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:air_quality' %}#main-pollutants"><span><i class="bi bi-wind me-2" aria-hidden="true"></i>{% translate "Main pollutants" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Guidance & outlook" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:air_quality' %}#health-advice"><span><i class="bi bi-heart-pulse me-2" aria-hidden="true"></i>{% translate "Health advice" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:air_quality' %}#air-quality-forecast"><span><i class="bi bi-calendar3 me-2" aria-hidden="true"></i>{% translate "Air-quality forecast" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:air_quality' %}#historical-air-quality"><span><i class="bi bi-clock-history me-2" aria-hidden="true"></i>{% translate "Historical data & reports" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'marine' %}active{% endif %}" href="{% url 'core:marine' %}" id="marineMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-water" aria-hidden="true"></i><span>{% translate "Marine" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="marineMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:marine' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Marine overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Forecasts & conditions" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:marine' %}#marine-forecast"><span><i class="bi bi-cloud-sun me-2" aria-hidden="true"></i>{% translate "Marine Forecast" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:marine' %}#coastal-forecast"><span><i class="bi bi-water me-2" aria-hidden="true"></i>{% translate "Coastal & ocean conditions" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:marine' %}#wave-forecast"><span><i class="bi bi-tsunami me-2" aria-hidden="true"></i>{% translate "Wave & wind forecast" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:marine' %}#tide-information"><span><i class="bi bi-arrow-down-up me-2" aria-hidden="true"></i>{% translate "Tide information" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Observation network" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:interactive_map' %}?station_type=MARINE"><span><i class="bi bi-broadcast-pin me-2" aria-hidden="true"></i>{% translate "Live marine observations" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:interactive_map' %}?station_type=TIDE_GAUGE"><span><i class="bi bi-water me-2" aria-hidden="true"></i>{% translate "Tide gauge stations" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:interactive_map' %}?station_type=BUOY"><span><i class="bi bi-life-preserver me-2" aria-hidden="true"></i>{% translate "Marine buoy stations" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Safety & specialist tools" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:marine' %}#marine-warnings"><span><i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>{% translate "Warnings & bulletins" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="https://osfas.dnmg.gov.tl" target="_blank" rel="noopener noreferrer"><span><i class="bi bi-box-arrow-up-right me-2" aria-hidden="true"></i>OSFAS</span><small>{% translate "External" %}</small></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'aviation' or request.resolver_match.url_name == 'aviation_airport_detail' %}active{% endif %}" href="{% url 'core:aviation' %}" id="aviationMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-airplane-engines" aria-hidden="true"></i><span>{% translate "Aviation" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu aviation-nav-menu" aria-labelledby="aviationMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:aviation' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Aviation overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Airports" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation_airport_detail' 'dili' %}"><span><i class="bi bi-geo-alt me-2" aria-hidden="true"></i>{% translate "Dili — Presidente Nicolau Lobato" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation_airport_detail' 'suai' %}"><span><i class="bi bi-geo-alt me-2" aria-hidden="true"></i>{% translate "Suai — Kayrala Xanana Gusmão" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation_airport_detail' 'oecusse' %}"><span><i class="bi bi-geo-alt me-2" aria-hidden="true"></i>{% translate "Oecusse — Rota do Sândalo" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Weather products" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation_airport_detail' 'dili' %}#airport-observations"><span><i class="bi bi-cloud-sun me-2" aria-hidden="true"></i>{% translate "Live airport weather" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation_airport_detail' 'dili' %}#metar"><span><i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>{% translate "METAR & TAF" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation_airport_detail' 'dili' %}#airport-observations"><span><i class="bi bi-eye me-2" aria-hidden="true"></i>{% translate "Visibility & wind" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:aviation' %}#aviation-warnings"><span><i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>{% translate "Warnings & reports" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.app_name == 'seismic' %}active{% endif %}" href="{% url 'seismic:earthquakes' %}" id="seismicMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-activity" aria-hidden="true"></i><span>{% translate "Seismic" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="seismicMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'seismic:earthquakes' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Earthquake Explorer" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Earthquake monitoring" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'seismic:earthquakes' %}#recent-earthquakes"><span><i class="bi bi-clock-history me-2" aria-hidden="true"></i>{% translate "Recent earthquakes" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'seismic:earthquakes' %}#earthquake-map"><span><i class="bi bi-map me-2" aria-hidden="true"></i>{% translate "Map & event explorer" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'seismic:earthquakes' %}#earthquake-details"><span><i class="bi bi-info-circle me-2" aria-hidden="true"></i>{% translate "Event details & summary" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Publications" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'cms:public_bulletin_list' %}"><span><i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>{% translate "Seismic bulletins" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'data_maps' %}active{% endif %}" href="{% url 'core:data_maps' %}" id="dataMapsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-map" aria-hidden="true"></i><span>{% translate "Data & Maps" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="dataMapsMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:data_maps' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "Data & maps overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Interactive maps" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:interactive_map' %}"><span><i class="bi bi-broadcast-pin me-2" aria-hidden="true"></i>{% translate "Live observations map" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:forecast_map' %}"><span><i class="bi bi-cloud-sun me-2" aria-hidden="true"></i>{% translate "Forecast map" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'seismic:earthquakes' %}"><span><i class="bi bi-activity me-2" aria-hidden="true"></i>{% translate "Seismic map & data" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Data resources" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:data_maps' %}#climate-data"><span><i class="bi bi-thermometer-sun me-2" aria-hidden="true"></i>{% translate "Climate data" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:data_maps' %}#air-quality-data"><span><i class="bi bi-lungs me-2" aria-hidden="true"></i>{% translate "Air-quality data" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'cms:public_bulletin_list' %}"><span><i class="bi bi-download me-2" aria-hidden="true"></i>{% translate "Downloads & publications" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:data_maps' %}#dataapi-information"><span><i class="bi bi-code-slash me-2" aria-hidden="true"></i>{% translate "Data/API Information" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.app_name == 'cms' %}active{% endif %}" href="{% url 'cms:public_news_list' %}" id="newsMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-newspaper" aria-hidden="true"></i><span>{% translate "News & Notices" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="newsMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'cms:public_news_list' %}"><span><i class="bi bi-newspaper me-2" aria-hidden="true"></i>{% translate "News, announcements & media" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Official notices" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'cms:public_bulletin_list' %}"><span><i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>{% translate "Official Bulletins" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'weather:public_warning_list' %}"><span><i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>{% translate "Public advisories" %}</span></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'dss' %}active{% endif %}" href="{% url 'core:dss' %}" id="dssMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-cpu" aria-hidden="true"></i><span>{% translate "DSS Systems" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu" aria-labelledby="dssMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:dss' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "DSS overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Decision-support systems" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="https://drr.dnmg.gov.tl" target="_blank" rel="noopener noreferrer"><span><i class="bi bi-shield-check me-2" aria-hidden="true"></i>DRR</span><small>{% translate "External" %}</small></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="https://osfas.dnmg.gov.tl" target="_blank" rel="noopener noreferrer"><span><i class="bi bi-water me-2" aria-hidden="true"></i>OSFAS</span><small>{% translate "External" %}</small></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="https://crish.dnmg.gov.tl" target="_blank" rel="noopener noreferrer"><span><i class="bi bi-cloud-rain-heavy me-2" aria-hidden="true"></i>CRISH</span><small>{% translate "External" %}</small></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="https://adss.dnmg.gov.tl" target="_blank" rel="noopener noreferrer"><span><i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>ADSS</span><small>{% translate "External" %}</small></a></li>
+        </ul>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link public-nav-link dropdown-toggle {% if request.resolver_match.url_name == 'about_dnmg' or request.resolver_match.url_name == 'dnmg_structure' %}active{% endif %}" href="{% url 'core:about_dnmg' %}" id="aboutMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-building" aria-hidden="true"></i><span>{% translate "About DNMG" %}</span></a>
+        <ul class="dropdown-menu public-nav-menu structured-nav-menu dropdown-menu-end" aria-labelledby="aboutMenu">
+            <li><a class="dropdown-item public-nav-menu-item structured-nav-menu__overview" href="{% url 'core:about_dnmg' %}"><span><i class="bi bi-grid me-2" aria-hidden="true"></i>{% translate "About DNMG overview" %}</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Organization" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:dnmg_structure' %}"><span><i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>{% translate "Structure & departments" %}</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h2 class="dropdown-header">{% translate "Contact & opportunities" %}</h2></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'core:about_dnmg' %}#contact"><span><i class="bi bi-envelope me-2" aria-hidden="true"></i>{% translate "Contact Information" %}</span></a></li>
+            <li><a class="dropdown-item public-nav-menu-item" href="{% url 'cms:public_career_list' %}"><span><i class="bi bi-briefcase me-2" aria-hidden="true"></i>{% translate "Careers" %}</span></a></li>
+        </ul>
+    </li>
+</ul>

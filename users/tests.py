@@ -1,5 +1,8 @@
 import datetime
 import tempfile
+from io import BytesIO
+
+from PIL import Image
 from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -10,8 +13,19 @@ from django.utils.timezone import now
 from django.contrib.messages.storage.fallback import FallbackStorage
 from users.models import AuditLog, Role, PortalPermission
 from users.middleware import AuditLogMiddleware, SessionTimeoutMiddleware
+from users.permissions import permission_rows
 
 User = get_user_model()
+SYSTEM_PERMISSION_ROWS = {row['code']: row for row in permission_rows()}
+
+
+def ensure_system_permissions(*codes):
+    """Create only the built-in permissions required by an isolated test."""
+    for code in codes:
+        PortalPermission.objects.get_or_create(
+            code=code,
+            defaults=SYSTEM_PERMISSION_ROWS[code],
+        )
 
 class CustomUserTestCase(TestCase):
     def test_create_user_with_role(self):
@@ -147,6 +161,12 @@ class AuditLogMiddlewareTestCase(TestCase):
 
 
 class UserManagementTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        ensure_system_permissions(
+            'users.view', 'users.edit', 'news.create', 'contracts.delete',
+        )
+
     def setUp(self):
         self.super_admin = User.objects.create_superuser(
             username="superadmin",
@@ -219,6 +239,86 @@ class UserManagementTestCase(TestCase):
         })
         self.assertEqual(response.status_code, 302) # Redirects to dashboard
 
+    def test_admin_cannot_see_or_manage_higher_level_accounts(self):
+        role_super_admin = User.objects.create_user(
+            username='role-super-admin', password='password123',
+            role=User.Role.SUPER_ADMIN,
+        )
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(reverse('users:user_list'))
+        self.assertNotContains(response, 'role-super-admin')
+        self.assertNotContains(response, 'superadmin')
+
+        response = self.client.get(reverse('users:user_update', kwargs={'pk': self.super_admin.pk}))
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse('users:user_update', kwargs={'pk': role_super_admin.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_superuser_can_see_all_accounts(self):
+        User.objects.create_user(
+            username='role-super-admin', password='password123',
+            role=User.Role.SUPER_ADMIN,
+        )
+        self.client.force_login(self.super_admin)
+        response = self.client.get(reverse('users:user_list'))
+        self.assertContains(response, 'role-super-admin')
+        self.assertContains(response, 'admin1')
+
+    def test_custom_super_admin_authority_sees_all_portal_users(self):
+        users_view = PortalPermission.objects.get(code='users.view')
+        users_edit = PortalPermission.objects.get(code='users.edit')
+        super_role = Role.objects.create(
+            name='superAdmin',
+            authority_level=Role.AuthorityLevel.SUPER_ADMIN,
+        )
+        super_role.permissions.add(users_view, users_edit)
+        delegated_super_admin = User.objects.create_user(
+            username='delegated-super-admin', password='password123',
+            access_role=super_role,
+        )
+
+        self.client.force_login(delegated_super_admin)
+        response = self.client.get(reverse('users:user_list'))
+        self.assertNotContains(response, self.super_admin.username)
+        self.assertContains(response, 'admin1')
+        self.assertContains(response, 'met1')
+        self.assertEqual(
+            self.client.get(reverse('users:user_update', kwargs={'pk': self.admin_user.pk})).status_code,
+            200,
+        )
+
+    def test_user_scope_is_not_limited_by_target_permissions(self):
+        users_view = PortalPermission.objects.get(code='users.view')
+        unusual_role = Role.objects.create(name='Weather And HR', authority_level=Role.AuthorityLevel.STANDARD)
+        unusual_role.permissions.add(
+            users_view,
+            PortalPermission.objects.get(code='news.create'),
+            PortalPermission.objects.get(code='contracts.delete'),
+        )
+        User.objects.create_user(
+            username='unusual-permission-user', password='password123', access_role=unusual_role,
+        )
+
+        self.client.force_login(self.admin_user)
+        response = self.client.get(reverse('users:user_list'))
+        self.assertContains(response, 'unusual-permission-user')
+
+    def test_administrator_cannot_edit_custom_super_admin_authority(self):
+        super_role = Role.objects.create(
+            name='SuperAdmin', authority_level=Role.AuthorityLevel.SUPER_ADMIN,
+        )
+        super_role.permissions.add(PortalPermission.objects.get(code='users.view'))
+        protected_user = User.objects.create_user(
+            username='protected-custom-super-admin', password='password123',
+            access_role=super_role,
+        )
+        self.client.force_login(self.admin_user)
+        self.assertEqual(
+            self.client.get(reverse('users:user_update', kwargs={'pk': protected_user.pk})).status_code,
+            403,
+        )
+
     def test_every_staff_user_can_change_their_own_password_from_profile(self):
         self.client.force_login(self.meteorologist)
         response = self.client.post(
@@ -236,15 +336,11 @@ class UserManagementTestCase(TestCase):
     @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
     def test_staff_user_can_upload_profile_picture(self):
         self.client.force_login(self.meteorologist)
+        image_buffer = BytesIO()
+        Image.new('RGB', (1, 1), color='white').save(image_buffer, format='PNG')
         image = SimpleUploadedFile(
             'profile.png',
-            (
-                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR'
-                b'\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06'
-                b'\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\x0d'
-                b'IDAT\x08\xd7c\xf8\xcf\xc0\xf0\x1f\x00\x05\x00\x01\xff'
-                b'\x89\x99=\x1d\x00\x00\x00\x00IEND\xaeB\x60\x82'
-            ),
+            image_buffer.getvalue(),
             content_type='image/png',
         )
         response = self.client.post(
@@ -264,6 +360,10 @@ class UserManagementTestCase(TestCase):
 
 
 class GranularRoleManagementTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        ensure_system_permissions('news.view', 'news.create', 'roles.view')
+
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             username='rbac-superuser', password='password123', email='root@example.test',
@@ -292,9 +392,12 @@ class GranularRoleManagementTestCase(TestCase):
         self.client.force_login(self.user)
         self.assertEqual(self.client.get(reverse('cms:admin_news_list')).status_code, 403)
 
-    def test_only_django_superuser_can_manage_roles(self):
+    def test_custom_role_with_role_permission_can_manage_roles(self):
+        roles_view = PortalPermission.objects.get(code='roles.view')
+        self.role.permissions.add(roles_view)
         self.client.force_login(self.user)
-        self.assertEqual(self.client.get(reverse('users:role_list')).status_code, 403)
+        self.assertEqual(self.client.get(reverse('users:role_list')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('users:role_detail', kwargs={'pk': self.role.pk})).status_code, 200)
         self.client.force_login(self.superuser)
         self.assertEqual(self.client.get(reverse('users:role_list')).status_code, 200)
         self.assertEqual(self.client.get(reverse('users:role_detail', kwargs={'pk': self.role.pk})).status_code, 200)

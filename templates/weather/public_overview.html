@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Weather" %}{% endblock %}
+
+{% block content %}
+<section class="public-page-hero py-5 text-white" aria-labelledby="weather-title">
+    <div class="container">
+        <p class="portal-eyebrow text-white-50 mb-2">
+            <i class="bi bi-cloud-sun me-2"></i>{% translate "Operational weather service" %}
+        </p>
+        <h1 id="weather-title" class="mb-3">{% translate "Weather" %}</h1>
+        <p class="lead mb-0">
+            {% translate "Official observations, forecasts, maps, warnings, and bulletins from DNMG." %}
+        </p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <section class="mb-5" aria-labelledby="current-title">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+            <div>
+                <h2 id="current-title" class="h4 mb-1">{% translate "Current conditions" %}</h2>
+                <p class="text-muted mb-0">
+                    {% translate "Latest available observation from the DNMG network." %}
+                </p>
+            </div>
+            <a class="btn btn-outline-primary" href="{% url 'weather:interactive_map' %}">
+                {% translate "Open live map" %} <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        {% if latest_observation %}
+        <article class="current-observation">
+            <div>
+                <span>{% translate "Temperature" %}</span>
+                <strong>{{ latest_observation.temperature|default:"—" }}°C</strong>
+            </div>
+            <div>
+                <span>{% translate "Humidity" %}</span>
+                <strong>{{ latest_observation.humidity|default:"—" }}%</strong>
+            </div>
+            <div>
+                <span>{% translate "Wind" %}</span>
+                <strong>
+                    {% if latest_observation.wind_speed_kmh is not None %}
+                        {{ latest_observation.wind_speed_kmh }} km/h
+                    {% else %}
+                        —
+                    {% endif %}
+                </strong>
+            </div>
+            <div>
+                <span>{% translate "Station" %}</span>
+                <strong>{{ latest_observation.station.name }}</strong>
+                <small>{{ latest_observation.recorded_at }}</small>
+            </div>
+        </article>
+        {% else %}
+        <p class="calm-status">
+            <i class="bi bi-info-circle me-2"></i>
+            {% translate "No current station observation is available." %}
+        </p>
+        {% endif %}
+    </section>
+
+    <section aria-labelledby="weather-products-title">
+        <h2 id="weather-products-title" class="h4 mb-3">{% translate "Weather products" %}</h2>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <a class="service-link-card" href="{% url 'weather:interactive_map' %}">
+                    <i class="bi bi-broadcast-pin"></i>
+                    <span>
+                        <strong>{% translate "Live Observations" %}</strong>
+                        <small>{% translate "Interactive station map" %}</small>
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a class="service-link-card" href="{% url 'weather:forecast_map' %}">
+                    <i class="bi bi-map"></i>
+                    <span>
+                        <strong>{% translate "10-Day Forecast Map" %}</strong>
+                        <small>{% translate "Municipality outlooks" %}</small>
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a class="service-link-card" href="{% url 'weather:public_official_forecast_list' %}">
+                    <i class="bi bi-calendar-week"></i>
+                    <span>
+                        <strong>{% translate "Official Forecasts" %}</strong>
+                        <small>{% translate "Published DNMG forecasts" %}</small>
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a class="service-link-card" href="{% url 'weather:public_warning_list' %}">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span>
+                        <strong>{% translate "Early Warnings" %}</strong>
+                        <small>{% translate "Current official warnings" %}</small>
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a class="service-link-card" href="{% url 'cms:public_bulletin_list' %}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>
+                        <strong>{% translate "Weather Bulletins" %}</strong>
+                        <small>{% translate "Official notices and publications" %}</small>
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a class="service-link-card" href="{% url 'weather:radar' %}">
+                    <i class="bi bi-radar"></i>
+                    <span>
+                        <strong>{% translate "Radar" %}</strong>
+                        <small>{% translate "Service status and imagery" %}</small>
+                    </span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

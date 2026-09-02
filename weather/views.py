@@ -1,25 +1,43 @@
-from datetime import timedelta
-
-from django.views.generic import ListView, CreateView, UpdateView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
-from django.http import JsonResponse
-from django.views.generic import TemplateView
-from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 
-from .models import WeatherStation, WeatherObservation, WeatherForecast, EarlyWarning, Municipality
-from .forms import WeatherStationForm, WeatherObservationForm, WeatherForecastForm, EarlyWarningForm
+from .filters import normalize_public_station_filter
+from .forms import (
+    EarlyWarningForm, OfficialForecastAttachmentFormSet, OfficialForecastForm,
+    OfficialForecastImageFormSet, WeatherForecastForm, WeatherObservationForm,
+    WeatherStationForm,
+)
+from .models import (
+    EarlyWarning,
+    Municipality,
+    OfficialForecast,
+    WeatherForecast,
+    WeatherObservation,
+    WeatherStation,
+)
 from .permissions import (
     TechnicalStaffRequiredMixin,
     EarlyWarningViewRequiredMixin,
     EarlyWarningCreateRequiredMixin,
     EarlyWarningEditRequiredMixin,
 )
+from .queries import current_public_warnings
 
 
 # Weather Station Management Views
@@ -202,6 +220,159 @@ class WeatherForecastUpdateView(TechnicalStaffRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+class PublicOfficialForecastListView(ListView):
+    model = OfficialForecast
+    template_name = 'weather/public_official_forecast_list.html'
+    context_object_name = 'forecasts'
+    paginate_by = 12
+
+    def get_queryset(self):
+        queryset = OfficialForecast.objects.filter(
+            status=OfficialForecast.Status.PUBLISHED,
+        ).select_related('published_by').prefetch_related('images', 'attachments')
+        period = self.request.GET.get('period')
+        if period in OfficialForecast.ForecastPeriod.values:
+            queryset = queryset.filter(forecast_period=period)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['period_choices'] = OfficialForecast.ForecastPeriod.choices
+        context['selected_period'] = self.request.GET.get('period', '')
+        return context
+
+
+class PublicOfficialForecastDetailView(DetailView):
+    model = OfficialForecast
+    template_name = 'weather/public_official_forecast_detail.html'
+    context_object_name = 'forecast'
+
+    def get_queryset(self):
+        return OfficialForecast.objects.filter(
+            status=OfficialForecast.Status.PUBLISHED,
+        ).select_related('published_by').prefetch_related('images', 'attachments')
+
+
+class OfficialForecastListView(TechnicalStaffRequiredMixin, ListView):
+    permission_code = 'forecasts.view'
+    model = OfficialForecast
+    template_name = 'weather/official_forecast_list.html'
+    context_object_name = 'official_forecasts'
+    paginate_by = 15
+
+    def get_queryset(self):
+        queryset = OfficialForecast.objects.select_related('created_by', 'published_by')
+        query = self.request.GET.get('q', '').strip()
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(coverage__icontains=query) |
+                Q(summary__icontains=query) |
+                Q(created_by__username__icontains=query)
+            )
+        period = self.request.GET.get('period')
+        if period in OfficialForecast.ForecastPeriod.values:
+            queryset = queryset.filter(forecast_period=period)
+        status = self.request.GET.get('status')
+        if status in OfficialForecast.Status.values:
+            queryset = queryset.filter(status=status)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['period_choices'] = OfficialForecast.ForecastPeriod.choices
+        context['status_choices'] = OfficialForecast.Status.choices
+        context['selected_period'] = self.request.GET.get('period', '')
+        context['selected_status'] = self.request.GET.get('status', '')
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
+
+
+class OfficialForecastPublicationMixin:
+    """Apply the forecasts.publish permission to publication state changes."""
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if not self.request.user.has_portal_permission('forecasts.publish'):
+            form.fields['status'].disabled = True
+            if not getattr(self, 'object', None):
+                form.fields['status'].initial = OfficialForecast.Status.DRAFT
+        return form
+
+    def form_valid(self, form):
+        requested_status = form.cleaned_data['status']
+        current_status = getattr(self.object, 'status', OfficialForecast.Status.DRAFT)
+        if requested_status != OfficialForecast.Status.DRAFT and not self.request.user.has_portal_permission('forecasts.publish'):
+            raise PermissionDenied(_('You do not have permission to publish or archive an official forecast.'))
+        if requested_status == OfficialForecast.Status.PUBLISHED and current_status != OfficialForecast.Status.PUBLISHED:
+            form.instance.published_by = self.request.user
+            form.instance.published_at = timezone.now()
+        return super().form_valid(form)
+
+
+class OfficialForecastMediaFormsetMixin:
+    """Persist repeatable gallery images and supporting files with a forecast."""
+
+    def get_image_formset(self, instance):
+        data = self.request.POST if self.request.method == 'POST' else None
+        files = self.request.FILES if self.request.method == 'POST' else None
+        return OfficialForecastImageFormSet(data, files, instance=instance, prefix='images')
+
+    def get_attachment_formset(self, instance):
+        data = self.request.POST if self.request.method == 'POST' else None
+        files = self.request.FILES if self.request.method == 'POST' else None
+        return OfficialForecastAttachmentFormSet(data, files, instance=instance, prefix='attachments')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = getattr(self, 'object', None) or OfficialForecast()
+        context.setdefault('image_formset', self.get_image_formset(instance))
+        context.setdefault('attachment_formset', self.get_attachment_formset(instance))
+        return context
+
+    def form_valid(self, form):
+        image_formset = self.get_image_formset(form.instance)
+        attachment_formset = self.get_attachment_formset(form.instance)
+        if not image_formset.is_valid() or not attachment_formset.is_valid():
+            return self.render_to_response(self.get_context_data(
+                form=form,
+                image_formset=image_formset,
+                attachment_formset=attachment_formset,
+            ))
+        with transaction.atomic():
+            response = super().form_valid(form)
+            image_formset.instance = self.object
+            attachment_formset.instance = self.object
+            image_formset.save()
+            attachment_formset.save()
+        return response
+
+
+class OfficialForecastCreateView(OfficialForecastMediaFormsetMixin, OfficialForecastPublicationMixin, TechnicalStaffRequiredMixin, CreateView):
+    permission_code = 'forecasts.create'
+    model = OfficialForecast
+    form_class = OfficialForecastForm
+    template_name = 'weather/official_forecast_form.html'
+    success_url = reverse_lazy('weather:official_forecast_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        messages.success(self.request, _('Official forecast saved successfully.'))
+        return super().form_valid(form)
+
+
+class OfficialForecastUpdateView(OfficialForecastMediaFormsetMixin, OfficialForecastPublicationMixin, TechnicalStaffRequiredMixin, UpdateView):
+    permission_code = 'forecasts.edit'
+    model = OfficialForecast
+    form_class = OfficialForecastForm
+    template_name = 'weather/official_forecast_form.html'
+    success_url = reverse_lazy('weather:official_forecast_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, _('Official forecast updated successfully.'))
+        return super().form_valid(form)
+
+
 # Early Warning Management Views
 class EarlyWarningListView(EarlyWarningViewRequiredMixin, ListView):
     model = EarlyWarning
@@ -243,12 +414,6 @@ class EarlyWarningCreateView(EarlyWarningCreateRequiredMixin, CreateView):
     template_name = 'weather/warning_form.html'
     success_url = reverse_lazy('weather:warning_list')
 
-    def get_initial(self):
-        initial = super().get_initial()
-        current_time = timezone.localtime().replace(second=0, microsecond=0)
-        initial.update({"valid_from": current_time, "valid_to": current_time + timedelta(hours=24)})
-        return initial
-
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         if not self.request.user.has_portal_permission('early_warnings.publish'):
@@ -261,11 +426,7 @@ class EarlyWarningCreateView(EarlyWarningCreateRequiredMixin, CreateView):
             form.add_error('is_active', _("You need permission to publish an alert. Create it as inactive, or ask an administrator for publish access."))
             return self.form_invalid(form)
         form.instance.issued_by = self.request.user
-        current_time = timezone.now()
-        if form.cleaned_data['is_active'] and form.cleaned_data['valid_from'] <= current_time <= form.cleaned_data['valid_to']:
-            messages.success(self.request, _(f"Early Warning '{form.cleaned_data['title']}' is now live on the public website."))
-        else:
-            messages.success(self.request, _(f"Early Warning '{form.cleaned_data['title']}' was saved. It will be public only during its valid period."))
+        messages.success(self.request, _(f"Early Warning '{form.cleaned_data['title']}' has been issued successfully."))
         return super().form_valid(form)
 
 
@@ -309,7 +470,7 @@ class EarlyWarningToggleActiveView(EarlyWarningViewRequiredMixin, View):
 # Live Station API and GIS Interactive Map Views
 class LiveStationGeoJSONView(View):
     """
-    Public API endpoint serving live station telemetry, 24h status, coordinates, 
+    Public API endpoint serving live station telemetry, five-hour status, coordinates,
     and time-series chart data for Leaflet GIS.
     """
     def get(self, request, *args, **kwargs):
@@ -331,13 +492,13 @@ class LiveStationGeoJSONView(View):
             latest_obs = snapshot['obs']
             recent_obs_qs = snapshot['observations_24h']
 
-            # 24-hour Online / Offline logic as requested
+            # The shared snapshot applies the five-hour online/offline rule.
             is_online = snapshot['is_online']
             last_seen_formatted = "No Data"
             if latest_obs and latest_obs.recorded_at:
                 time_diff = current_time - latest_obs.recorded_at
                 local_recorded_at = localtime(latest_obs.recorded_at)
-                if time_diff <= timedelta(hours=24):
+                if time_diff <= DNMGStationSyncService.ONLINE_WINDOW:
                     is_online = True
                     last_seen_formatted = f"Online • Updated {local_recorded_at.strftime('%H:%M, %b %d')} (GMT+9)"
                 else:
@@ -347,6 +508,7 @@ class LiveStationGeoJSONView(View):
             obs_data = None
             history_data = {
                 "timestamps": [],
+                "source_timestamps": [],
                 "temp": [],
                 "pressure": [],
                 "peak_period": [],
@@ -360,10 +522,13 @@ class LiveStationGeoJSONView(View):
                 obs_data = {
                     "temp": float(latest_obs.temperature) if latest_obs.temperature is not None else None,
                     "humidity": latest_obs.humidity,
+                    "dew_point": float(latest_obs.dew_point_c) if latest_obs.dew_point_c is not None else None,
                     "rainfall": float(latest_obs.rainfall_mm) if latest_obs.rainfall_mm is not None else None,
                     "wind_speed": float(latest_obs.wind_speed_kmh) if latest_obs.wind_speed_kmh is not None else None,
                     "wind_direction": latest_obs.wind_direction or "",
                     "pressure": float(latest_obs.pressure_hpa) if latest_obs.pressure_hpa is not None else None,
+                    "visibility": float(latest_obs.visibility_m) if latest_obs.visibility_m is not None else None,
+                    "runway_visual_range": float(latest_obs.runway_visual_range_m) if latest_obs.runway_visual_range_m is not None else None,
                     "wave_height": float(latest_obs.wave_height_m) if latest_obs.wave_height_m is not None else None,
                     "tide_level": float(latest_obs.tide_level_mm) if latest_obs.tide_level_mm is not None else None,
                     "peak_period": float(latest_obs.peak_period_s) if latest_obs.peak_period_s is not None else None,
@@ -376,32 +541,38 @@ class LiveStationGeoJSONView(View):
                     "recorded_at_formatted": local_latest.strftime('%b %d, %H:%M (GMT+9)') if latest_obs.recorded_at else None,
                 }
 
-                # AWS stations sometimes report at irregular times. Preserve
-                # those actual timestamps instead of dropping the observations
-                # solely because they do not fall on a 30-minute boundary.
-                preserve_irregular_aws = station.station_type == WeatherStation.StationType.AWS
-                regular_chart_observations = DNMGStationSyncService.get_chart_observations(
-                    recent_obs_qs,
-                    30,
+                chart_interval_minutes = DNMGStationSyncService.chart_interval_minutes(
+                    station,
                 )
-                chart_observations = DNMGStationSyncService.get_chart_observations(
-                    recent_obs_qs,
-                    30,
-                    include_irregular=preserve_irregular_aws,
-                )
-                uses_actual_timestamps = preserve_irregular_aws and (
-                    len(chart_observations) != len(regular_chart_observations)
-                )
+                if chart_interval_minutes:
+                    chart_observations = DNMGStationSyncService.get_chart_observations(
+                        recent_obs_qs,
+                        chart_interval_minutes,
+                        current_time,
+                    )
+                elif station.station_type == WeatherStation.StationType.AWS:
+                    chart_observations = DNMGStationSyncService.get_raw_chart_observations(
+                        recent_obs_qs,
+                    )
+                else:
+                    chart_interval_minutes = 15
+                    chart_observations = DNMGStationSyncService.get_chart_observations(
+                        recent_obs_qs,
+                        15,
+                        current_time,
+                    )
                 for loc_ob_time, ob in chart_observations:
                     history_data["timestamps"].append(loc_ob_time.strftime('%b %d %H:%M'))
-                    history_data["temp"].append(float(ob.temperature) if ob.temperature is not None else None)
-                    history_data["pressure"].append(float(ob.pressure_hpa) if ob.pressure_hpa is not None else None)
-                    history_data["peak_period"].append(float(ob.peak_period_s) if ob.peak_period_s is not None else None)
-                    history_data["humidity"].append(ob.humidity)
-                    history_data["tide"].append(float(ob.tide_level_mm) if ob.tide_level_mm is not None else None)
-                    history_data["wave"].append(float(ob.wave_height_m) if ob.wave_height_m is not None else None)
-            else:
-                uses_actual_timestamps = False
+                    history_data["source_timestamps"].append(
+                        loc_ob_time.strftime('%b %d %H:%M') if ob is None
+                        else localtime(ob.recorded_at).strftime('%b %d %H:%M')
+                    )
+                    history_data["temp"].append(float(ob.temperature) if ob and ob.temperature is not None else None)
+                    history_data["pressure"].append(float(ob.pressure_hpa) if ob and ob.pressure_hpa is not None else None)
+                    history_data["peak_period"].append(float(ob.peak_period_s) if ob and ob.peak_period_s is not None else None)
+                    history_data["humidity"].append(ob.humidity if ob else None)
+                    history_data["tide"].append(float(ob.tide_level_mm) if ob and ob.tide_level_mm is not None else None)
+                    history_data["wave"].append(float(ob.wave_height_m) if ob and ob.wave_height_m is not None else None)
 
             feature = {
                 "type": "Feature",
@@ -427,8 +598,7 @@ class LiveStationGeoJSONView(View):
                     "last_seen_formatted": last_seen_formatted,
                     "observation": obs_data,
                     "history": history_data,
-                    "history_interval_minutes": 30,
-                    "history_uses_actual_timestamps": uses_actual_timestamps,
+                    "history_interval_minutes": chart_interval_minutes,
                 }
             }
             features.append(feature)
@@ -445,10 +615,14 @@ class InteractiveMapView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        selected_station_type = normalize_public_station_filter(
+            self.request.GET.get('station_type')
+        )
         context['title'] = _("Live Weather Observations Map")
         context['map_mode'] = 'observations'
+        context['selected_station_type'] = selected_station_type
         context['stations_count'] = WeatherStation.objects.count()
-        context['active_warnings'] = EarlyWarning.objects.currently_public()
+        context['active_warnings'] = current_public_warnings()
         return context
 
 
@@ -462,16 +636,85 @@ class ForecastMapView(InteractiveMapView):
         return context
 
 
+class PublicWeatherOverviewView(TemplateView):
+    """Public entry point which links verified weather products together."""
+
+    template_name = 'weather/public_overview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = _('Weather')
+        context['latest_observation'] = (
+            WeatherObservation.objects.select_related('station')
+            .order_by('-recorded_at')
+            .first()
+        )
+        return context
+
+
+class PublicWarningListView(TemplateView):
+    template_name = 'weather/public_warnings.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = _('Early Warnings')
+        context['warnings'] = current_public_warnings()
+        return context
+
+
+class PublicWarningDetailView(DetailView):
+    """Show the full text of a warning that is currently public."""
+
+    template_name = 'weather/public_warning_detail.html'
+    context_object_name = 'warning'
+
+    def get_queryset(self):
+        return current_public_warnings()
+
+
+class WeatherUnavailableView(TemplateView):
+    template_name = 'core/service_landing.html'
+
+    pages = {
+        'radar': (
+            _('Radar'),
+            'bi-radar',
+            _(
+                'Radar imagery will be published here when an operational '
+                'radar data source is available.'
+            ),
+        ),
+    }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title, icon, description = self.pages[self.kwargs['service']]
+        context.update({
+            'title': title,
+            'icon': icon,
+            'description': description,
+            'sections': [],
+        })
+        return context
+
+
 class StationSyncAPIView(TechnicalStaffRequiredMixin, View):
-    permission_code = 'weather_stations.manage_configuration'
     """
     Triggers live synchronization of all 15 stations with ms-obs.dnmg.gov.tl API.
     """
+    permission_code = 'weather_stations.manage_configuration'
+
     def post(self, request, *args, **kwargs):
         from .services import DNMGStationSyncService
         results = DNMGStationSyncService.sync_all_stations(force=True)
         synced_count = sum(1 for r in results if r.get("status") == "synced")
-        messages.success(request, _(f"Successfully synchronized {synced_count}/15 stations with live DNMG API."))
+        messages.success(
+            request,
+            _(
+                "Successfully synchronized %(count)s/15 stations with live "
+                "DNMG API."
+            ) % {'count': synced_count},
+        )
         return JsonResponse({
             "status": "success",
             "synced_count": synced_count,

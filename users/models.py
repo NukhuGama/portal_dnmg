@@ -24,9 +24,20 @@ class PortalPermission(models.Model):
 
 class Role(models.Model):
     """A custom role whose permissions are applied directly to assigned users."""
+    class AuthorityLevel(models.IntegerChoices):
+        STANDARD = 0, _('Standard')
+        STAFF = 1, _('Staff')
+        ADMIN = 2, _('Administrator')
+        SUPER_ADMIN = 3, _('Super Administrator')
+
     name = models.CharField(max_length=100, unique=True, verbose_name=_('Role Name'))
     description = models.TextField(blank=True, verbose_name=_('Description'))
     is_active = models.BooleanField(default=True, verbose_name=_('Active'))
+    authority_level = models.PositiveSmallIntegerField(
+        choices=AuthorityLevel.choices, default=AuthorityLevel.STANDARD,
+        verbose_name=_('Authority Level'),
+        help_text=_('Controls which accounts and roles this role may manage. The name alone never grants authority.'),
+    )
     permissions = models.ManyToManyField(PortalPermission, blank=True, related_name='roles', verbose_name=_('Permissions'))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

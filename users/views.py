@@ -20,8 +20,9 @@ from .forms import (
 )
 from .models import User, AuditLog, Role, PortalPermission
 from .permissions import (
-    PortalPermissionRequiredMixin, DjangoSuperuserRequiredMixin,
-    UserManagementAccessMixin, log_security_event, module_label,
+    PortalPermissionRequiredMixin, UserManagementAccessMixin,
+    ROLE_LEVELS, can_view_user, can_manage_user, effective_authority_level,
+    manageable_role_ids, log_security_event, module_label,
 )
 
 class CustomLoginView(LoginView):
@@ -250,6 +251,10 @@ class UserListView(UserManagementAccessMixin, ListView):
 
     def get_queryset(self):
         queryset = User.objects.all().order_by('-date_joined')
+        if not self.request.user.is_superuser:
+            manageable_ids = [user.pk for user in queryset.select_related('access_role')
+                              if can_view_user(self.request.user, user)]
+            queryset = queryset.filter(pk__in=manageable_ids)
             
         # Search filter
         q = self.request.GET.get('q')
@@ -277,7 +282,10 @@ class UserListView(UserManagementAccessMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['role_choices'] = User.Role.choices
+        manager_level = effective_authority_level(self.request.user)
+        context['role_choices'] = [choice for choice in User.Role.choices
+                                   if self.request.user.is_superuser or
+                                   ROLE_LEVELS.get(choice[0], 0) <= manager_level]
         context['selected_role'] = self.request.GET.get('role', '')
         context['selected_active'] = self.request.GET.get('is_active', '')
         context['search_query'] = self.request.GET.get('q', '')
@@ -347,11 +355,6 @@ class UserToggleActiveView(UserManagementAccessMixin, View):
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied(_("You do not have permission to change this account status."))
         
-        # Security constraints
-        if request.user.role == User.Role.ADMIN and user.role == User.Role.SUPER_ADMIN and not request.user.is_superuser:
-            messages.error(request, _("Access denied. Administrators cannot toggle Super Administrator accounts."))
-            return redirect('users:user_list')
-            
         if user == request.user:
             messages.error(request, _("Action invalid. You cannot deactivate your own account."))
             return redirect('users:user_list')
@@ -417,10 +420,6 @@ class UserPasswordResetAdminView(UserManagementAccessMixin, FormView):
     def form_valid(self, form):
         user = get_object_or_404(User, pk=self.kwargs['pk'])
         
-        if self.request.user.role == User.Role.ADMIN and user.role == User.Role.SUPER_ADMIN and not self.request.user.is_superuser:
-            messages.error(self.request, _("Access denied. Administrators cannot change password for Super Administrators."))
-            return redirect('users:user_list')
-
         user.set_password(form.cleaned_data['password'])
         user.save()
         messages.success(self.request, _(f"Password for user '{user.username}' has been updated successfully."))
@@ -428,22 +427,29 @@ class UserPasswordResetAdminView(UserManagementAccessMixin, FormView):
 
 
 # ──────────────────────────────────────────────────────────────────
-# Role and permission management (Django superuser only)
+# Role and permission management (permission-based access)
 # ──────────────────────────────────────────────────────────────────
 
-class RoleListView(DjangoSuperuserRequiredMixin, ListView):
+class RoleListView(PortalPermissionRequiredMixin, ListView):
+    permission_code = 'roles.view'
     model = Role
     template_name = 'users/role_list.html'
     context_object_name = 'roles'
 
     def get_queryset(self):
-        return Role.objects.prefetch_related('permissions').all()
+        roles = Role.objects.prefetch_related('permissions').all()
+        return roles.filter(pk__in=manageable_role_ids(self.request.user, roles))
 
 
-class RoleDetailView(DjangoSuperuserRequiredMixin, DetailView):
+class RoleDetailView(PortalPermissionRequiredMixin, DetailView):
+    permission_code = 'roles.view'
     model = Role
     template_name = 'users/role_detail.html'
     context_object_name = 'role'
+
+    def get_queryset(self):
+        roles = Role.objects.prefetch_related('permissions').all()
+        return roles.filter(pk__in=manageable_role_ids(self.request.user, roles))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -451,7 +457,11 @@ class RoleDetailView(DjangoSuperuserRequiredMixin, DetailView):
         for permission in self.object.permissions.all().order_by('module', 'code'):
             grouped.setdefault(module_label(permission.module), []).append(permission)
         context['permissions_by_module'] = grouped
-        context['assigned_users'] = self.object.users.order_by('username')
+        assigned_users = self.object.users.select_related('access_role').order_by('username')
+        if not self.request.user.is_superuser:
+            assigned_users = [user for user in assigned_users
+                              if can_view_user(self.request.user, user)]
+        context['assigned_users'] = assigned_users
         return context
 
 
@@ -459,17 +469,27 @@ class RoleFormContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         grouped = {}
-        for permission in PortalPermission.objects.order_by('module', 'code'):
+        permissions = PortalPermission.objects.order_by('module', 'code')
+        if not self.request.user.is_superuser:
+            permissions = [permission for permission in permissions
+                           if self.request.user.has_portal_permission(permission.code)]
+        for permission in permissions:
             grouped.setdefault(module_label(permission.module), []).append(permission)
         context['permission_groups'] = grouped
         return context
 
 
-class RoleCreateView(DjangoSuperuserRequiredMixin, RoleFormContextMixin, CreateView):
+class RoleCreateView(PortalPermissionRequiredMixin, RoleFormContextMixin, CreateView):
+    permission_code = 'roles.create'
     model = Role
     form_class = RoleForm
     template_name = 'users/role_form.html'
     success_url = reverse_lazy('users:role_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request_user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -481,20 +501,40 @@ class RoleCreateView(DjangoSuperuserRequiredMixin, RoleFormContextMixin, CreateV
         return response
 
 
-class RoleUpdateView(DjangoSuperuserRequiredMixin, RoleFormContextMixin, UpdateView):
+class RoleUpdateView(PortalPermissionRequiredMixin, RoleFormContextMixin, UpdateView):
+    permission_code = 'roles.edit'
     model = Role
     form_class = RoleForm
     template_name = 'users/role_form.html'
     success_url = reverse_lazy('users:role_list')
 
+    def get_queryset(self):
+        roles = Role.objects.prefetch_related('permissions').all()
+        return roles.filter(pk__in=manageable_role_ids(self.request.user, roles))
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request_user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         previous_permissions = set(self.object.permissions.values_list('code', flat=True))
-        previous = {'name': self.object.name, 'description': self.object.description, 'is_active': self.object.is_active}
+        previous = {
+            'name': self.object.name,
+            'description': self.object.description,
+            'authority_level': self.object.authority_level,
+            'is_active': self.object.is_active,
+        }
         response = super().form_valid(form)
         new_permissions = set(self.object.permissions.values_list('code', flat=True))
         log_security_event(self.request, 'ROLE_UPDATED', {
             'role_id': self.object.pk, 'previous': previous,
-            'new': {'name': self.object.name, 'description': self.object.description, 'is_active': self.object.is_active},
+            'new': {
+                'name': self.object.name,
+                'description': self.object.description,
+                'authority_level': self.object.authority_level,
+                'is_active': self.object.is_active,
+            },
             'permissions_added': sorted(new_permissions - previous_permissions),
             'permissions_removed': sorted(previous_permissions - new_permissions),
         })
@@ -502,10 +542,15 @@ class RoleUpdateView(DjangoSuperuserRequiredMixin, RoleFormContextMixin, UpdateV
         return response
 
 
-class RoleDeleteView(DjangoSuperuserRequiredMixin, DeleteView):
+class RoleDeleteView(PortalPermissionRequiredMixin, DeleteView):
+    permission_code = 'roles.delete'
     model = Role
     template_name = 'users/role_confirm_delete.html'
     success_url = reverse_lazy('users:role_list')
+
+    def get_queryset(self):
+        roles = Role.objects.prefetch_related('permissions').all()
+        return roles.filter(pk__in=manageable_role_ids(self.request.user, roles))
 
     def form_valid(self, form):
         details = {'role_id': self.object.pk, 'role_name': self.object.name, 'assigned_user_ids': list(self.object.users.values_list('pk', flat=True))}
@@ -514,9 +559,23 @@ class RoleDeleteView(DjangoSuperuserRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
-class RoleToggleActiveView(DjangoSuperuserRequiredMixin, View):
+class RoleToggleActiveView(PortalPermissionRequiredMixin, View):
+    permission_code = None
+
+    def has_required_permission(self):
+        roles = Role.objects.prefetch_related('permissions').all()
+        role = get_object_or_404(
+            roles.filter(pk__in=manageable_role_ids(self.request.user, roles)),
+            pk=self.kwargs['pk'],
+        )
+        required_code = 'roles.activate' if not role.is_active else 'roles.deactivate'
+        return self.request.user.has_portal_permission(required_code)
+
     def post(self, request, pk):
-        role = get_object_or_404(Role, pk=pk)
+        roles = Role.objects.prefetch_related('permissions').all()
+        role = get_object_or_404(
+            roles.filter(pk__in=manageable_role_ids(request.user, roles)), pk=pk,
+        )
         previous = role.is_active
         role.is_active = not previous
         role.save(update_fields=['is_active', 'updated_at'])
@@ -527,13 +586,15 @@ class RoleToggleActiveView(DjangoSuperuserRequiredMixin, View):
         return redirect('users:role_list')
 
 
-class PermissionListView(DjangoSuperuserRequiredMixin, ListView):
+class PermissionListView(PortalPermissionRequiredMixin, ListView):
+    permission_code = 'permissions.view'
     model = PortalPermission
     template_name = 'users/permission_list.html'
     context_object_name = 'permissions'
 
 
-class PermissionCreateView(DjangoSuperuserRequiredMixin, CreateView):
+class PermissionCreateView(PortalPermissionRequiredMixin, CreateView):
+    permission_code = 'permissions.create'
     model = PortalPermission
     form_class = PortalPermissionForm
     template_name = 'users/permission_form.html'
@@ -545,7 +606,8 @@ class PermissionCreateView(DjangoSuperuserRequiredMixin, CreateView):
         return response
 
 
-class PermissionUpdateView(DjangoSuperuserRequiredMixin, UpdateView):
+class PermissionUpdateView(PortalPermissionRequiredMixin, UpdateView):
+    permission_code = 'permissions.edit'
     model = PortalPermission
     form_class = PortalPermissionForm
     template_name = 'users/permission_form.html'
@@ -558,7 +620,8 @@ class PermissionUpdateView(DjangoSuperuserRequiredMixin, UpdateView):
         return response
 
 
-class PermissionDeleteView(DjangoSuperuserRequiredMixin, DeleteView):
+class PermissionDeleteView(PortalPermissionRequiredMixin, DeleteView):
+    permission_code = 'permissions.delete'
     model = PortalPermission
     template_name = 'users/permission_confirm_delete.html'
     success_url = reverse_lazy('users:permission_list')

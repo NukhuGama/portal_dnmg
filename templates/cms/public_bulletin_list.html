@@ -4,7 +4,7 @@
 {% block title %}{% translate "Official Bulletins & Documents" %} | DNMG{% endblock %}
 
 {% block content %}
-<div class="bg-primary text-white py-5 mb-5 shadow-sm">
+<section class="public-page-hero public-bulletin-hero text-white py-5 mb-5">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-8">
@@ -13,13 +13,13 @@
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="container mb-5">
+<div class="container public-bulletin-page mb-5">
     <div class="row g-4">
         <!-- Sidebar Filter -->
         <div class="col-lg-3">
-            <div class="card border-0 shadow-sm p-3">
+            <div class="card public-bulletin-filter border-0 shadow-sm p-3">
                 <h5 class="fw-bold mb-3">{% translate "Bulletin Type" %}</h5>
                 <form method="get">
                     <select name="type" class="form-select mb-3" onchange="this.form.submit()">
@@ -34,25 +34,25 @@
 
         <!-- Bulletin List Grid -->
         <div class="col-lg-9">
-            <div class="row g-4">
+            <div class="row g-4 public-bulletin-grid">
                 {% for bulletin in bulletins %}
-                <div class="col-md-6">
-                    <div class="card h-100 border-0 shadow-sm">
+                <div class="col-md-6 d-flex">
+                    <article class="card bulletin-card h-100 border-0 shadow-sm w-100">
                         <div class="card-body d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="bulletin-card__meta d-flex justify-content-between align-items-start mb-2">
                                 <span class="badge bg-info text-dark">{{ bulletin.get_bulletin_type_display }}</span>
                                 <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>{{ bulletin.publication_date|date:"b d, Y" }}</small>
                             </div>
-                            <h5 class="fw-bold text-dark mb-2">{{ bulletin.title }}</h5>
-                            <p class="text-muted small flex-grow-1">{{ bulletin.summary|default:_("Official document published by DNMG.") }}</p>
+                            <h5 class="bulletin-card__title fw-bold text-dark mb-2">{{ bulletin.title }}</h5>
+                            <p class="bulletin-card__summary text-muted small flex-grow-1">{{ bulletin.summary|default:_("Official document published by DNMG.") }}</p>
                             
-                            <div class="mt-3 d-grid gap-2">
-                                <a href="{% url 'cms:public_bulletin_detail' bulletin.slug %}" class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2">
+                            <div class="bulletin-card__actions mt-3 d-grid gap-2">
+                                <a href="{% url 'cms:public_bulletin_detail' bulletin.slug %}" class="bulletin-card__action btn btn-outline-primary d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-book"></i>
                                     <span>{% translate "Read More" %}</span>
                                 </a>
                                 {% if bulletin.pdf_file|media_available %}
-                                    <a href="{{ bulletin.pdf_file.url }}" target="_blank" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                                    <a href="{{ bulletin.pdf_file.url }}" target="_blank" class="bulletin-card__action btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
                                         <i class="bi bi-file-earmark-pdf-fill"></i>
                                         <span>{% translate "Download PDF Bulletin" %}</span>
                                     </a>
@@ -61,7 +61,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
+                    </article>
                 </div>
                 {% empty %}
                 <div class="col-12 py-5 text-center text-muted">

@@ -19,6 +19,7 @@ from .forms import (
     JobOpeningAttachmentFormSet,
 )
 from .permissions import CMSManagementAccessMixin
+from .sanitizers import sanitize_article_html
 
 
 # Public Content Views
@@ -64,7 +65,9 @@ class PublicNewsDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        content = self.object.content
+        # Forms sanitize new content, and this second pass keeps legacy records
+        # safe if they were created before the editor's validation existed.
+        content = sanitize_article_html(self.object.content)
 
         def replace_missing_image(match):
             return match.group(0) if media_url_available(match.group('url')) else (

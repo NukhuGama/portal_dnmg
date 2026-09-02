@@ -1,0 +1,21 @@
+{% load i18n %}
+
+<div class="portal-time-clocks{% if compact %} portal-time-clocks--compact{% endif %}"
+    data-live-clocks
+    aria-label="{% translate 'Current time' %}">
+    <div class="portal-time-clock" data-live-clock data-clock-timezone="UTC">
+        <i class="bi bi-clock-history portal-time-clock__icon" aria-hidden="true"></i>
+        <span class="portal-time-clock__content">
+            <span class="portal-time-clock__label">{% translate "UTC" %}</span>
+            <time class="portal-time-clock__time" data-clock-time datetime="">--:--:--</time>
+        </span>
+    </div>
+    <span class="portal-time-clocks__divider" aria-hidden="true"></span>
+    <div class="portal-time-clock" data-live-clock data-clock-timezone="Asia/Dili">
+        <i class="bi bi-geo-alt portal-time-clock__icon" aria-hidden="true"></i>
+        <span class="portal-time-clock__content">
+            <span class="portal-time-clock__label" title="{% translate 'Timor-Leste' %}">{% translate "TLS" %}</span>
+            <time class="portal-time-clock__time" data-clock-time datetime="">--:--:--</time>
+        </span>
+    </div>
+</div>

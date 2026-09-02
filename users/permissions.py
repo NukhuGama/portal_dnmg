@@ -7,6 +7,15 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import gettext_lazy as _
 
 
+ROLE_LEVELS = {
+    'PUBLIC': 0,
+    'HR_OFFICER': 1, 'METEOROLOGIST': 1, 'CLIMATE_OFFICER': 1,
+    'MARINE_OFFICER': 1, 'SEISMIC_OFFICER': 1, 'EDITOR': 1, 'RESEARCHER': 1,
+    'ADMIN': 2,
+    'SUPER_ADMIN': 3,
+}
+
+
 # A new module only needs an entry here and a data migration to be available to
 # the role manager.  Codes intentionally use ``module.action`` consistently.
 PERMISSION_CATALOG = OrderedDict([
@@ -72,25 +81,59 @@ class UserManagementAccessMixin(PortalPermissionRequiredMixin):
     permission_code = 'users.view'
 
     def dispatch(self, request, *args, **kwargs):
-        # Delegated user managers must never operate on Django superusers.
-        if request.user.is_authenticated and not request.user.is_superuser and kwargs.get('pk'):
+        if request.user.is_authenticated and kwargs.get('pk'):
             from .models import User
-            target = User.objects.filter(pk=kwargs['pk']).only('is_superuser').first()
-            if target and target.is_superuser:
-                raise PermissionDenied(_("Only a Django superuser can manage another superuser."))
+            target = User.objects.select_related('access_role').filter(pk=kwargs['pk']).first()
+            if target and not can_manage_user(request.user, target):
+                raise PermissionDenied(_("You cannot manage a user at a higher authority level."))
         return super().dispatch(request, *args, **kwargs)
 
 
-class DjangoSuperuserRequiredMixin(LoginRequiredMixin):
-    """Security administration is deliberately reserved for Django superusers."""
-    raise_exception = True
+def can_manage_role(user, role):
+    """Authority boundary for viewing or managing a role."""
+    return user.is_superuser or role.authority_level <= effective_authority_level(user)
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
-        if not request.user.is_superuser:
-            raise PermissionDenied(_("Only a Django superuser can manage roles and permissions."))
-        return super().dispatch(request, *args, **kwargs)
+
+def can_assign_role(user, role):
+    """Permission boundary for assigning a role to another account."""
+    if not can_manage_role(user, role):
+        return False
+    return user.is_superuser or all(
+        user.has_portal_permission(permission.code)
+        for permission in role.permissions.all()
+    )
+
+
+def manageable_role_ids(user, roles):
+    return [role.pk for role in roles if can_manage_role(user, role)]
+
+
+def effective_authority_level(user):
+    """Return the single authority level used by every hierarchy decision."""
+    if user.is_superuser:
+        return 100
+    role_level = ROLE_LEVELS.get(user.role, 0)
+    custom_level = 0
+    if user.access_role_id and user.access_role.is_active:
+        custom_level = user.access_role.authority_level
+    return max(role_level, custom_level)
+
+
+def can_manage_user(manager, target):
+    if not can_view_user(manager, target):
+        return False
+    if target.is_superuser and not manager.is_superuser:
+        return False
+    return True
+
+
+def can_view_user(manager, target):
+    """Whether the account belongs in the manager's visible user scope."""
+    if target.is_superuser:
+        # Django superusers are outside the delegated portal hierarchy.  Only
+        # another Django superuser may view or manage those accounts.
+        return manager.is_superuser
+    return effective_authority_level(target) <= effective_authority_level(manager)
 
 
 def log_security_event(request, action, details):

@@ -98,6 +98,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.htmx',
+                'core.context_processors.active_site_alerts',
             ],
         },
     },
@@ -129,6 +130,29 @@ DATABASES = {
         "CONN_MAX_AGE": 60,
     }
 }
+
+def _positive_environment_integer(name, default):
+    """Read an optional retention setting without making Django fail at startup."""
+    try:
+        value = int(os.getenv(name, str(default)))
+    except ValueError:
+        return default
+    return value if value > 0 else default
+
+
+# Dili AWOS is an operational MariaDB system on the local network.  It remains
+# the source of truth; the weather service copies only the portal's small,
+# read-only working set into PostgreSQL.  An empty URL disables the integration
+# so development environments without AWOS access remain usable.
+AWOS_DILI_DATABASE_URL = os.getenv("AWOS_DILI_DATABASE_URL", "")
+AWOS_DILI_USER = os.getenv("AWOS_DILI_USER", "")
+AWOS_DILI_PASSWORD = os.getenv("AWOS_DILI_PASSWORD", "")
+AWOS_DILI_OBSERVATION_RETENTION_HOURS = _positive_environment_integer(
+    "AWOS_DILI_OBSERVATION_RETENTION_HOURS", 48,
+)
+AWOS_DILI_METAR_RETENTION_DAYS = _positive_environment_integer(
+    "AWOS_DILI_METAR_RETENTION_DAYS", 30,
+)
 
 # Redis is shared by the web and background-sync containers. Falling back to a
 # local-memory cache keeps direct, non-Docker development and unit tests usable;
@@ -220,10 +244,14 @@ SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", not DEBUG)
 CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", not DEBUG)
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_REFERRER_POLICY = "same-origin"
+# Send only the portal origin to cross-origin resources such as OpenStreetMap
+# tiles. This keeps paths and query strings private while letting browsers
+# satisfy the public tile service's referrer requirement.
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 X_FRAME_OPTIONS = "DENY"
 SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 31536000 if not DEBUG else 0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", not DEBUG)
+SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", not DEBUG)
 
 # The audit middleware only trusts proxy-provided client IP headers when the
 # application is deployed behind the configured reverse proxy.

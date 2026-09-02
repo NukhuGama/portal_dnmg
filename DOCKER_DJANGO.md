@@ -29,9 +29,13 @@ is used only for cache entries and the distributed station-sync lock.
    ```
 
 The sync service runs `sync_live_stations` immediately and then every five
-minutes, then refreshes the public rainfall-forecast cache. The homepage and
-live-stations API only read cached/database data and never wait on an external
-API.
+minutes, then refreshes the public rainfall-forecast cache. When the AWOS
+reader variables are configured, the separate `awos-sync` service copies the
+selected Dili Airport AWOS values every five minutes. It reads MariaDB with its
+dedicated `SELECT`-only account, stores UTC timestamps in PostgreSQL, and keeps
+48 hours of portal observations plus 30 days of METAR reports by default. The
+homepage and live-stations API only read cached/database data and never wait on
+an external API.
 
 The sync container becomes healthy after its first successful synchronization.
 It becomes unhealthy if no successful run is recorded for 15 minutes, which is
@@ -105,5 +109,6 @@ After the script completes, reload the host Nginx configuration and verify
 
 Only one `sync` container must run. Redis persistence is useful for warm cache
 and locking, but PostgreSQL remains the durable record of every observation.
-The production Compose file bind-mounts `./media`, so existing uploads remain
+The production Compose file bind-mounts `MEDIA_HOST_PATH` (falling back to
+`./media` only when the variable is absent), so existing uploads remain
 available after deployment; back up that directory along with PostgreSQL.

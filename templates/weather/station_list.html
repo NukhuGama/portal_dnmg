@@ -94,7 +94,10 @@
                     <td><code>{{ station.code }}</code></td>
                     <td>{{ station.get_municipality_display }}</td>
                     <td><span class="badge bg-secondary">{{ station.get_station_type_display }}</span></td>
-                    <td class="small text-muted">{{ station.latitude }}, {{ station.longitude }}</td>
+                    <td class="small text-muted">
+                        <div><i class="bi bi-geo-alt me-1"></i>{{ station.latitude }}, {{ station.longitude }}</div>
+                        <small>{% if station.coordinate_source == 'MANUAL' %}{% translate "Manual" %}{% else %}{% translate "Provider" %}{% endif %}</small>
+                    </td>
                     <td>
                         {% if station.status == 'ACTIVE' %}
                             <span class="badge bg-success">{% translate "Active" %}</span>

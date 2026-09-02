@@ -92,12 +92,8 @@
                     <td>{{ warning.region }}</td>
                     <td class="small">{{ warning.valid_from|date:"b d, H:i" }} — {{ warning.valid_to|date:"b d, H:i Y" }}</td>
                     <td>
-                        {% if warning.publication_state == 'live' %}
-                            <span class="badge bg-success"><i class="bi bi-broadcast me-1"></i>{% translate "Live on public website" %}</span>
-                        {% elif warning.publication_state == 'scheduled' %}
-                            <span class="badge bg-info text-dark"><i class="bi bi-clock me-1"></i>{% translate "Scheduled" %}</span>
-                        {% elif warning.publication_state == 'expired' %}
-                            <span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i>{% translate "Expired — edit to re-publish" %}</span>
+                        {% if warning.is_active %}
+                            <span class="badge bg-success"><i class="bi bi-broadcast me-1"></i>{% translate "Broadcasting" %}</span>
                         {% else %}
                             <span class="badge bg-secondary">{% translate "Archived" %}</span>
                         {% endif %}

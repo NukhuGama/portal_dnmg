@@ -6,6 +6,7 @@ from django.db import IntegrityError, connection, transaction
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from django.utils import timezone
 from unittest import skipUnless
 from users.models import User, AuditLog
 from .models import Department, DepartmentSection, StaffLevel, Employee, EmployeeEducation, EmployeeDocument, DownloadCategory, DownloadableFile
@@ -36,7 +37,7 @@ class HRModelTestCase(TestCase):
             employment_type=Employee.EmploymentType.CONTRACT,
             staff_level=self.level,
             start_date=date(2022, 1, 1),
-            contract_end_date=date.today() + relativedelta(days=20),
+            contract_end_date=timezone.localdate() + relativedelta(days=20),
             employment_status=Employee.EmploymentStatus.ACTIVE
         )
 
@@ -300,7 +301,7 @@ class HRServicesAndReportsTestCase(TestCase):
             position="Assistant Researcher",
             employment_type=Employee.EmploymentType.CONTRACT,
             start_date=date(2024, 1, 1),
-            contract_end_date=date.today() + relativedelta(days=15),
+            contract_end_date=timezone.localdate() + relativedelta(days=15),
             employment_status=Employee.EmploymentStatus.ACTIVE
         )
 

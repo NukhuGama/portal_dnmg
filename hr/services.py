@@ -2,7 +2,6 @@
 HR Services — Business logic layer for the HR & Staff Management module.
 Keeps views thin; all calculations and side effects are encapsulated here.
 """
-from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db.models import Count, Q
@@ -117,7 +116,7 @@ class HRDashboardService:
     @staticmethod
     def get_age_distribution_chart_data():
         from .models import Employee
-        today = date.today()
+        today = timezone.localdate()
         bins = {'Under 25': 0, '25–34': 0, '35–44': 0, '45–54': 0, '55+': 0, 'Unknown': 0}
         for emp in Employee.objects.filter(date_of_birth__isnull=False):
             age = today.year - emp.date_of_birth.year - (
@@ -144,7 +143,7 @@ class HRDashboardService:
     def get_staff_growth_chart_data():
         """Returns cumulative monthly staff count for the past 12 months."""
         from .models import Employee
-        today = date.today()
+        today = timezone.localdate()
         months = []
         counts = []
         for i in range(11, -1, -1):
@@ -172,7 +171,7 @@ class ContractMonitoringService:
 
     @classmethod
     def expiring_within(cls, days):
-        today = date.today()
+        today = timezone.localdate()
         threshold = today + relativedelta(days=days)
         return cls._contract_qs().filter(
             contract_end_date__gte=today,
@@ -181,16 +180,17 @@ class ContractMonitoringService:
 
     @classmethod
     def expired(cls):
-        today = date.today()
+        today = timezone.localdate()
         return cls._contract_qs().filter(contract_end_date__lt=today).order_by('-contract_end_date')
 
     @classmethod
     def recently_renewed(cls, days=30):
         """Employees whose contract end date was recently updated/extended."""
-        threshold = date.today() - relativedelta(days=days)
+        today = timezone.localdate()
+        threshold = today - relativedelta(days=days)
         return cls._contract_qs().filter(
             updated_at__date__gte=threshold,
-            contract_end_date__gte=date.today()
+            contract_end_date__gte=today
         ).order_by('-updated_at')
 
 
@@ -460,7 +460,7 @@ class HRReportService:
             ]))
             elements.extend([
                 Paragraph(f"DNMG – {title}", title_style),
-                Paragraph(f"Generated on {date.today().strftime('%Y-%m-%d')} | Records: {len(rows)}", subtitle_style), table,
+                Paragraph(f"Generated on {timezone.localdate():%Y-%m-%d} | Records: {len(rows)}", subtitle_style), table,
             ])
         document.build(elements)
 

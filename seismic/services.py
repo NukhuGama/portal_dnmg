@@ -1,6 +1,7 @@
 """Reusable seismic data-source service layer."""
 
 import json
+import logging
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -10,6 +11,9 @@ from zoneinfo import ZoneInfo
 
 from django.core.cache import cache
 from .geography import TIMOR_LESTE, TIMOR_LESTE_TZ
+
+
+logger = logging.getLogger(__name__)
 
 
 USGS_QUERY_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
@@ -50,6 +54,7 @@ class USGSEarthquakeDataSource(EarthquakeDataSource):
             with urllib.request.urlopen(request, timeout=12) as response:
                 return json.loads(response.read().decode("utf-8")).get("features", [])
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError, json.JSONDecodeError) as exc:
+            logger.warning("USGS earthquake request failed: %s", exc)
             raise EarthquakeServiceError("USGS earthquake data is temporarily unavailable.") from exc
 
 
@@ -69,6 +74,9 @@ class USGSEarthquakeService:
         from .serializers import USGSEarthquakeSerializer
 
         raw_features = USGSEarthquakeDataSource().fetch_features(scope, start_date, end_date)
+        if not isinstance(raw_features, list):
+            logger.error("USGS earthquake response did not contain a feature list")
+            raise EarthquakeServiceError("USGS earthquake data is temporarily unavailable.")
         features = [normalized for feature in raw_features if (normalized := USGSEarthquakeSerializer.normalize_feature(feature))]
         result = {
             "type": "FeatureCollection", "features": features,

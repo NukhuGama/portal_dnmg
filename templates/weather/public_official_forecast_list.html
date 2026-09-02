@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{% translate "Official Weather Forecasts" %}{% endblock %}
+
+{% block content %}
+<section class="public-page-hero text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="fw-bold mb-2">{% translate "Official Weather Forecasts" %}</h1>
+                <p class="lead mb-0 text-white-50">{% translate "Published operational forecasts from the National Directorate of Meteorology and Geophysics." %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <nav class="nav nav-pills flex-wrap gap-2 mb-4" aria-label="{% translate 'Forecast period' %}">
+        <a class="nav-link {% if not selected_period %}active{% endif %}" href="{% url 'weather:public_official_forecast_list' %}">{% translate "All official forecasts" %}</a>
+        {% for code, label in period_choices %}
+            <a class="nav-link {% if selected_period == code %}active{% endif %}" href="{% url 'weather:public_official_forecast_list' %}?period={{ code }}">{{ label }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="row g-4">
+        {% for forecast in forecasts %}
+            <div class="col-md-6 col-xl-4">
+                <article class="card h-100 border-0 shadow-sm">
+                    {% if forecast.primary_image|media_available %}
+                        <img src="{{ forecast.primary_image.url }}" class="card-img-top" alt="{{ forecast.title }}">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <span class="badge bg-primary-subtle text-primary">{{ forecast.get_forecast_period_display }}</span>
+                            <small class="text-muted">{{ forecast.valid_from|date:"d M Y" }}</small>
+                        </div>
+                        <h2 class="h5 fw-bold">{{ forecast.title }}</h2>
+                        <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i>{{ forecast.coverage }}</p>
+                        <p class="card-text">{{ forecast.summary|striptags|truncatechars:180 }}</p>
+                        <div class="mt-auto pt-2 d-flex justify-content-between align-items-center gap-2">
+                            <small class="text-muted">{% translate "Valid until" %} {{ forecast.valid_to|date:"d M Y" }}</small>
+                            <a class="btn btn-outline-primary btn-sm" href="{% url 'weather:public_official_forecast_detail' forecast.pk %}">{% translate "Read forecast" %}<i class="bi bi-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5 text-muted border rounded bg-light">
+                    <i class="bi bi-cloud-sun fs-1 d-block mb-3"></i>
+                    <h2 class="h5">{% translate "No official forecasts are currently published for this period." %}</h2>
+                    <p class="mb-0">{% translate "Please check the 10-day forecast map for automated model guidance." %}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="mt-4">{% include 'components/pagination.html' %}</div>
+    {% endif %}
+</div>
+{% endblock %}

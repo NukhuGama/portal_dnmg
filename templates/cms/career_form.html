@@ -5,6 +5,9 @@
 {% block section_title %}{% translate "Job Opening Editor" %}{% endblock %}
 
 {% block admin_content %}
+{% translate "Write the role, responsibilities, and other important details." as description_placeholder %}
+{% translate "Add qualifications, skills, and experience. Lists work well here." as requirements_placeholder %}
+{% translate "Explain the application steps, required documents, and contact details." as application_placeholder %}
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div class="card border-0 shadow-sm">
@@ -46,16 +49,17 @@
                             {{ form.application_deadline }}
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold">{% translate "Job Description" %}</label>
-                            {{ form.description }}
+                            <label id="{{ form.description.id_for_label }}_label" class="form-label fw-semibold" for="job_description_editor">{% translate "Job Description" %}</label>
+                            {% include "components/admin_rich_text_field.html" with field=form.description editor_id="job_description_editor" placeholder=description_placeholder only %}
+                            <div class="form-text">{% translate "Use headings and lists to make responsibilities easy to scan." %}</div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold">{% translate "Requirements & Qualifications" %}</label>
-                            {{ form.requirements }}
+                            <label id="{{ form.requirements.id_for_label }}_label" class="form-label fw-semibold" for="job_requirements_editor">{% translate "Requirements & Qualifications" %}</label>
+                            {% include "components/admin_rich_text_field.html" with field=form.requirements editor_id="job_requirements_editor" placeholder=requirements_placeholder only %}
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold">{% translate "How to Apply (Instructions)" %}</label>
-                            {{ form.how_to_apply }}
+                            <label id="{{ form.how_to_apply.id_for_label }}_label" class="form-label fw-semibold" for="job_application_editor">{% translate "How to Apply (Instructions)" %}</label>
+                            {% include "components/admin_rich_text_field.html" with field=form.how_to_apply editor_id="job_application_editor" placeholder=application_placeholder only %}
                         </div>
                     </div>
                     <section class="mt-4 pt-4 border-top">
@@ -64,20 +68,20 @@
                         {{ attachment_formset.management_form }}
                         {{ attachment_formset.non_form_errors }}
                         {% for attachment_form in attachment_formset %}
-                        <div class="row g-3 align-items-end border rounded p-3 mb-3 bg-light">
+                        <div class="admin-upload-row admin-upload-row--two-fields border rounded p-3 mb-3 bg-light">
                             {{ attachment_form.id }}
-                            <div class="col-md-5">
+                            <div>
                                 <label class="form-label small fw-semibold">{% translate "File" %}</label>
                                 {{ attachment_form.file }}
                                 {{ attachment_form.file.errors }}
                             </div>
-                            <div class="col-md-5">
+                            <div>
                                 <label class="form-label small fw-semibold">{% translate "File Title" %}</label>
                                 {{ attachment_form.title }}
                                 {{ attachment_form.title.errors }}
                             </div>
                             {% if attachment_form.instance.pk %}
-                            <div class="col-md-2"><div class="form-check">{{ attachment_form.DELETE }} <label class="form-check-label">{% translate "Remove" %}</label></div></div>
+                            <div class="admin-upload-action"><div class="form-check">{{ attachment_form.DELETE }} <label class="form-check-label" for="{{ attachment_form.DELETE.id_for_label }}">{% translate "Remove" %}</label></div></div>
                             {% endif %}
                         </div>
                         {% endfor %}

@@ -234,7 +234,7 @@ class Employee(models.Model):
     @property
     def age(self):
         if self.date_of_birth:
-            today = timezone.now().date()
+            today = timezone.localdate()
             return today.year - self.date_of_birth.year - (
                 (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
             )
@@ -243,7 +243,7 @@ class Employee(models.Model):
     @property
     def contract_days_remaining(self):
         if self.contract_end_date:
-            return (self.contract_end_date - timezone.now().date()).days
+            return (self.contract_end_date - timezone.localdate()).days
         return None
 
     @property

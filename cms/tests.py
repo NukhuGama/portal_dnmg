@@ -10,7 +10,7 @@ from .models import (
     Category, NewsArticle, NewsArticleAttachment, NewsArticleInlineImage, NewsArticleInlineAttachment, OfficialBulletin,
     JobOpening, JobOpeningAttachment,
 )
-from .forms import JobOpeningAttachmentForm, NewsArticleForm
+from .forms import JobOpeningAttachmentForm, JobOpeningForm, NewsArticleForm
 
 class CMSModelTestCase(TestCase):
     def setUp(self):
@@ -111,6 +111,34 @@ class CMSModelTestCase(TestCase):
         self.assertEqual(job.status, JobOpening.Status.OPEN)
         self.assertEqual(job.department, department)
 
+    def test_job_opening_rich_text_is_sanitized(self):
+        form = JobOpeningForm(data={
+            'title': 'Formatted Vacancy',
+            'department': '',
+            'location': 'Dili, Timor-Leste',
+            'employment_type': JobOpening.EmploymentType.FULL_TIME,
+            'description': (
+                '<h2>Core duties</h2><div><strong>Monitor</strong> weather systems.</div>'
+                '<script>alert(1)</script>'
+            ),
+            'requirements': '<ul><li>Relevant degree</li><li>Field experience</li></ul>',
+            'how_to_apply': (
+                '<p><a href="javascript:alert(1)">Unsafe</a> '
+                '<a href="mailto:jobs@dnmg.gov.tl">Email DNMG</a></p>'
+            ),
+            'application_deadline': '',
+            'status': JobOpening.Status.DRAFT,
+        })
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertIn('<h2>Core duties</h2>', form.cleaned_data['description'])
+        self.assertIn('<p><strong>Monitor</strong> weather systems.</p>', form.cleaned_data['description'])
+        self.assertIn('<strong>Monitor</strong>', form.cleaned_data['description'])
+        self.assertIn('<ul><li>Relevant degree</li>', form.cleaned_data['requirements'])
+        self.assertNotIn('<script>', form.cleaned_data['description'])
+        self.assertNotIn('javascript:', form.cleaned_data['how_to_apply'])
+        self.assertIn('href="mailto:jobs@dnmg.gov.tl"', form.cleaned_data['how_to_apply'])
+
 
 class CMSViewsTestCase(TestCase):
     def setUp(self):
@@ -167,9 +195,12 @@ class CMSViewsTestCase(TestCase):
         list_response = self.client.get(reverse('cms:public_bulletin_list'))
         self.assertEqual(list_response.status_code, 200)
         self.assertContains(list_response, "Read More")
+        self.assertContains(list_response, 'bulletin-card')
+        self.assertContains(list_response, 'bulletin-card__meta')
         detail_response = self.client.get(reverse('cms:public_bulletin_detail', kwargs={'slug': self.bulletin.slug}))
         self.assertEqual(detail_response.status_code, 200)
         self.assertContains(detail_response, "Marine conditions and warnings.")
+        self.assertContains(detail_response, 'public-bulletin-detail__metadata')
 
     def test_admin_news_list_editor_access(self):
         self.client.force_login(self.editor)
@@ -248,6 +279,38 @@ class CMSViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Seismic monitoring duty.")
 
+    def test_public_career_detail_renders_safe_structured_content(self):
+        self.job.description = (
+            '<h2>Responsibilities</h2><ul><li>Monitor seismic activity</li></ul>'
+            '<script>alert(1)</script>'
+        )
+        self.job.requirements = '<p><strong>Required:</strong> geophysics degree.</p>'
+        self.job.save(update_fields=['description', 'requirements'])
+
+        response = self.client.get(
+            reverse('cms:public_career_detail', kwargs={'slug': self.job.slug})
+        )
+
+        self.assertContains(response, '<h2>Responsibilities</h2>')
+        self.assertContains(response, '<ul><li>Monitor seismic activity</li></ul>')
+        self.assertContains(response, '<strong>Required:</strong>')
+        self.assertNotContains(response, '<script>alert(1)</script>')
+
+    def test_public_news_detail_sanitizes_legacy_article_content(self):
+        self.article.content = (
+            '<p>Important update.</p><script>alert(1)</script>'
+            '<a href="//untrusted.example">Unsafe link</a>'
+        )
+        self.article.save(update_fields=['content', 'updated_at'])
+
+        response = self.client.get(
+            reverse('cms:public_news_detail', kwargs={'slug': self.article.slug})
+        )
+
+        self.assertContains(response, '<p>Important update.</p>')
+        self.assertNotContains(response, '<script>alert(1)</script>')
+        self.assertNotContains(response, 'href="//untrusted.example"')
+
     def test_admin_career_list_editor_access(self):
         self.client.force_login(self.editor)
         response = self.client.get(reverse('cms:admin_career_list'))
@@ -259,3 +322,17 @@ class CMSViewsTestCase(TestCase):
         response = self.client.get(reverse('cms:career_create'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'attachments-TOTAL_FORMS')
+
+    def test_career_editor_includes_rich_text_tools_for_each_content_section(self):
+        self.client.force_login(self.editor)
+
+        response = self.client.get(reverse('cms:career_create'))
+
+        self.assertContains(response, 'id="job_description_editor"')
+        self.assertContains(response, 'id="job_requirements_editor"')
+        self.assertContains(response, 'id="job_application_editor"')
+        self.assertContains(response, 'data-editor-command="bold"', count=3)
+        self.assertContains(response, 'data-editor-command="italic"', count=3)
+        self.assertContains(response, 'data-editor-command="insertUnorderedList"', count=3)
+        self.assertContains(response, 'data-editor-command="insertOrderedList"', count=3)
+        self.assertContains(response, 'data-editor-value="h2"', count=3)

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load i18n static tz %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-hero py-5 text-white" aria-labelledby="airport-title">
+    <div class="container">
+        <a class="btn btn-sm btn-outline-light mb-4" href="{{ aviation_directory_url }}">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>{% translate "All airports" %}
+        </a>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <span class="rounded-circle bg-white bg-opacity-15 d-inline-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
+                <i class="bi bi-airplane-engines fs-2" aria-hidden="true"></i>
+            </span>
+            <div>
+                <p class="portal-eyebrow text-white-50 mb-1"><i class="bi bi-geo-alt-fill me-2" aria-hidden="true"></i>{{ airport.location }}</p>
+                <h1 id="airport-title" class="mb-1">{{ airport.name }}</h1>
+                {% if airport.official_name %}<p class="lead mb-0">{{ airport.official_name }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container-fluid airport-awos-page py-4 py-lg-5">
+    {% if awos_station %}
+    <section id="airport-observations" aria-labelledby="airport-products-title">
+        {% if awos_observation %}
+        <article class="airport-awos-dashboard" aria-label="{% translate 'Dili Airport AWOS operational display' %}" data-awos-auto-refresh data-awos-live-url="{% url 'core:dili_awos_live_observation' %}" data-awos-empty-metar="{% translate 'No current METAR is available.' %}">
+            <header class="airport-awos-dashboard__header">
+                <div>
+                    <p class="airport-awos-dashboard__eyebrow"><span class="airport-awos-dashboard__live-dot" aria-hidden="true"></span>{% translate "AWOS observations and METAR" %} · WPDL</p>
+                    <h2 id="airport-products-title">{% translate "Presidente Nicolau Lobato Airport (WPDL)" %}</h2>
+                    <p>{% translate "Current verified airport observation" %}</p>
+                </div>
+                <div class="airport-awos-dashboard__times">
+                    <div><span>{% translate "UTC" %}</span><time data-awos-field="utc_display" data-awos-datetime-source="observation" data-awos-datetime="{{ awos_observation.recorded_at|date:'c' }}" datetime="{{ awos_observation.recorded_at|date:'c' }}">{{ awos_observation.recorded_at|utc|date:"d M Y · H:i" }}Z</time></div>
+                    <div><span>{% translate "Timor-Leste" %}</span><time data-awos-field="local_display" data-awos-datetime-source="observation" data-awos-datetime="{{ awos_observation.recorded_at|date:'c' }}" datetime="{{ awos_observation.recorded_at|date:'c' }}">{{ awos_observation.recorded_at|localtime|date:"d M Y · H:i" }} UTC+9</time></div>
+                    <a href="{% url 'weather:interactive_map' %}?station_type=AWOS"><i class="bi bi-map" aria-hidden="true"></i><span>{% translate "Map" %}</span></a>
+                </div>
+            </header>
+
+            <div class="airport-awos-dashboard__body">
+                <section class="airport-awos-conditions" aria-labelledby="awos-conditions-title">
+                    <div class="airport-awos-conditions__heading">
+                        <div><p class="airport-awos-dashboard__eyebrow">{% translate "Operational data" %}</p><h3 id="awos-conditions-title">{% translate "Current conditions" %}</h3></div>
+                        <span class="airport-awos-conditions__status" role="status"><i class="bi bi-broadcast-pin" aria-hidden="true"></i>{% translate "Live feed" %}</span>
+                    </div>
+                    <dl class="airport-awos-metrics">
+                        <div class="airport-awos-metric"><dt><i class="bi bi-thermometer-half" aria-hidden="true"></i>{% translate "Temperature" %}</dt><dd><span data-awos-field="temperature">{{ awos_observation.temperature|default:"--"|floatformat:1 }}</span> <small>°C</small></dd></div>
+                        <div class="airport-awos-metric"><dt><i class="bi bi-droplet-half" aria-hidden="true"></i>{% translate "Dew point" %}</dt><dd><span data-awos-field="dew_point">{{ awos_observation.dew_point_c|default:"--"|floatformat:1 }}</span> <small>°C</small></dd></div>
+                        <div class="airport-awos-metric"><dt><i class="bi bi-moisture" aria-hidden="true"></i>{% translate "Relative humidity" %}</dt><dd><span data-awos-field="humidity">{{ awos_observation.humidity|default:"--"|floatformat:0 }}</span> <small>%</small></dd></div>
+                        <div class="airport-awos-metric"><dt><i class="bi bi-speedometer2" aria-hidden="true"></i>{% translate "QNH" %}</dt><dd><span data-awos-field="pressure">{{ awos_observation.pressure_hpa|default:"--"|floatformat:1 }}</span> <small>hPa</small></dd></div>
+                        <div class="airport-awos-metric"><dt><i class="bi bi-eye" aria-hidden="true"></i>{% translate "Visibility" %}</dt><dd><span data-awos-field="visibility">{{ awos_observation.visibility_m|default:"--"|floatformat:0 }}</span> <small>m</small></dd></div>
+                        <div class="airport-awos-metric"><dt><i class="bi bi-airplane" aria-hidden="true"></i>{% translate "Runway visual range" %}</dt><dd><span data-awos-field="runway_visual_range">{{ awos_observation.runway_visual_range_m|default:"--"|floatformat:0 }}</span> <small>m</small></dd></div>
+                    </dl>
+                    <dl class="airport-awos-wind-summary">
+                        <div class="airport-awos-wind-summary__title"><dt><i class="bi bi-wind" aria-hidden="true"></i>{% translate "Aviation wind" %}</dt><dd>{% translate "Current reading" %}</dd></div>
+                        <div><dt>{% translate "Direction" %}</dt><dd data-awos-field="wind_direction">{{ awos_observation.wind_direction|default:"--" }}</dd></div>
+                        <div><dt>{% translate "Wind speed" %}</dt><dd><span data-awos-field="wind_speed">{{ awos_wind_speed_knots|default:"--"|floatformat:1 }}</span> kt</dd></div>
+                        <div><dt>{% translate "Wind gust" %}</dt><dd><span data-awos-field="wind_gust">{{ awos_wind_gust_knots|default:"--"|floatformat:1 }}</span> kt</dd></div>
+                    </dl>
+                </section>
+            </div>
+
+            <footer id="metar" class="airport-awos-metar">
+                <div class="airport-awos-metar__times">
+                    <span>{% translate "Latest METAR" %}</span>
+                    <time data-awos-datetime-source="metar" data-awos-datetime="{% if awos_metar %}{{ awos_metar.reported_at|date:'c' }}{% endif %}" datetime="{% if awos_metar %}{{ awos_metar.reported_at|date:'c' }}{% endif %}"><small>{% translate "UTC" %}</small><span data-awos-field="metar_utc_display">{% if awos_metar %}{{ awos_metar.reported_at|utc|date:"d M H:i" }}Z{% endif %}</span></time>
+                    <time data-awos-datetime-source="metar" data-awos-datetime="{% if awos_metar %}{{ awos_metar.reported_at|date:'c' }}{% endif %}" datetime="{% if awos_metar %}{{ awos_metar.reported_at|date:'c' }}{% endif %}"><small>{% translate "Timor-Leste" %}</small><span data-awos-field="metar_local_display">{% if awos_metar %}{{ awos_metar.reported_at|localtime|date:"d M H:i" }} UTC+9{% endif %}</span></time>
+                </div>
+                <p data-awos-field="metar_raw_report" class="{% if not awos_metar %}airport-awos-metar__empty{% endif %}">{% if awos_metar %}{{ awos_metar.raw_report }}{% else %}{% translate "No current METAR is available." %}{% endif %}</p>
+            </footer>
+        </article>
+        {% else %}
+        <div class="service-availability">
+            <div class="service-availability__icon"><i class="bi bi-info-circle"></i></div>
+            <div><h2 class="h5">{% translate "AWOS data is not available yet" %}</h2><p class="mb-0">{% translate "The Dili Airport AWOS feed will appear here after its first successful synchronization." %}</p></div>
+        </div>
+        {% endif %}
+    </section>
+    {% else %}
+    <section id="airport-observations" class="service-availability" aria-labelledby="airport-availability-title">
+        <div class="service-availability__icon"><i class="bi bi-info-circle"></i></div>
+        <div>
+            <h2 id="airport-availability-title">{% translate "Products are being prepared" %}</h2>
+            <p class="mb-0">{% translate "Verified airport weather products will appear here when the operational data source is available." %}</p>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/airport-awos-live.js' %}?v=20260901-2" defer></script>
+{% endblock %}

@@ -1,7 +1,7 @@
 from datetime import date
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .classification import risk_for_magnitude
@@ -11,6 +11,12 @@ from .services import USGSEarthquakeService
 from .summaries import build_home_summary
 
 
+@override_settings(CACHES={
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "seismic-tests",
+    }
+})
 class EarthquakeExplorerTestCase(TestCase):
     def test_explorer_page_uses_seismic_template_and_statistics_components(self):
         response = self.client.get(reverse("seismic:earthquakes"))
@@ -84,3 +90,40 @@ class EarthquakeExplorerTestCase(TestCase):
         self.assertEqual(event["properties"]["depth_km"], 12.3)
         self.assertEqual(event["properties"]["risk_code"], "high")
         self.assertIn("is_recent", event["properties"])
+
+    def test_usgs_event_serializer_ignores_malformed_provider_features(self):
+        from .serializers import USGSEarthquakeSerializer
+
+        self.assertIsNone(USGSEarthquakeSerializer.normalize_feature(None))
+        self.assertIsNone(USGSEarthquakeSerializer.normalize_feature({"geometry": {"coordinates": [125.7, -8.8]}}))
+        self.assertIsNone(USGSEarthquakeSerializer.normalize_feature({
+            "geometry": {"coordinates": ["not-a-longitude", -8.8, 12]},
+            "properties": {"mag": 4.2, "time": 1},
+        }))
+
+    @patch("seismic.services.USGSEarthquakeDataSource.fetch_features")
+    def test_usgs_service_reuses_cached_results(self, fetch_features):
+        from django.core.cache import cache
+
+        cache.clear()
+        fetch_features.return_value = [{
+            "id": "cached-event",
+            "geometry": {"coordinates": [125.7, -8.8, 12]},
+            "properties": {"mag": 4.2, "time": 1, "place": "Test location"},
+        }]
+        start_date, end_date = date(2026, 8, 11), date(2026, 8, 17)
+
+        first = USGSEarthquakeService.fetch("timor-leste", start_date, end_date)
+        second = USGSEarthquakeService.fetch("timor-leste", start_date, end_date)
+
+        self.assertEqual(first, second)
+        fetch_features.assert_called_once_with("timor-leste", start_date, end_date)
+
+    def test_api_returns_service_unavailable_when_usgs_fails(self):
+        from .services import EarthquakeServiceError
+
+        with patch.object(USGSEarthquakeService, "fetch", side_effect=EarthquakeServiceError):
+            response = self.client.get(reverse("seismic:api_earthquakes"))
+
+        self.assertEqual(response.status_code, 503)
+        self.assertIn("error", response.json())

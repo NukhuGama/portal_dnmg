@@ -97,7 +97,7 @@ Wait about one minute after `up -d`, then run:
 cd /dnmg_sites/portal_dnmg
 curl -f -H 'X-Forwarded-Proto: https' http://127.0.0.1:8000/healthz/
 sudo docker compose --env-file .env.production -f docker-compose.production.yml ps
-sudo docker compose --env-file .env.production -f docker-compose.production.yml logs --tail=100 web sync
+sudo docker compose --env-file .env.production -f docker-compose.production.yml logs --tail=100 web sync awos-sync
 ```
 
 Expected result:
@@ -107,12 +107,18 @@ Expected result:
 - `redis` is healthy.
 - `sync` moves from `health: starting` to healthy after its first successful
   synchronization. It can take up to five minutes.
+- When `AWOS_DILI_DATABASE_URL`, `AWOS_DILI_USER`, and
+  `AWOS_DILI_PASSWORD` are configured and the production host is on the AWOS
+  network, `awos-sync` becomes healthy after its first successful run and then
+  refreshes every five minutes. If the AWOS integration is intentionally not
+  configured, it logs that synchronization is disabled and remains a healthy
+  no-op.
 - Logs contain no repeated traceback, database, permission, or network errors.
 
 For ongoing log viewing, press `Ctrl+C` to stop:
 
 ```bash
-sudo docker compose --env-file .env.production -f docker-compose.production.yml logs -f web sync
+sudo docker compose --env-file .env.production -f docker-compose.production.yml logs -f web sync awos-sync
 ```
 
 ## 6. Nginx and HTTPS checks
@@ -169,4 +175,3 @@ they can contain personal and confidential data.
 - Do not delete the database, run destructive Docker commands, or fake
   migrations to bypass an error.
 - Restore from the latest backup only after the problem has been diagnosed.
-

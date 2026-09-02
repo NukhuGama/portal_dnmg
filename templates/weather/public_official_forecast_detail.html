@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{{ forecast.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <a class="btn btn-sm btn-outline-secondary mb-4" href="{% url 'weather:public_official_forecast_list' %}"><i class="bi bi-arrow-left me-1"></i>{% translate "All official forecasts" %}</a>
+            <article class="card border-0 shadow-sm overflow-hidden">
+                    {% if forecast.image|media_available %}
+                        <a href="{{ forecast.image.url }}" data-bs-toggle="modal" data-bs-target="#forecastCoverImage"><img src="{{ forecast.image.url }}" class="img-fluid" alt="{{ forecast.title }}"></a>
+                {% endif %}
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <span class="badge bg-primary-subtle text-primary">{{ forecast.get_forecast_period_display }}</span>
+                        <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>{{ forecast.coverage }}</span>
+                    </div>
+                    <h1 class="h2 fw-bold">{{ forecast.title }}</h1>
+                    <div class="lead forecast-rich-content">{{ forecast.summary|safe }}</div>
+                    <dl class="row small border-top border-bottom py-3 my-4">
+                        <dt class="col-sm-3">{% translate "Valid from" %}</dt><dd class="col-sm-9">{{ forecast.valid_from|date:"l, d F Y" }}</dd>
+                        <dt class="col-sm-3">{% translate "Valid until" %}</dt><dd class="col-sm-9">{{ forecast.valid_to|date:"l, d F Y" }}</dd>
+                        <dt class="col-sm-3">{% translate "Published" %}</dt><dd class="col-sm-9">{{ forecast.published_at|date:"d M Y, H:i" }}{% if forecast.published_by %} · {{ forecast.published_by.get_full_name|default:forecast.published_by.username }}{% endif %}</dd>
+                    </dl>
+                    {% if forecast.notes %}
+                        <section>
+                            <h2 class="h5 fw-bold">{% translate "Additional meteorologist notes" %}</h2>
+                            <div class="lh-lg">{{ forecast.notes|linebreaks }}</div>
+                        </section>
+                    {% endif %}
+                    {% if forecast.images.all %}
+                        <section class="mt-4 pt-3 border-top">
+                            <h2 class="h5 fw-bold mb-3">{% translate "Forecast image gallery" %}</h2>
+                            <div class="row g-3">
+                                {% for image in forecast.images.all %}
+                                    {% if image.image|media_available %}
+                                        <div class="col-sm-6 col-lg-4">
+                                            <figure class="card h-100 border-0 shadow-sm mb-0 overflow-hidden">
+                                                <button type="button" class="btn p-0 border-0" data-bs-toggle="modal" data-bs-target="#forecastGalleryImage{{ image.pk }}"><img src="{{ image.image.url }}" class="img-fluid" alt="{{ image.caption|default:forecast.title }}"></button>
+                                                {% if image.caption %}<figcaption class="card-body small text-muted">{{ image.caption }}</figcaption>{% endif %}
+                                            </figure>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+                    {% if forecast.attachment|media_available or forecast.attachments.all %}
+                        <div class="mt-4 pt-3 border-top">
+                            <h2 class="h5 fw-bold mb-3">{% translate "Supporting files" %}</h2>
+                            <div class="d-flex flex-column align-items-start gap-2">
+                                {% if forecast.attachment|media_available %}<a class="btn btn-outline-primary" href="{{ forecast.attachment.url }}" target="_blank" rel="noopener"><i class="bi bi-paperclip me-1"></i>{% translate "Download supporting file" %}</a>{% endif %}
+                                {% for attachment in forecast.attachments.all %}
+                                    {% if attachment.file|media_available %}<a class="btn btn-outline-primary" href="{{ attachment.file.url }}" target="_blank" rel="noopener"><i class="bi bi-paperclip me-1"></i>{{ attachment.title|default:attachment.file.name }}</a>{% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </article>
+            {% if forecast.image|media_available %}
+                <div class="modal fade" id="forecastCoverImage" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content bg-dark"><div class="modal-header border-0"><h2 class="modal-title fs-6 text-white">{{ forecast.title }}</h2><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button></div><div class="modal-body text-center"><img src="{{ forecast.image.url }}" class="img-fluid" alt="{{ forecast.title }}"></div></div></div></div>
+            {% endif %}
+            {% for image in forecast.images.all %}
+                {% if image.image|media_available %}
+                    <div class="modal fade" id="forecastGalleryImage{{ image.pk }}" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content bg-dark"><div class="modal-header border-0"><h2 class="modal-title fs-6 text-white">{{ image.caption|default:forecast.title }}</h2><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button></div><div class="modal-body text-center"><img src="{{ image.image.url }}" class="img-fluid" alt="{{ image.caption|default:forecast.title }}"></div></div></div></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
