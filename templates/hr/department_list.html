@@ -1,0 +1,77 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{% translate "Departments" %}{% endblock %}
+{% block section_title %}{% translate "Department Management" %}{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold mb-0">{% translate "Departments" %}</h5>
+                <p class="text-muted small mb-0">{% translate "Manage all DNMG departments and their heads." %}</p>
+            </div>
+            {% if user|has_portal_permission:'departments.create' or user|has_portal_permission:'departments.view' %}
+            <div class="d-flex gap-2">
+                {% if user|has_portal_permission:'departments.view' %}<a href="{% url 'hr:section_list' %}" class="btn btn-outline-primary rounded-pill px-4"><i class="bi bi-diagram-2 me-1"></i>{% translate "Manage Sections" %}</a>{% endif %}
+                {% if user|has_portal_permission:'departments.create' %}<a href="{% url 'hr:department_create' %}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-plus-circle me-1"></i>{% translate "Add Department" %}</a>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        <form method="get" action="{% url 'hr:department_list' %}" class="row g-2">
+            <div class="col-md-8">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ request.GET.q }}" class="form-control bg-light border-start-0" placeholder="{% translate 'Search department name or code...' %}">
+                </div>
+            </div>
+            <div class="col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel"></i></button>
+                <a href="{% url 'hr:department_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-circle"></i></a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for dept in departments %}
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="border-left: 4px solid #3b82f6 !important;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">{{ dept.name }}</h6>
+                            <span class="badge bg-primary-subtle text-primary font-monospace small">{{ dept.code }}</span>
+                        </div>
+                        <span class="badge {% if dept.is_active %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-secondary{% endif %} small">
+                            {% if dept.is_active %}{% translate "Active" %}{% else %}{% translate "Inactive" %}{% endif %}
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-2">{{ dept.description|truncatechars:80|default:"–" }}</p>
+                    <div class="d-flex align-items-center justify-content-between mt-auto">
+                        <div class="text-muted small">
+                            <i class="bi bi-person-fill me-1"></i>
+                            {% if dept.head %}{{ dept.head.full_name }}{% else %}<em>{% translate "No HOD assigned" %}</em>{% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-info-subtle text-info">{{ dept.employee_count }} {% translate "staff" %}</span>
+                            <span class="badge bg-primary-subtle text-primary">{{ dept.section_count }} {% translate "sections" %}</span>
+                            <a href="{% url 'hr:department_detail' dept.pk %}" class="btn btn-sm btn-light border rounded-pill" title="{% translate 'View' %}"><i class="bi bi-eye"></i></a>
+                            {% if user|has_portal_permission:'departments.edit' %}<a href="{% url 'hr:department_update' dept.pk %}" class="btn btn-sm btn-light border rounded-pill" title="{% translate 'Edit' %}"><i class="bi bi-pencil"></i></a>{% endif %}
+                            {% if user|has_portal_permission:'departments.delete' %}<a href="{% url 'hr:department_delete' dept.pk %}" class="btn btn-sm btn-light border border-danger text-danger rounded-pill" title="{% translate 'Delete' %}"><i class="bi bi-trash"></i></a>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="bi bi-diagram-3 fs-1 d-block mb-3"></i>
+                {% translate "No departments found." %}
+            </div>
+            {% endfor %}
+        </div>
+        {% if is_paginated %}
+        <div class="mt-4">{% include 'components/pagination.html' %}</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

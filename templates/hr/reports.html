@@ -1,0 +1,231 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "HR Reports" %}{% endblock %}
+{% block section_title %}{% translate "HR Reports & Exports" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row g-4">
+    <!-- Filter Panel -->
+    <div class="col-md-4 col-xl-3">
+        <div class="card shadow-sm border-0 rounded-4 p-4 sticky-top" style="top: 80px;">
+            <h6 class="fw-bold mb-3"><i class="bi bi-download me-2 text-primary"></i>{% translate "Export Data" %}</h6>
+            <form method="get" action="{% url 'hr:reports' %}" id="reportForm">
+                <p class="text-muted small">{% translate "Choose the tables and exact fields to include. Education Information keeps one row for every qualification recorded for matching staff." %}</p>
+                <div class="border rounded-3 p-3 bg-light mb-3" id="export-table-options">
+                    {% for value, label in form.data_sections.field.choices %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input export-table-checkbox" type="checkbox" name="data_sections" value="{{ value }}" id="table_{{ value }}" {% if value in form.data_sections.value %}checked{% endif %}>
+                        <label class="form-check-label small fw-semibold" for="table_{{ value }}">{{ label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex gap-2 mb-3">
+                    <button type="button" id="select-all-tables" class="btn btn-sm btn-outline-secondary rounded-pill">{% translate "Select All Tables" %}</button>
+                    <button type="button" id="select-all-fields" class="btn btn-sm btn-outline-secondary rounded-pill">{% translate "Select All Fields" %}</button>
+                </div>
+                <div id="export-field-options" class="mb-3">
+                    <h6 class="fw-bold small mb-2"><i class="bi bi-ui-checks-grid me-1 text-primary"></i>{% translate "Fields to Include" %}</h6>
+                    {% for section, section_label, fields in export_field_groups %}
+                    <div class="border rounded-3 p-3 mb-2 export-field-group" data-section="{{ section }}">
+                        <div class="small fw-semibold mb-2">{{ section_label }}</div>
+                        <div class="row g-2">
+                            {% for value, label in fields %}
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input export-field-checkbox" type="checkbox" name="export_fields" value="{{ value }}" id="field_{{ section }}_{{ forloop.counter }}" data-section="{{ section }}" {% if value in form.export_fields.value %}checked{% endif %}>
+                                    <label class="form-check-label small" for="field_{{ section }}_{{ forloop.counter }}">{{ label }}</label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="alert alert-primary small py-2 mb-3" id="export-preview"><i class="bi bi-eye me-1"></i><strong>{% translate "Export preview:" %}</strong> <span>{% translate "No tables selected." %}</span></div>
+                <hr>
+                <h6 class="fw-bold mb-3"><i class="bi bi-funnel me-2 text-primary"></i>{% translate "Report Filters" %}</h6>
+                {% for field in form %}
+                {% if field.name != 'data_sections' and field.name != 'export_fields' %}
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+                {% endif %}
+                {% endfor %}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary rounded-pill btn-sm">
+                        <i class="bi bi-search me-1"></i>{% translate "Generate Report" %}
+                    </button>
+                    <a href="{% url 'hr:reports' %}" class="btn btn-outline-secondary rounded-pill btn-sm">{% translate "Reset" %}</a>
+                </div>
+            </form>
+
+            {% if employees %}
+            <hr>
+            <h6 class="fw-bold mb-2">{% translate "Export Report" %}</h6>
+            <p class="text-muted small">{% translate "Review the selected tables and fields above, then choose a file format." %}</p>
+            <div class="d-grid gap-2" id="export-actions">
+                <button type="submit" form="export-data-form" name="format" value="excel" hx-boost="false" class="btn btn-sm btn-outline-success rounded-pill">
+                    <i class="bi bi-file-earmark-excel me-1"></i>{% translate "Export Excel (.xlsx)" %}
+                </button>
+                <button type="submit" form="export-data-form" name="format" value="pdf" hx-boost="false" class="btn btn-sm btn-outline-danger rounded-pill">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>{% translate "Export PDF (.pdf)" %}
+                </button>
+                <button type="submit" form="export-data-form" name="format" value="csv" hx-boost="false" class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="bi bi-filetype-csv me-1"></i>{% translate "Export CSV (.csv)" %}
+                </button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="window.print();">
+                    <i class="bi bi-printer me-1"></i>{% translate "Print" %}
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Report Results -->
+    <div class="col-md-8 col-xl-9">
+        {% if employees is not None %}
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold mb-0">{% translate "Report Results" %}</h6>
+                    <p class="text-muted small mb-0">{{ employees.count }} {% translate "employees found" %}</p>
+                </div>
+            </div>
+            <div class="table-responsive" id="printableReport">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">{% translate "No." %}</th>
+                            <th>{% translate "Name" %}</th>
+                            <th>{% translate "Gender" %}</th>
+                            <th>{% translate "Department" %}</th>
+                            <th>{% translate "Position" %}</th>
+                            <th>{% translate "Type" %}</th>
+                            <th>{% translate "Level" %}</th>
+                            <th>{% translate "Start Date" %}</th>
+                            <th>{% translate "Contract End" %}</th>
+                            <th>{% translate "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                        <tr>
+                            <td class="ps-3 text-muted">{{ forloop.counter }}</td>
+                            <td class="fw-semibold">{{ emp.full_name }}<div class="text-muted font-monospace" style="font-size:.7rem;">{{ emp.employee_number }}</div></td>
+                            <td>{{ emp.get_gender_display }}</td>
+                            <td class="text-muted">{{ emp.department.name|default:"–" }}</td>
+                            <td class="text-muted">{{ emp.position }}</td>
+                            <td>
+                                <span class="badge rounded-pill
+                                    {% if emp.employment_type == 'PERMANENT' %}bg-success-subtle text-success
+                                    {% elif emp.employment_type == 'CONTRACT' %}bg-warning-subtle text-warning
+                                    {% elif emp.employment_type == 'CONSULTANT' %}bg-info-subtle text-info
+                                    {% else %}bg-secondary-subtle text-secondary{% endif %}">
+                                    {{ emp.get_employment_type_display }}
+                                </span>
+                            </td>
+                            <td class="text-muted">{{ emp.staff_level.name|default:"–" }}</td>
+                            <td class="text-muted">{{ emp.start_date }}</td>
+                            <td class="{% if emp.is_contract_expired %}text-danger{% elif emp.is_contract_expiring_soon %}text-warning{% endif %}">
+                                {{ emp.contract_end_date|default:"–" }}
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill
+                                    {% if emp.employment_status == 'ACTIVE' %}bg-success-subtle text-success
+                                    {% elif emp.employment_status == 'ON_LEAVE' %}bg-warning-subtle text-warning
+                                    {% else %}bg-secondary-subtle text-secondary{% endif %}">
+                                    {{ emp.get_employment_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="10" class="text-center py-5 text-muted">{% translate "No employees match the selected filters." %}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card shadow-sm border-0 rounded-4 text-center py-6 p-5">
+            <i class="bi bi-file-earmark-bar-graph fs-1 text-secondary d-block mb-3"></i>
+            <h6 class="fw-bold">{% translate "Generate a Staff Report" %}</h6>
+            <p class="text-muted small">{% translate "Use the filter panel on the left to generate a filtered employee report, then export it to CSV, Excel, or print." %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<form method="get" action="{% url 'hr:report_export' %}" target="_blank" hx-boost="false" id="export-data-form">
+    {% for key, value in request.GET.items %}
+        {% if key != 'data_sections' and key != 'export_fields' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}
+    {% endfor %}
+</form>
+<script>
+(function initializeReportExport() {
+    const checkboxes = Array.from(document.querySelectorAll('.export-table-checkbox'));
+    const fieldCheckboxes = Array.from(document.querySelectorAll('.export-field-checkbox'));
+    const preview = document.querySelector('#export-preview span');
+    const exportForm = document.getElementById('export-data-form');
+    const selectAll = document.getElementById('select-all-tables');
+    const selectAllFields = document.getElementById('select-all-fields');
+    const exportActions = document.getElementById('export-actions');
+
+    function updatePreview() {
+        const selected = checkboxes.filter((checkbox) => checkbox.checked);
+        const selectedFields = fieldCheckboxes.filter((checkbox) => checkbox.checked);
+        document.querySelectorAll('.export-field-group').forEach((group) => {
+            group.classList.toggle('d-none', !selected.some((checkbox) => checkbox.value === group.dataset.section));
+        });
+        preview.textContent = selected.length
+            ? selected.map((checkbox) => checkbox.nextElementSibling.textContent.trim()).join(', ')
+              + ' — ' + selectedFields.length + ' {% translate "field(s) selected" %}'
+            : '{% translate "No tables selected." %}';
+        exportForm.querySelectorAll('input[name="data_sections"]').forEach((input) => input.remove());
+        exportForm.querySelectorAll('input[name="export_fields"]').forEach((input) => input.remove());
+        selected.forEach((checkbox) => {
+            const input = document.createElement('input');
+            input.type = 'hidden'; input.name = 'data_sections'; input.value = checkbox.value;
+            exportForm.appendChild(input);
+        });
+        selectedFields.forEach((checkbox) => {
+            if (!selected.some((table) => table.value === checkbox.dataset.section)) return;
+            const input = document.createElement('input');
+            input.type = 'hidden'; input.name = 'export_fields'; input.value = checkbox.value;
+            exportForm.appendChild(input);
+        });
+        if (exportActions) exportActions.querySelectorAll('button[type="submit"]').forEach((button) => button.disabled = !selected.length || !selectedFields.length);
+        selectAll.textContent = selected.length === checkboxes.length ? '{% translate "Clear All Tables" %}' : '{% translate "Select All Tables" %}';
+        selectAllFields.textContent = selectedFields.length === fieldCheckboxes.length ? '{% translate "Clear All Fields" %}' : '{% translate "Select All Fields" %}';
+    }
+    checkboxes.forEach((checkbox) => checkbox.addEventListener('change', function () {
+        fieldCheckboxes.filter((field) => field.dataset.section === checkbox.value).forEach((field) => field.checked = checkbox.checked);
+        updatePreview();
+    }));
+    fieldCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', function () {
+        if (checkbox.checked) {
+            const table = checkboxes.find((item) => item.value === checkbox.dataset.section);
+            if (table) table.checked = true;
+        }
+        updatePreview();
+    }));
+    selectAll.addEventListener('click', function () {
+        const selectEverything = checkboxes.some((checkbox) => !checkbox.checked);
+        checkboxes.forEach((checkbox) => checkbox.checked = selectEverything);
+        updatePreview();
+    });
+    selectAllFields.addEventListener('click', function () {
+        const selectEverything = fieldCheckboxes.some((checkbox) => !checkbox.checked);
+        fieldCheckboxes.forEach((checkbox) => checkbox.checked = selectEverything);
+        if (selectEverything) checkboxes.forEach((checkbox) => checkbox.checked = true);
+        updatePreview();
+    });
+    if (!fieldCheckboxes.some((checkbox) => checkbox.checked)) {
+        fieldCheckboxes.forEach((checkbox) => {
+            checkbox.checked = checkboxes.some((table) => table.checked && table.value === checkbox.dataset.section);
+        });
+    }
+    updatePreview();
+})();
+</script>
+{% endblock %}

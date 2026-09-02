@@ -1,0 +1,169 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{% translate "Staff Accounts Management" %}{% endblock %}
+
+{% block section_title %}{% translate "User Management" %}{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-sm border-0 rounded-4">
+    <!-- Header with Search and Add -->
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-md-9 col-lg-8">
+                <form method="get" action="{% url 'users:user_list' %}" class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="q" value="{{ search_query }}" class="form-control bg-light border-start-0" placeholder="{% translate 'Search by name, user or email...' %}">
+                        </div>
+                    </div>
+                    
+                    <!-- Role filter -->
+                    <div class="col-md-3">
+                        <select name="role" class="form-select form-select-sm bg-light" onchange="this.form.submit();">
+                            <option value="">{% translate "All Roles" %}</option>
+                            {% for r_code, r_name in role_choices %}
+                                <option value="{{ r_code }}" {% if selected_role == r_code %}selected{% endif %}>{{ r_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Active status filter -->
+                    <div class="col-md-3">
+                        <select name="is_active" class="form-select form-select-sm bg-light" onchange="this.form.submit();">
+                            <option value="">{% translate "All Statuses" %}</option>
+                            <option value="1" {% if selected_active == '1' %}selected{% endif %}>{% translate "Active" %}</option>
+                            <option value="0" {% if selected_active == '0' %}selected{% endif %}>{% translate "Deactivated" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-1">
+                        <a href="{% url 'users:user_list' %}" class="btn btn-sm btn-outline-secondary w-100" title="{% translate 'Reset' %}"><i class="bi bi-x-circle"></i></a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="col-md-auto">
+                {% if user|has_portal_permission:'users.create' %}
+                <a href="{% url 'users:user_create' %}" class="btn btn-warning fw-semibold px-4 text-dark rounded-pill">
+                    <i class="bi bi-person-plus-fill me-1"></i>{% translate "Add Staff User" %}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Table content -->
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="ps-4">{% translate "Staff Account" %}</th>
+                        <th scope="col">{% translate "Role" %}</th>
+                        <th scope="col">{% translate "Status" %}</th>
+                        <th scope="col">{% translate "Contact" %}</th>
+                        <th scope="col" class="text-end pe-4">{% translate "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in users_list %}
+                        <tr>
+                            <!-- Account Detail (Name & Picture) -->
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if staff.profile_picture|media_available %}
+                                        <img src="{{ staff.profile_picture.url }}" alt="{{ staff.username }}" class="rounded-circle border" width="38" height="38" style="object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <span class="fw-semibold text-dark d-block">{{ staff.get_full_name|default:staff.username }}</span>
+                                        <span class="text-muted small">@{{ staff.username }}</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Role -->
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary font-monospace small px-2.5 py-1.5 rounded">
+                                    {{ staff.get_effective_role_display }}
+                                </span>
+                            </td>
+
+                            <!-- Status Badge -->
+                            <td>
+                                {% if staff.is_active %}
+                                    <span class="badge bg-success-subtle text-success py-1.5 px-2.5 rounded-pill small">{% translate "Active" %}</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger py-1.5 px-2.5 rounded-pill small">{% translate "Deactivated" %}</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Contact info -->
+                            <td>
+                                <div class="small">
+                                    <span class="text-dark d-block"><i class="bi bi-envelope me-1.5 text-muted"></i>{{ staff.email|default:"-" }}</span>
+                                    <span class="text-muted"><i class="bi bi-telephone me-1.5 text-muted"></i>{{ staff.phone_number|default:"-" }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Actions Row -->
+                            <td class="text-end pe-4">
+                                {% if user|has_portal_permission:'users.edit' or user|has_portal_permission:'users.reset_password' or user|has_portal_permission:'users.activate' or user|has_portal_permission:'users.deactivate' %}
+                                <div class="d-inline-flex gap-2">
+                                    <!-- Edit Profile -->
+                                    {% if user|has_portal_permission:'users.edit' %}<a href="{% url 'users:user_update' staff.id %}" class="btn btn-light btn-sm border rounded" title="{% translate 'Edit Account' %}">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>{% endif %}
+
+                                    <!-- Reset Password -->
+                                    {% if user|has_portal_permission:'users.reset_password' %}<a href="{% url 'users:user_reset_password' staff.id %}" class="btn btn-light btn-sm border rounded text-warning" title="{% translate 'Override Password' %}">
+                                        <i class="bi bi-key"></i>
+                                    </a>{% endif %}
+
+                                    <!-- Force Logout Form -->
+                                    {% if staff != user %}
+                                        {% if user|has_portal_permission:'users.edit' %}<form action="{% url 'users:user_force_logout' staff.id %}" method="post" class="d-inline-block" onsubmit="return confirm('{% translate 'Force logout this user session?' %}');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-light btn-sm border rounded text-danger" title="{% translate 'Force Logout' %}">
+                                                <i class="bi bi-box-arrow-right"></i>
+                                            </button>
+                                        </form>{% endif %}
+
+                                        <!-- Toggle Activation Form -->
+                                        {% if staff.is_active and user|has_portal_permission:'users.deactivate' or not staff.is_active and user|has_portal_permission:'users.activate' %}<form action="{% url 'users:user_toggle_active' staff.id %}" method="post" class="d-inline-block" onsubmit="return confirm('{% if staff.is_active %}{% translate 'Are you sure you want to deactivate this account?' %}{% else %}{% translate 'Reactivate this account?' %}{% endif %}');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm {% if staff.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} rounded" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                                {% if staff.is_active %}{% translate "Deactivate" %}{% else %}{% translate "Reactivate" %}{% endif %}
+                                            </button>
+                                        </form>{% endif %}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-person-exclamation fs-1 d-block mb-3 text-secondary"></i>
+                                {% translate "No staff accounts found matching your search." %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="card-footer bg-white border-0 py-3">
+            {% include 'components/pagination.html' %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load i18n static portal_tags %}
+
+{% block title %}{{ article.title }} | DNMG{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">{% translate "Home" %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cms:public_news_list' %}">{% translate "News" %}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ article.title|truncatewords:5 }}</li>
+                </ol>
+            </nav>
+
+            <article class="card border-0 shadow-sm p-4 p-md-5">
+                <div class="mb-3">
+                    <span class="badge bg-primary px-3 py-2 fs-6 mb-2">{{ article.category.name|default:"General" }}</span>
+                    <h1 class="fw-bold text-dark mb-3">{{ article.title }}</h1>
+                    <div class="d-flex align-items-center gap-3 text-muted small border-bottom pb-3">
+                        <span><i class="bi bi-calendar3 me-1"></i>{{ article.published_at|date:"F d, Y" }}</span>
+                        <span><i class="bi bi-person me-1"></i>{{ article.author.get_full_name|default:article.author.username|default:"DNMG Staff" }}</span>
+                    </div>
+                </div>
+
+                {% if article.featured_image|media_available %}
+                <div class="mb-4 text-center">
+                    <img src="{{ article.featured_image.url }}" class="img-fluid rounded shadow-sm" alt="{{ article.title }}" style="max-height: 450px; width: 100%; object-fit: cover;">
+                </div>
+                {% endif %}
+
+                <div class="lead text-secondary mb-4 fst-italic border-start border-4 border-primary ps-3">
+                    {{ article.excerpt }}
+                </div>
+
+                <div class="article-content lh-lg text-dark">
+                    {{ article_content|safe }}
+                    {% for image in article.images.all %}
+                    {% if image.image|media_available %}
+                    <figure class="article-inline-image">
+                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:article.title }}">
+                        {% if image.caption %}<figcaption>{{ image.caption }}</figcaption>{% endif %}
+                    </figure>
+                    {% else %}
+                    <p class="text-muted small">{% translate "No files or data available." %}</p>
+                    {% endif %}
+                    {% endfor %}
+                    {% for attachment in article.attachments.all %}
+                    {% if attachment.file|media_available %}
+                    <figure class="article-inline-attachment">
+                        <a href="{{ attachment.file.url }}" target="_blank" rel="noopener">{{ attachment.title|default:attachment.file.name }}</a>
+                        <figcaption>{% translate "Supporting document" %}</figcaption>
+                    </figure>
+                    {% else %}
+                    <p class="text-muted small">{% translate "No files or data available." %}</p>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex justify-content-between align-items-center">
+                    <a href="{% url 'cms:public_news_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>{% translate "Back to News List" %}
+                    </a>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{% endblock %}

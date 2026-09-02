@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load i18n static portal_tags %}
+
+{% block title %}{% translate "News & Updates" %} | DNMG{% endblock %}
+
+{% block content %}
+<div class="bg-primary text-white py-5 mb-5 shadow-sm">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="fw-bold mb-2">{% translate "Meteorological & Geophysical News" %}</h1>
+                <p class="lead mb-0 text-white-50">{% translate "Latest announcements, climate updates, and operational press releases from DNMG Timor-Leste." %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <!-- Search & Filter sidebar -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm p-3">
+                <h5 class="fw-bold mb-3">{% translate "Search & Filter" %}</h5>
+                <form method="get" action="{% url 'cms:public_news_list' %}">
+                    <div class="mb-3">
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="{% translate 'Search news...' %}">
+                    </div>
+                    {% if categories %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{% translate "Category" %}</label>
+                        <select name="category" class="form-select" onchange="this.form.submit()">
+                            <option value="">{% translate "All Categories" %}</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-100">{% translate "Filter Results" %}</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- News Cards Grid -->
+        <div class="col-lg-9">
+            <div class="row g-4">
+                {% for article in articles %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                        {% if article.featured_image|media_available %}
+                            <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 180px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center text-muted" style="height: 180px;">
+                                <i class="bi bi-newspaper fs-1 text-secondary opacity-50"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-secondary">{{ article.category.name|default:"General" }}</span>
+                                <small class="text-muted">{{ article.published_at|date:"b d, Y" }}</small>
+                            </div>
+                            <h5 class="card-title fw-bold text-dark mb-2">{{ article.title }}</h5>
+                            <p class="card-text text-muted small flex-grow-1">{{ article.excerpt|truncatewords:20 }}</p>
+                            <a href="{% url 'cms:public_news_detail' article.slug %}" class="btn btn-sm btn-outline-primary mt-3 align-self-start">
+                                {% translate "Read Full Article" %} <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center text-muted">
+                    <i class="bi bi-newspaper fs-1 text-secondary d-block mb-3"></i>
+                    <p class="fs-5 mb-0">{% translate "No news articles found matching your criteria." %}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+            <div class="mt-4">
+                {% include 'components/pagination.html' %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

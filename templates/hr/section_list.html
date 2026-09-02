@@ -1,0 +1,16 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Department Sections" %}{% endblock %}
+{% block section_title %}{% translate "Department Sections" %}{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3"><div><h5 class="fw-bold mb-0">{% translate "Department Sections" %}</h5><p class="text-muted small mb-0">{% translate "Manage sections under each department." %}</p></div>{% if user.can_manage_hr %}<a href="{% url 'hr:section_create' %}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-plus-circle me-1"></i>{% translate "Add Section" %}</a>{% endif %}</div>
+        <form method="get" class="row g-2"><div class="col-md-5"><input name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="{% translate 'Search section name or code...' %}"></div><div class="col-md-4"><select name="department" class="form-select form-select-sm"><option value="">{% translate "All Departments" %}</option>{% for department in departments %}<option value="{{ department.pk }}" {% if selected_department == department.pk|stringformat:'s' %}selected{% endif %}>{{ department.name }}</option>{% endfor %}</select></div><div class="col-md-3 d-flex gap-2"><button class="btn btn-sm btn-primary"><i class="bi bi-funnel"></i></button><a href="{% url 'hr:section_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-circle"></i></a></div></form>
+    </div>
+    <div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="table-light"><tr><th class="ps-4">{% translate "Section" %}</th><th>{% translate "Department" %}</th><th>{% translate "Code" %}</th><th>{% translate "Status" %}</th><th class="text-end pe-4">{% translate "Actions" %}</th></tr></thead><tbody>{% for section in sections %}<tr><td class="ps-4"><span class="fw-semibold">{{ section.name }}</span><div class="text-muted small">{{ section.description|truncatechars:70 }}</div></td><td>{{ section.department.name }}</td><td class="font-monospace text-muted">{{ section.code|default:'–' }}</td><td><span class="badge {% if section.is_active %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-secondary{% endif %}">{% if section.is_active %}{% translate "Active" %}{% else %}{% translate "Inactive" %}{% endif %}</span></td><td class="text-end pe-4">{% if user.can_manage_hr %}<a href="{% url 'hr:section_update' section.pk %}" class="btn btn-sm btn-light border rounded-pill"><i class="bi bi-pencil"></i></a><a href="{% url 'hr:section_delete' section.pk %}" class="btn btn-sm btn-light border border-danger text-danger rounded-pill"><i class="bi bi-trash"></i></a>{% endif %}</td></tr>{% empty %}<tr><td colspan="5" class="text-center py-5 text-muted">{% translate "No sections found." %}</td></tr>{% endfor %}</tbody></table></div>
+    {% if is_paginated %}<div class="card-footer bg-white border-0 py-3">{% include 'components/pagination.html' %}</div>{% endif %}
+</div>
+{% endblock %}

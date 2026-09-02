@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "File Unavailable" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card border-0 shadow-sm text-center p-5">
+                <i class="bi bi-folder2-open display-4 text-secondary mb-3"></i>
+                <h1 class="h4 fw-bold text-dark">{% translate "No files or data available." %}</h1>
+                <p class="text-muted mb-4">{% translate "The requested file is unavailable. Please return to the previous page or try again later." %}</p>
+                <a href="javascript:history.back()" class="btn btn-outline-primary">{% translate "Go Back" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,874 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% if map_mode == 'forecast' %}{% translate "10-Day ECMWF Forecast Map" %}{% else %}{% translate "Live Weather Observations Map" %}{% endif %}{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js for real-time station & 10-day forecast graphs -->
+<script src="{% static 'vendor/chart.js/chart.umd.min.js' %}"></script>
+<style>
+    .gis-explorer-container {
+        position: relative;
+        min-height: 720px;
+        background: #f8fafc;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--gray-border);
+    }
+    #gis_map_canvas {
+        height: 720px;
+        width: 100%;
+    }
+    .station-detail-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 480px;
+        max-width: 100%;
+        height: 100%;
+        background: #ffffff;
+        z-index: 1000;
+        box-shadow: -4px 0 20px rgba(0,0,0,0.12);
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .station-detail-panel.open {
+        transform: translateX(0);
+    }
+    .panel-close-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1.5px solid #ef4444;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .panel-close-btn:hover {
+        background: #ef4444;
+        color: #fff;
+    }
+    .meta-grid-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+    }
+    .chart-card-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 16px;
+    }
+    .bottom-map-filter-pill {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 6px 12px;
+        border-radius: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .live-station-search {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 998;
+        width: min(360px, calc(100% - 40px));
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .live-station-search .form-control:focus {
+        box-shadow: none;
+        border-color: var(--bs-primary);
+    }
+    /* 10-Day Forecast Control Overlays */
+    .forecast-top-control-card {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 998;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 14px 18px;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        max-width: 620px;
+    }
+    .map-legend-card {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        z-index: 998;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 10px 14px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        font-size: 0.82rem;
+    }
+    .legend-color-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    .nav-pills-mode .nav-link {
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 20px;
+    }
+    @media (max-width: 991.98px) {
+        .gis-explorer-container, #gis_map_canvas { min-height: 620px; height: 620px; }
+        .forecast-top-control-card { max-width: calc(100% - 40px); }
+    }
+    @media (max-width: 767.98px) {
+        .weather-map-header { align-items: stretch !important; }
+        .weather-map-actions { width: 100%; }
+        .weather-map-actions .btn { flex: 1 1 0; }
+        .gis-explorer-container, #gis_map_canvas { min-height: 540px; height: 540px; border-radius: 12px; }
+        .station-detail-panel { width: 100%; }
+        .forecast-top-control-card { top: 12px; left: 12px; max-width: calc(100% - 24px); padding: 12px; }
+        .live-station-search { top: 12px; left: 12px; width: calc(100% - 24px); }
+        .bottom-map-filter-pill { bottom: 12px; width: calc(100% - 24px); max-width: none; overflow-x: auto; justify-content: flex-start; }
+        .bottom-map-filter-pill .btn { flex: 0 0 auto; }
+        .map-legend-card { right: 12px; bottom: 76px; font-size: 0.72rem; }
+        #day_pills_container { padding-bottom: 2px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3 px-md-4 weather-map-page">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 weather-map-header">
+        <div>
+            <h4 class="fw-bold text-dark mb-0">
+                {% if map_mode == 'forecast' %}
+                <i class="bi bi-calendar3-week me-2 text-primary"></i>{% translate "10-Day ECMWF Forecast Map" %}
+                {% else %}
+                <i class="bi bi-broadcast me-2 text-success"></i>{% translate "Live Weather Observations" %}
+                {% endif %}
+            </h4>
+            <small class="text-muted">
+                {% if map_mode == 'forecast' %}
+                {% translate "Municipality-level ECMWF guidance for the next 10 days." %}
+                {% else %}
+                {% translate "Current telemetry from the national weather-station network." %}
+                {% endif %}
+            </small>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 weather-map-actions">
+            {% if map_mode == 'forecast' %}
+            <a href="{% url 'weather:interactive_map' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-broadcast me-1"></i>{% translate "Live Observations" %}
+            </a>
+            {% else %}
+            <a href="{% url 'weather:forecast_map' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-calendar3 me-1"></i>{% translate "10-Day Forecast" %}
+            </a>
+            {% endif %}
+            <a href="{% url 'core:home' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-house me-1"></i>{% translate "Home" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Explorer Split Container -->
+    <div class="gis-explorer-container shadow-sm position-relative">
+        <!-- GIS Map Canvas -->
+        <div id="gis_map_canvas"></div>
+
+        {% if map_mode == 'observations' %}
+        <!-- Floating controls for live observations only -->
+        <form id="live_station_search" class="live-station-search" role="search">
+            <label for="live_station_search_input" class="visually-hidden">{% translate "Search live weather stations" %}</label>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-primary"></i></span>
+                <input id="live_station_search_input" type="search" class="form-control border-start-0" autocomplete="off"
+                       placeholder="{% translate 'Search station or municipality...' %}" aria-describedby="live_station_search_help">
+                <button class="btn btn-primary" type="submit">{% translate "Search" %}</button>
+            </div>
+            <small id="live_station_search_help" class="text-muted d-block mt-1 px-1">{% translate "Search by station name, code, municipality, or type." %}</small>
+            <div id="live_station_search_status" class="visually-hidden" aria-live="polite"></div>
+        </form>
+        <div id="live_filter_pill" class="bottom-map-filter-pill d-flex align-items-center gap-1">
+            <button class="btn btn-sm btn-primary rounded-pill px-3 filter-pill-btn active" data-type="ALL">{% translate "ALL" %}</button>
+            <button class="btn btn-sm btn-light rounded-pill px-3 filter-pill-btn" data-type="AWS">{% translate "AWS" %}</button>
+            <button class="btn btn-sm btn-light rounded-pill px-3 filter-pill-btn" data-type="TIDE_GAUGE">{% translate "Tide Gauge" %}</button>
+            <button class="btn btn-sm btn-light rounded-pill px-3 filter-pill-btn" data-type="BUOY">{% translate "Buoy" %}</button>
+        </div>
+        {% endif %}
+
+        {% if map_mode == 'forecast' %}
+        <!-- Floating controls for forecast data only -->
+        <div id="forecast_control_overlay" class="forecast-top-control-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="fw-bold text-dark small text-uppercase font-monospace">
+                    <i class="bi bi-layers-half text-primary me-1"></i>{% translate "10-Day Regional Forecast Variable" %}
+                </span>
+                <span id="forecast_model_badge" class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1 font-monospace extra-small">
+                    ECMWF-IFS Model
+                </span>
+            </div>
+
+            <!-- Forecast Variable Buttons -->
+            <div class="d-flex flex-wrap gap-1 mb-3" id="var_pill_group">
+                <button class="btn btn-sm btn-primary rounded-pill px-2.5 py-1 var-pill-btn active" data-var="tp">
+                    <i class="bi bi-cloud-rain-fill me-1"></i>Rainfall (tp)
+                </button>
+                <button class="btn btn-sm btn-light rounded-pill px-2.5 py-1 var-pill-btn" data-var="heat">
+                    <i class="bi bi-thermometer-high me-1 text-danger"></i>Heat Temp
+                </button>
+                <button class="btn btn-sm btn-light rounded-pill px-2.5 py-1 var-pill-btn" data-var="cold">
+                    <i class="bi bi-thermometer-snow me-1 text-info"></i>Cold Temp
+                </button>
+                <button class="btn btn-sm btn-light rounded-pill px-2.5 py-1 var-pill-btn" data-var="wind">
+                    <i class="bi bi-wind me-1 text-primary"></i>Wind Speed
+                </button>
+                <button class="btn btn-sm btn-light rounded-pill px-2.5 py-1 var-pill-btn" data-var="rh">
+                    <i class="bi bi-droplet-half me-1 text-info"></i>Humidity
+                </button>
+                <button class="btn btn-sm btn-light rounded-pill px-2.5 py-1 var-pill-btn" data-var="thi">
+                    <i class="bi bi-activity me-1 text-warning"></i>THI Index
+                </button>
+                <button class="btn btn-sm btn-light rounded-pill px-2.5 py-1 var-pill-btn" data-var="cloud_cover">
+                    <i class="bi bi-clouds-fill me-1 text-secondary"></i>Cloud Cover
+                </button>
+            </div>
+
+            <!-- 10-Day Timeline Day Slider & Labels -->
+            <div class="d-flex align-items-center justify-content-between mb-1">
+                <small class="text-muted font-monospace" id="forecast_selected_day_label">
+                    Day 1: Loading...
+                </small>
+                <small class="text-primary fw-bold font-monospace" id="forecast_date_range_label">
+                    --
+                </small>
+            </div>
+
+            <input type="range" class="form-range" id="forecast_day_slider" min="1" max="10" step="1" value="1">
+
+            <!-- Day Pills Row -->
+            <div class="forecast-day-pills d-flex gap-2 overflow-x-auto pt-1" id="day_pills_container">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- 10-DAY FORECAST MAP LEGEND CARD -->
+        <div id="forecast_legend_card" class="map-legend-card">
+            <div class="fw-bold text-dark mb-1" id="legend_title">Alert Level Legend</div>
+            <div class="d-flex flex-column gap-1">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="legend-color-dot" style="background: #94CB55;"></span>
+                    <span class="text-muted">Low / Normal</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="legend-color-dot" style="background: #F3EB12;"></span>
+                    <span class="text-muted">Moderate / Advisory</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="legend-color-dot" style="background: #F39B3A;"></span>
+                    <span class="text-muted">High / Watch</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="legend-color-dot" style="background: #EF4444;"></span>
+                    <span class="text-muted">Danger / Warning</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- SLIDING RIGHT PANEL FOR STATIONS & MUNICIPALITIES -->
+        <div id="station_detail_panel" class="station-detail-panel p-4">
+            <!-- Header Bar -->
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="panel-close-btn" onclick="closeStationPanel()">
+                        <i class="bi bi-x-lg fs-6"></i>
+                    </button>
+                    <h6 class="fw-bold mb-0 text-uppercase font-monospace text-primary" id="panel_station_title" style="letter-spacing: 0.5px;">
+                        SELECT A LOCATION
+                    </h6>
+                </div>
+                <span id="panel_online_badge" class="badge bg-success-subtle text-success rounded-pill px-3 py-1.5 font-monospace small">
+                    ONLINE
+                </span>
+            </div>
+
+            <!-- Status Alert Banner -->
+            <div id="panel_status_alert" class="alert alert-success py-2 px-3 mb-3 small d-flex align-items-center gap-2 border-0 rounded-3">
+                <i class="bi bi-wifi text-success fs-5"></i>
+                <span id="panel_status_text">Station updated in real-time</span>
+            </div>
+
+            <!-- Metadata 2x2 Grid -->
+            <div class="row g-2 mb-4" id="panel_meta_grid">
+                <div class="col-6">
+                    <div class="meta-grid-box">
+                        <div class="d-flex align-items-center gap-2 text-muted small mb-1">
+                            <i class="bi bi-compass text-success fs-5"></i>
+                            <span>{% translate "Longitude" %}</span>
+                        </div>
+                        <strong class="text-dark font-monospace fs-6" id="panel_lon">125.5747°</strong>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="meta-grid-box">
+                        <div class="d-flex align-items-center gap-2 text-muted small mb-1">
+                            <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                            <span>{% translate "Latitude" %}</span>
+                        </div>
+                        <strong class="text-dark font-monospace fs-6" id="panel_lat">-8.5532°</strong>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="meta-grid-box">
+                        <div class="d-flex align-items-center gap-2 text-muted small mb-1">
+                            <i class="bi bi-database text-primary fs-5"></i>
+                            <span>{% translate "Source" %}</span>
+                        </div>
+                        <strong class="text-dark font-monospace fs-6" id="panel_source">SYNOPTIC</strong>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="meta-grid-box">
+                        <div class="d-flex align-items-center gap-2 text-muted small mb-1">
+                            <i class="bi bi-alt text-dark fs-5"></i>
+                            <span>{% translate "Elevation" %}</span>
+                        </div>
+                        <strong class="text-dark font-monospace fs-6" id="panel_elevation">0 m</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Telemetry Real-time Values & Charts Container -->
+            <div id="panel_charts_container">
+                <!-- Air Temperature Chart -->
+                <div class="chart-card-box" id="box_temp_chart">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold text-dark small" id="panel_chart1_label">{% translate "Air Temperature [°C]" %}</span>
+                        <span class="fw-bold text-danger fs-5" id="panel_temp_val">-- °C</span>
+                    </div>
+                    <div style="height: 160px; position: relative;">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pressure Chart -->
+                <div class="chart-card-box" id="box_pressure_chart">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold text-dark small" id="panel_pressure_label">{% translate "Non Coordinate Pressure [mb / hPa]" %}</span>
+                        <span class="fw-bold text-primary fs-5" id="panel_press_val">-- hPa</span>
+                    </div>
+                    <div style="height: 160px; position: relative;">
+                        <canvas id="pressureChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Humidity / Tide / Wave Chart -->
+                <div class="chart-card-box" id="box_third_chart">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold text-dark small" id="panel_third_label">{% translate "Relative Humidity [%]" %}</span>
+                        <span class="fw-bold text-info fs-5" id="panel_third_val">-- %</span>
+                    </div>
+                    <div style="height: 160px; position: relative;">
+                        <canvas id="thirdChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    var map;
+    var mapMode = "{{ map_mode }}";
+    var activeVariable = "tp";
+    var activeForecastDay = 1;
+    var forecastGeojsonData = null;
+
+    var chartTemp, chartPressure, chartThird;
+    var markersLayer, forecastGeojsonLayer;
+    var allStationFeatures = [];
+    var activeStationType = "ALL";
+    var stationSearchQuery = "";
+
+    function closeStationPanel() {
+        document.getElementById('station_detail_panel').classList.remove('open');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Leaflet Map
+        map = L.map('gis_map_canvas').setView([-8.65, 125.75], 9);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        markersLayer = L.layerGroup();
+
+        // Initialize Charts
+        function initCharts() {
+            var ctxT = document.getElementById('tempChart').getContext('2d');
+            chartTemp = new Chart(ctxT, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Temp', data: [], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            });
+
+            var ctxP = document.getElementById('pressureChart').getContext('2d');
+            chartPressure = new Chart(ctxP, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Pressure', data: [], borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            });
+
+            var ctxTh = document.getElementById('thirdChart').getContext('2d');
+            chartThird = new Chart(ctxTh, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Value', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            });
+        }
+        initCharts();
+
+        // Icon Generator for Stations
+        function getStationIcon(type, isOnline) {
+            var iconHtml = '';
+            var bgClass = isOnline ? 'bg-primary' : 'bg-danger';
+
+            if (type === 'TIDE_GAUGE') {
+                iconHtml = '<i class="bi bi-water text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-info' : 'bg-danger';
+            } else if (type === 'BUOY') {
+                iconHtml = '<i class="bi bi-life-preserver text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-dark' : 'bg-danger';
+            } else {
+                iconHtml = '<i class="bi bi-cloud-sun text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-primary' : 'bg-danger';
+            }
+
+            var statusRing = isOnline ? 'border: 3px solid #22c55e;' : 'border: 3px solid #ef4444;';
+
+            return L.divIcon({
+                className: 'custom-leaflet-marker',
+                html: '<div class="d-flex align-items-center justify-content-center rounded-circle shadow ' + bgClass + '" style="width:38px; height:38px; ' + statusRing + '">' + iconHtml + '</div>',
+                iconSize: [38, 38],
+                iconAnchor: [19, 19],
+                popupAnchor: [0, -19]
+            });
+        }
+
+        // Update Panel for Live Stations Mode
+        function formatTelemetryValue(value) {
+            if (value === null || value === undefined || value === '') {
+                return '--';
+            }
+            var numericValue = Number(value);
+            return Number.isFinite(numericValue) ? numericValue.toFixed(2) : '--';
+        }
+
+        function formatCoordinate(value) {
+            var numericValue = Number(value);
+            return Number.isFinite(numericValue) ? numericValue.toFixed(6) : '--';
+        }
+
+        function updateStationPanel(props) {
+            document.getElementById('box_pressure_chart').classList.remove('d-none');
+            document.getElementById('box_third_chart').classList.remove('d-none');
+
+            var panel = document.getElementById('station_detail_panel');
+            var obs = props.observation || {};
+            var history = props.history || {};
+            var isBuoy = props.station_type === 'BUOY';
+            var usesActualTimestamps = Boolean(props.history_uses_actual_timestamps);
+            // var timestampLabel = usesActualTimestamps
+                // ? "{% translate 'API timestamps' %}"
+                // : "30 min ({% translate 'API timestamps' %})";
+            document.getElementById('panel_chart1_label').innerText = (
+                isBuoy
+                    ? "{% translate 'Sea Surface Temperature [°C]' %}"
+                    : "{% translate 'Air Temperature [°C]' %}"
+            );
+            // + " — " + timestampLabel;
+
+            document.getElementById('panel_station_title').innerText = "STATION: " + props.name.toUpperCase();
+            document.getElementById('panel_lon').innerText = formatCoordinate(props.longitude) + "°";
+            document.getElementById('panel_lat').innerText = formatCoordinate(props.latitude) + "°";
+            document.getElementById('panel_source').innerText = props.station_type_display || props.station_type;
+            document.getElementById('panel_elevation').innerText = (props.elevation || 0) + " m";
+
+            var badge = document.getElementById('panel_online_badge');
+            var alertBox = document.getElementById('panel_status_alert');
+            var alertText = document.getElementById('panel_status_text');
+
+            if (props.is_online) {
+                badge.className = "badge bg-success-subtle text-success rounded-pill px-3 py-1.5 font-monospace small";
+                badge.innerText = "ONLINE";
+                alertBox.className = "alert alert-success py-2 px-3 mb-3 small d-flex align-items-center gap-2 border-0 rounded-3";
+                alertText.innerText = props.last_seen_formatted;
+            } else {
+                badge.className = "badge bg-danger-subtle text-danger rounded-pill px-3 py-1.5 font-monospace small";
+                badge.innerText = "OFFLINE";
+                alertBox.className = "alert alert-danger py-2 px-3 mb-3 small d-flex align-items-center gap-2 border-0 rounded-3";
+                alertText.innerText = props.last_seen_formatted;
+            }
+
+            var displayedTemperature = isBuoy && obs.sea_surface_temp !== null && obs.sea_surface_temp !== undefined
+                ? obs.sea_surface_temp
+                : obs.temp;
+            document.getElementById('panel_temp_val').innerText = formatTelemetryValue(displayedTemperature) + " °C";
+
+            var pressureLabel = document.getElementById('panel_pressure_label');
+            if (isBuoy) {
+                pressureLabel.innerText = "{% translate 'Peak Period [s]' %}";
+                document.getElementById('panel_press_val').innerText = formatTelemetryValue(obs.peak_period) + " s";
+                chartPressure.data.datasets[0].label = "{% translate 'Peak Period' %}";
+            } else {
+                pressureLabel.innerText = "{% translate 'Non Coordinate Pressure [mb / hPa]' %}";
+                document.getElementById('panel_press_val').innerText = formatTelemetryValue(obs.pressure) + " hPa";
+                chartPressure.data.datasets[0].label = "{% translate 'Pressure' %}";
+            }
+
+            var thirdLabel = document.getElementById('panel_third_label');
+            var thirdVal = document.getElementById('panel_third_val');
+            var thirdData = [];
+
+            if (props.station_type === 'TIDE_GAUGE') {
+                thirdLabel.innerText = "{% translate 'Tide Level [mm]' %}";
+                thirdVal.innerText = formatTelemetryValue(obs.tide_level) + " mm";
+                thirdData = history.tide || [];
+            } else if (props.station_type === 'BUOY') {
+                thirdLabel.innerText = "{% translate 'Significant Wave Height [m]' %}";
+                thirdVal.innerText = formatTelemetryValue(obs.wave_height) + " m";
+                thirdData = history.wave || [];
+            } else {
+                thirdLabel.innerText = "{% translate 'Relative Humidity [%]' %}";
+                thirdVal.innerText = formatTelemetryValue(obs.humidity) + " %";
+                thirdData = history.humidity || [];
+            }
+
+            var timeLabels = history.timestamps || ['Aug 4', 'Aug 5'];
+            chartTemp.data.labels = timeLabels;
+            chartTemp.data.datasets[0].data = history.temp && history.temp.length ? history.temp : [displayedTemperature];
+            chartTemp.update();
+
+            chartPressure.data.labels = timeLabels;
+            chartPressure.data.datasets[0].data = isBuoy
+                ? (history.peak_period && history.peak_period.length ? history.peak_period : [obs.peak_period])
+                : (history.pressure && history.pressure.length ? history.pressure : [obs.pressure]);
+            chartPressure.update();
+
+            chartThird.data.labels = timeLabels;
+            chartThird.data.datasets[0].data = thirdData;
+            chartThird.update();
+
+            panel.classList.add('open');
+        }
+
+        function stationMatchesSearch(props) {
+            if (!stationSearchQuery) return true;
+            var searchableText = [
+                props.name,
+                props.code,
+                props.municipality,
+                props.municipality_display,
+                props.station_type,
+                props.station_type_display
+            ].filter(Boolean).join(' ').toLowerCase();
+            return searchableText.includes(stationSearchQuery);
+        }
+
+        function getVisibleStations() {
+            return allStationFeatures.filter(function(feat) {
+                var props = feat.properties;
+                return (activeStationType === "ALL" || props.station_type === activeStationType) && stationMatchesSearch(props);
+            });
+        }
+
+        function focusStation(feature) {
+            var coords = feature.geometry.coordinates;
+            map.flyTo([coords[1], coords[0]], 11, { duration: 0.8 });
+            updateStationPanel(feature.properties);
+        }
+
+        function renderMarkers() {
+            markersLayer.clearLayers();
+            getVisibleStations().forEach(function(feat) {
+                var props = feat.properties;
+                var coords = feat.geometry.coordinates;
+
+                var marker = L.marker([coords[1], coords[0]], { 
+                    icon: getStationIcon(props.station_type, props.is_online) 
+                });
+
+                marker.on('click', function() {
+                    focusStation(feat);
+                });
+
+                markersLayer.addLayer(marker);
+            });
+        }
+
+        if (mapMode === 'observations') {
+            markersLayer.addTo(map);
+            fetch("{% url 'weather:api_live_stations' %}")
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data && data.features) {
+                        allStationFeatures = data.features;
+                        renderMarkers();
+                        var defaultSt = allStationFeatures.find(function(f) { return f.properties.name.toLowerCase().includes('manatuto'); }) || allStationFeatures[0];
+                        if (defaultSt) updateStationPanel(defaultSt.properties);
+                    }
+                });
+
+            document.querySelectorAll('.filter-pill-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-pill-btn').forEach(function(b) {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-light');
+                    });
+                    this.classList.remove('btn-light');
+                    this.classList.add('btn-primary', 'active');
+                    activeStationType = this.getAttribute('data-type');
+                    renderMarkers();
+                });
+            });
+
+            var searchForm = document.getElementById('live_station_search');
+            var searchInput = document.getElementById('live_station_search_input');
+            var searchStatus = document.getElementById('live_station_search_status');
+
+            function updateStationSearch(focusFirstResult) {
+                stationSearchQuery = searchInput.value.trim().toLowerCase();
+                var matchingStations = getVisibleStations();
+                renderMarkers();
+
+                if (!stationSearchQuery) {
+                    searchStatus.textContent = "";
+                    return;
+                }
+
+                var resultMessage = matchingStations.length === 1
+                    ? "1 {% translate 'station found' %}"
+                    : matchingStations.length + " {% translate 'stations found' %}";
+                searchStatus.textContent = resultMessage;
+
+                if (focusFirstResult && matchingStations.length) {
+                    focusStation(matchingStations[0]);
+                }
+            }
+
+            searchInput.addEventListener('input', function() {
+                updateStationSearch(false);
+            });
+            searchForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                updateStationSearch(true);
+            });
+        }
+
+        // --- 10-DAY FORECAST MAP FUNCTIONS ---
+        window.load10DayForecastData = function(varCode) {
+            activeVariable = varCode;
+            var url = "{% url 'weather:api_10day_forecast_map' %}?variable=" + varCode;
+
+            fetch(url)
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    forecastGeojsonData = data;
+                    render10DayChoropleth();
+                });
+        };
+
+        function render10DayChoropleth() {
+            if (!forecastGeojsonData) return;
+
+            if (forecastGeojsonLayer) {
+                map.removeLayer(forecastGeojsonLayer);
+            }
+
+            var dayIdx = activeForecastDay - 1;
+
+            forecastGeojsonLayer = L.geoJSON(forecastGeojsonData, {
+                style: function(feature) {
+                    var props = feature.properties;
+                    var days = props.forecast_days || [];
+                    var dayData = days[dayIdx] || {};
+                    var fillColor = dayData.color_code || "#94CB55";
+
+                    return {
+                        fillColor: fillColor,
+                        weight: 2,
+                        opacity: 1,
+                        color: '#ffffff',
+                        fillOpacity: 0.72
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    var props = feature.properties;
+
+                    layer.on({
+                        mouseover: function(e) {
+                            var l = e.target;
+                            l.setStyle({
+                                weight: 3,
+                                color: '#1e293b',
+                                fillOpacity: 0.9
+                            });
+                            l.bringToFront();
+                        },
+                        mouseout: function(e) {
+                            forecastGeojsonLayer.resetStyle(e.target);
+                        },
+                        click: function(e) {
+                            map.fitBounds(e.target.getBounds(), { padding: [30, 30] });
+                            updateForecastMunicipalityPanel(props);
+                        }
+                    });
+
+                    // Dynamic Tooltip
+                    var days = props.forecast_days || [];
+                    var dayData = days[dayIdx] || {};
+                    var valStr = (dayData.aggregate_value !== null && dayData.aggregate_value !== undefined) ? dayData.aggregate_value + " " + props.unit : "N/A";
+                    
+                    var tooltipHtml = '<strong>' + props.municipality_name + '</strong><br/>' +
+                                      props.variable_name + ': <strong>' + valStr + '</strong><br/>' +
+                                      'Alert: <span style="color:' + dayData.color_code + '; font-weight:bold;">' + dayData.alert_level + '</span>';
+                    
+                    layer.bindTooltip(tooltipHtml, { sticky: true, direction: 'top' });
+                }
+            }).addTo(map);
+
+            // Update Timeline Header & Slider Label
+            var sampleFeat = forecastGeojsonData.features[0];
+            if (sampleFeat && sampleFeat.properties.forecast_days) {
+                var days = sampleFeat.properties.forecast_days;
+                var totalDays = days.length;
+
+                var slider = document.getElementById('forecast_day_slider');
+                slider.max = totalDays;
+
+                var curDayData = days[dayIdx] || {};
+                document.getElementById('forecast_selected_day_label').innerText = "Day " + activeForecastDay + " (" + (curDayData.date_label || "") + ")";
+                
+                if (curDayData.period_start) {
+                    var pStartStr = curDayData.period_start.replace('T', ' ').substring(0, 16);
+                    document.getElementById('forecast_date_range_label').innerText = pStartStr + " GMT+9";
+                }
+
+                // Render Day Buttons Row
+                var pillsContainer = document.getElementById('day_pills_container');
+                pillsContainer.innerHTML = '';
+                days.forEach(function(d, idx) {
+                    var btn = document.createElement('button');
+                    var activeClass = (idx + 1 === activeForecastDay) ? 'active' : '';
+                    btn.className = 'forecast-day-pill ' + activeClass;
+                    btn.type = 'button';
+                    btn.innerHTML = '<span>Day ' + (idx + 1) + '</span><small>' + (d.date_label || '') + '</small>';
+                    btn.onclick = function() {
+                        activeForecastDay = idx + 1;
+                        slider.value = activeForecastDay;
+                        render10DayChoropleth();
+                    };
+                    pillsContainer.appendChild(btn);
+                });
+            }
+        }
+
+        // Update Panel for 10-Day Municipality Forecast
+        function updateForecastMunicipalityPanel(props) {
+            var panel = document.getElementById('station_detail_panel');
+            var dayIdx = activeForecastDay - 1;
+            var days = props.forecast_days || [];
+            var curDay = days[dayIdx] || {};
+
+            document.getElementById('panel_station_title').innerText = "MUNICIPALITY: " + props.municipality_name.toUpperCase();
+
+            document.getElementById('panel_lon').innerText = props.variable_name;
+            document.getElementById('panel_lat').innerText = props.unit;
+            document.getElementById('panel_source').innerText = "ECMWF-IFS";
+            document.getElementById('panel_elevation').innerText = "10-Day Model";
+
+            var badge = document.getElementById('panel_online_badge');
+            var alertBox = document.getElementById('panel_status_alert');
+            var alertText = document.getElementById('panel_status_text');
+
+            badge.className = "badge rounded-pill px-3 py-1.5 font-monospace small text-white";
+            badge.style.backgroundColor = curDay.color_code || "#94CB55";
+            badge.innerText = (curDay.alert_level || "Normal").toUpperCase();
+
+            alertBox.className = "alert py-2 px-3 mb-3 small d-flex align-items-center gap-2 border-0 rounded-3 text-white";
+            alertBox.style.backgroundColor = curDay.color_code || "#94CB55";
+            var valStr = (curDay.aggregate_value !== null && curDay.aggregate_value !== undefined) ? curDay.aggregate_value + " " + props.unit : "N/A";
+            var curDayVal = (curDay.aggregate_value !== null && curDay.aggregate_value !== undefined) ? curDay.aggregate_value + " " + props.unit : "N/A";
+            alertText.innerText = "Forecast Value: " + curDayVal + " (" + (curDay.date_label || "") + ")";
+
+            // Hide unused 2nd and 3rd chart cards for forecast mode
+            document.getElementById('box_pressure_chart').classList.add('d-none');
+            document.getElementById('box_third_chart').classList.add('d-none');
+
+            document.getElementById('panel_chart1_label').innerText = props.variable_name + " 10-Day Forecast Trend [" + props.unit + "]";
+            document.getElementById('panel_temp_val').innerText = valStr;
+
+            // Render 10-Day Trend Line Chart
+            var labels = days.map(function(d) { return d.date_label; });
+            var dataVals = days.map(function(d) { return d.aggregate_value; });
+
+            chartTemp.data.labels = labels;
+            chartTemp.data.datasets[0].label = props.variable_name + " (" + props.unit + ")";
+            chartTemp.data.datasets[0].borderColor = curDay.color_code || "#3b82f6";
+            chartTemp.data.datasets[0].backgroundColor = (curDay.color_code || "#3b82f6") + "22";
+            chartTemp.data.datasets[0].data = dataVals;
+            chartTemp.update();
+
+            panel.classList.add('open');
+        }
+
+        // Variable Pills Event Listener
+        document.querySelectorAll('.var-pill-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.var-pill-btn').forEach(function(b) {
+                    b.classList.remove('btn-primary', 'active');
+                    b.classList.add('btn-light');
+                });
+                this.classList.remove('btn-light');
+                this.classList.add('btn-primary', 'active');
+                var v = this.getAttribute('data-var');
+                load10DayForecastData(v);
+            });
+        });
+
+        if (mapMode === 'forecast') {
+            document.getElementById('forecast_day_slider').addEventListener('input', function(e) {
+                activeForecastDay = parseInt(e.target.value);
+                render10DayChoropleth();
+            });
+            load10DayForecastData(activeVariable);
+        }
+    });
+</script>
+{% endblock %}

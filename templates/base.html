@@ -1,0 +1,675 @@
+{% load i18n static portal_tags %}
+
+<!DOCTYPE html>
+
+<html lang="{{ LANGUAGE_CODE }}">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{% endblock %} | Portal DNMG</title>
+
+
+
+    <!-- Bootstrap 5 CSS -->
+
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/font/bootstrap-icons.min.css' %}">
+
+
+
+    <!-- Local Google Fonts -->
+
+    <link rel="stylesheet" href="{% static 'vendor/fonts/fonts.css' %}">
+
+
+
+    <!-- Custom Portal CSS -->
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+
+
+    <!-- Leaflet CSS (For Maps) -->
+
+    <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
+
+
+
+    <!-- HTMX -->
+
+    <script src="{% static 'vendor/htmx/htmx.min.js' %}"></script>
+
+
+
+    <!-- Alpine.js -->
+
+    <script defer src="{% static 'vendor/alpinejs/cdn.min.js' %}"></script>
+
+
+
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+<body class="d-flex flex-column min-height-100vh">
+
+    <script>
+
+        document.body.addEventListener('htmx:configRequest', (event) => {
+
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+
+        });
+
+    </script>
+
+
+
+    <!-- Header Section -->
+
+    <header class="glass-navbar sticky-top navbar navbar-expand-xxl navbar-dark py-2">
+
+        <div class="container-fluid px-lg-4 public-navbar-container">
+
+            <!-- Brand Logo / Title -->
+
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+
+                <!-- SVG Emblem Emblem for TL DNMG -->
+
+                <!-- <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                    <circle cx="50" cy="50" r="48" fill="#0d3b66" stroke="#fbbf24" stroke-width="3" />
+
+                    <path d="M50 15 L20 75 L50 60 L80 75 Z" fill="#ef4444" stroke="#ffffff" stroke-width="2" />
+
+                    <circle cx="50" cy="45" r="10" fill="#fbbf24" />
+
+                </svg> -->
+                <!-- <img src="{% static 'images/dnmg_logo.png' %}" alt="Logo" width="40" height="40"> -->
+                <img src="{% static 'images/dnmg_logo.png' %}" alt="Logo" class="navbar-brand-logo">
+
+                <div class="d-flex flex-column text-start navbar-brand-copy">
+
+                    <span class="navbar-brand-title">Portal DNMG</span>
+
+                    <small class="navbar-brand-subtitle text-white-50">Direção Nacional de Meteorologia e Geofísica</small>
+                    <!-- <small class="text-white-50" style="font-size: 0.7rem;">Meteorologia e Geofísica</small> -->
+
+                </div>
+
+            </a>
+
+            <!-- Compact controls remain available while the navigation is collapsed. -->
+            <div class="d-flex d-xxl-none align-items-center gap-2 ms-auto public-navbar-mobile-utility">
+                {% include 'components/language_switcher.html' with compact=True switcher_id='langDropdownMobile' %}
+
+                {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle public-account-button" type="button"
+                        id="userMenuBtnMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i><span class="visually-hidden">{% translate "My Profile" %}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 py-2 bg-dark text-white" aria-labelledby="userMenuBtnMobile">
+                        <li><a class="dropdown-item text-white-50 hover-text-white" href="{% url 'users:profile' %}"><i class="bi bi-person me-2"></i>{% translate "My Profile" %}</a></li>
+                        {% if user.is_internal_staff %}
+                        <!-- <li><a class="dropdown-item text-warning hover-text-white" href="{% url 'users:dashboard' %}"><i class="bi bi-arrow-return-left me-2"></i>{% translate "Back to Admin Portal" %}</a></li> -->
+                        {% endif %}
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li><form action="{% url 'users:logout' %}" method="post" class="px-3 py-1">{% csrf_token %}<button type="submit" class="btn btn-danger w-100 btn-sm text-white"><i class="bi bi-box-arrow-right me-1"></i>{% translate "Log Out" %}</button></form></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-warning fw-semibold text-dark rounded-pill shadow-sm public-login-button">
+                    <i class="bi bi-lock me-1"></i>{% translate "Login" %}
+                </a>
+                {% endif %}
+            </div>
+
+
+
+            <!-- Navbar Toggler -->
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false"
+                aria-label="Toggle navigation">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+
+
+            <!-- Navigation Menu -->
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center gap-1">
+
+                    <!-- 1. Home -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' and not request.path|slice:'-1:' == '#' %}active text-white fw-semibold{% else %}text-white-50{% endif %}"
+                            href="{% url 'core:home' %}">
+
+                            <i class="bi bi-house-door me-1"></i>{% translate "Home" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 2. Forecast -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link text-white-50 {% if 'forecast-map' in request.path %}active text-white fw-semibold{% endif %}"
+                            href="{% url 'weather:forecast_map' %}">
+
+                            <i class="bi bi-cloud-sun me-1"></i>{% translate "Forecast" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 3. Observations (Dropdown containing GIS Map) -->
+
+                    <li class="nav-item ">
+
+                        <!-- <a class="nav-link dropdown-toggle text-white-50 {% if 'observations' in request.path or 'map' in request.path or 'stations' in request.path %}active text-white fw-semibold{% endif %}" href="#" id="observationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                            <i class="bi bi-activity me-1"></i>{% translate "Observations" %}
+
+                        </a> -->
+
+                        <a class="nav-link text-white-50 {% if request.resolver_match.url_name == 'interactive_map' %}active text-white fw-semibold{% endif %}" href="{% url 'weather:interactive_map' %}">
+
+                            <i class="bi bi-activity me-1"></i>{% translate "Observations" %}
+
+                        </a>
+
+                        <!-- <ul class="dropdown-menu shadow border-0 mt-2 py-2 bg-dark text-white" aria-labelledby="observationsDropdown">
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white {% if 'observations' in request.path %}active{% endif %}" href="{% url 'weather:observation_list' %}">
+
+                                    <i class="bi bi-list-ul me-2"></i>{% translate "Observations Data" %}
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white {% if 'map' in request.path %}active{% endif %}" href="{% url 'weather:interactive_map' %}">
+
+                                    <i class="bi bi-geo-alt me-2 text-warning"></i>{% translate "Interactive GIS Map" %}
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white {% if 'stations' in request.path %}active{% endif %}" href="{% url 'weather:station_list' %}">
+
+                                    <i class="bi bi-diagram-3 me-2"></i>{% translate "Weather Stations" %}
+
+                                </a>
+
+                            </li>
+
+                        </ul> -->
+
+                    </li>
+
+
+
+                    <!-- 4. Climate -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link text-white-50" href="{% url 'core:home' %}#climate">
+
+                            <i class="bi bi-thermometer-sun me-1"></i>{% translate "Climate" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 5. Seismic -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link text-white-50 {% if request.resolver_match.app_name == 'seismic' %}active text-white fw-semibold{% endif %}" href="{% url 'seismic:earthquakes' %}">
+
+                            <i class="bi bi-activity me-1"></i>{% translate "Seismic" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 6. News -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link text-white-50 {% if 'news' in request.path %}active text-white fw-semibold{% endif %}"
+                            href="{% url 'cms:public_news_list' %}">
+
+                            <i class="bi bi-newspaper me-1"></i>{% translate "News" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 7. Bulletins -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link text-white-50 {% if 'bulletins' in request.path %}active text-white fw-semibold{% endif %}"
+                            href="{% url 'cms:public_bulletin_list' %}">
+
+                            <i class="bi bi-file-earmark-pdf me-1"></i>{% translate "Bulletins" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 8. Alerts (Replaces top-level GIS Map) -->
+
+                    <!-- <li class="nav-item">
+
+                        <a class="nav-link text-white-50 {% if 'warnings' in request.path %}active text-white fw-semibold{% endif %}"
+                            href="{% url 'weather:warning_list' %}">
+
+                            <i class="bi bi-exclamation-triangle me-1 text-warning"></i>{% translate "Alerts" %}
+
+                        </a>
+
+                    </li> -->
+
+
+
+                    <!-- 9. Career -->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link text-white-50 {% if 'careers' in request.path %}active text-white fw-semibold{% endif %}" href="{% url 'cms:public_career_list' %}">
+
+                            <i class="bi bi-briefcase me-1"></i>{% translate "Career" %}
+
+                        </a>
+
+                    </li>
+
+
+
+                    <!-- 10. DSS System (Submenu with DRR, OSFAS, CRISH, ADSS) -->
+
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle text-white-50" href="#" id="dssDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+
+                            <i class="bi bi-cpu me-1"></i>{% translate "DSS System" %}
+
+                        </a>
+
+                        <ul class="dropdown-menu shadow border-0 mt-2 py-2 bg-dark text-white"
+                            aria-labelledby="dssDropdown">
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white" href="https://drr.dnmg.gov.tl"
+                                    target="_blank" rel="noopener noreferrer">
+
+                                    <i class="bi bi-shield-exclamation me-2 text-danger"></i>{% translate "DRR (Disaster Risk Reduction)" %}
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white" href="https://osfas.dnmg.gov.tl"
+                                    target="_blank" rel="noopener noreferrer">
+
+                                    <i class="bi bi-water me-2 text-info"></i>{% translate "OSFAS (Ocean State Forecasting)" %}
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white" href="https://crish.dnmg.gov.tl"
+                                    target="_blank" rel="noopener noreferrer">
+
+                                    <i class="bi bi-cloud-haze me-2 text-warning"></i>{% translate "CRISH (Climate Risk Information System for Public Health)" %}
+
+                                </a>
+
+                            </li>
+
+                            <li>
+
+                                <a class="dropdown-item text-white-50 hover-text-white" href="https://adss.dnmg.gov.tl"
+                                    target="_blank" rel="noopener noreferrer">
+
+                                    <i class="bi bi-flower1 me-2 text-success"></i>{% translate "ADSS (Agricultural DSS)" %}
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+
+
+                    <!-- 11. Profile -->
+
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle text-white-50 {% if request.resolver_match.url_name == 'about_dnmg' or request.resolver_match.url_name == 'dnmg_structure' %}active text-white fw-semibold{% endif %}"
+                            href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                            <i class="bi bi-person-vcard me-1"></i>{% translate "Profile" %}
+
+                        </a>
+
+                        <ul class="dropdown-menu shadow border-0 mt-2 py-2 bg-dark text-white" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item text-white-50 hover-text-white {% if request.resolver_match.url_name == 'about_dnmg' %}active{% endif %}"
+                                    href="{% url 'core:about_dnmg' %}">
+                                    <i class="bi bi-info-circle me-2 text-info"></i>{% translate "About DNMG" %}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-white-50 hover-text-white {% if request.resolver_match.url_name == 'dnmg_structure' %}active{% endif %}"
+                                    href="{% url 'core:dnmg_structure' %}">
+                                    <i class="bi bi-diagram-3 me-2 text-warning"></i>{% translate "DNMG Structure" %}
+                                </a>
+                            </li>
+                        </ul>
+
+                    </li>
+
+                </ul>
+
+
+
+                <!-- Right Utility Panel (Search, Language Switcher, Login) -->
+
+                <div class="d-none d-xxl-flex align-items-center gap-3 public-navbar-desktop-utility">
+
+                    <!-- Language Switcher Component -->
+
+                    {% include 'components/language_switcher.html' with switcher_id='langDropdownDesktop' %}
+
+
+
+                    <!-- Admin Portal Login / User Control -->
+
+                    {% if user.is_authenticated %}
+
+                    {% if user.is_internal_staff %}
+                    <!-- <a href="{% url 'users:dashboard' %}" class="btn btn-warning btn-sm rounded-pill fw-semibold">
+                        <i class="bi bi-arrow-return-left me-1"></i>{% translate "Admin Portal" %}
+                    </a> -->
+                    {% endif %}
+
+                    <div class="dropdown">
+
+                        <button
+                            class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 py-2 px-3 border-0 bg-white-5"
+                            type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+
+                            {% if user.profile_picture|media_available %}
+
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle"
+                                width="28" height="28" style="object-fit: cover;">
+
+                            {% else %}
+
+                            <i class="bi bi-person-circle fs-5"></i>
+
+                            {% endif %}
+
+                            <span class="d-inline">{{ user.first_name|default:user.username }}</span>
+
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 py-2 bg-dark text-white"
+                            aria-labelledby="userMenuBtn">
+
+                            <li><a class="dropdown-item text-white-50 hover-text-white"
+                                    href="{% url 'users:profile' %}"><i class="bi bi-person me-2"></i>{% translate "My Profile" %}</a></li>
+
+                            {% if user.is_internal_staff %}
+
+                            <li><a class="dropdown-item text-warning hover-text-white"
+                                    href="{% url 'users:dashboard' %}"><i class="bi-arrow-right me-2"></i>{% translate "Go to Admin Portal" %}</a></li>
+
+                            {% endif %}
+
+                            <li>
+                                <hr class="dropdown-divider border-secondary">
+                            </li>
+
+                            <li>
+
+                                <form action="{% url 'users:logout' %}" method="post" class="px-3 py-1">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit" class="btn btn-danger w-100 btn-sm text-white">
+
+                                        <i class="bi bi-box-arrow-right me-1"></i>{% translate "Log Out" %}
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                    {% else %}
+
+                    <a href="{% url 'users:login' %}"
+                        class="btn btn-warning fw-semibold px-4 py-2 text-dark rounded-pill shadow-sm transition">
+
+                        <i class="bi bi-lock me-1"></i>{% translate "Login" %}
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- Alerts Messages (Django Messages framework) -->
+
+    <div class="container mt-3">
+
+        {% if messages %}
+
+        {% for message in messages %}
+
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm d-flex align-items-center gap-2"
+            role="alert">
+
+            {% if message.tags == 'success' %}
+
+            <i class="bi bi-check-circle-fill fs-5"></i>
+
+            {% elif message.tags == 'warning' %}
+
+            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+
+            {% elif message.tags == 'error' or message.tags == 'danger' %}
+
+            <i class="bi bi-slash-circle-fill fs-5"></i>
+
+            {% else %}
+
+            <i class="bi bi-info-circle-fill fs-5"></i>
+
+            {% endif %}
+
+            <div>{{ message }}</div>
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+        </div>
+
+        {% endfor %}
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- Main Content Block -->
+
+    <main class="flex-grow-1">
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+
+
+    <!-- Footer -->
+
+    <footer class="bg-gradient-dark text-white-50 py-5 mt-auto border-top border-secondary">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <div class="col-lg-4">
+
+                    <h5 class="text-white mb-3" style="font-family: var(--font-heading);">Portal DNMG</h5>
+
+                    <p class="small text-white-50">
+
+                        {% translate "The official digital meteorological and geophysical information service portal for the Democratic Republic of Timor-Leste." %}
+
+                    </p>
+
+                    <div class="d-flex gap-3 fs-5 mt-3">
+
+                        <a href="https://www.facebook.com/p/DNMG-Timor-Leste-100067875199943/" class="text-white-50 hover-text-white transition"><i class="bi bi-facebook"></i></a>
+
+                        <a href="#" class="text-white-50 hover-text-white transition"><i
+                                class="bi bi-twitter-x"></i></a>
+
+                        <a href="#" class="text-white-50 hover-text-white transition"><i class="bi bi-youtube"></i></a>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <h5 class="text-white mb-3">{% translate "Quick Links" %}</h5>
+
+                    <ul class="list-unstyled d-grid gap-2 small">
+
+                        <li><a href="{% url 'weather:forecast_map' %}" class="text-white-50 text-decoration-none hover-text-white">{% translate "Weather Forecasts" %}</a></li>
+
+                        <li><a href="{% url 'weather:warning_list' %}" class="text-white-50 text-decoration-none hover-text-white">{% translate "Severe Weather Warnings" %}</a></li>
+
+                        <li><a href="{% url 'weather:interactive_map' %}" class="text-white-50 text-decoration-none hover-text-white">{% translate "Live Weather Stations" %}</a></li>
+
+                        <li><a href="{% url 'cms:public_bulletin_list' %}" class="text-white-50 text-decoration-none hover-text-white">{% translate "Public Downloads" %}</a></li>
+
+                    </ul>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <h5 class="text-white mb-3">{% translate "Contact Information" %}</h5>
+
+                    <p class="small text-white-50 mb-1"><i class="bi bi-geo-alt me-2 text-warning"></i> Avenida Xavier do Amaral Dili, Timor-Leste</p>
+
+                    <p class="small text-white-50 mb-1"><i class="bi bi-envelope me-2 text-warning"></i>
+                        info@dnmg.gov.tl</p>
+
+                    <p class="small text-white-50"><i class="bi bi-telephone me-2 text-warning"></i> +670 331 0102</p>
+
+                </div>
+
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small">
+
+                <span>&copy; {% now "Y" %} Direção Nacional de Meteorologia e Geofísica (DNMG). All rights
+                    reserved.</span>
+
+                <!-- <span>{% translate "Government of Timor-Leste" %}</span> -->
+                <span> República Democrática de Timor-Leste (RDTL) 🇹🇱</span>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- Bootstrap 5 Bundle JS -->
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+
+
+    <!-- Leaflet JS -->
+
+    <script src="{% static 'vendor/leaflet/leaflet.js' %}"></script>
+
+
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

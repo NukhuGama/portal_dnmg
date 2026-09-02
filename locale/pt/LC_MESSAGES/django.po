@@ -1,0 +1,4298 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-09 12:14+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cms/forms.py:68 cms/models.py:8 hr/models.py:198
+#, fuzzy
+#| msgid "Last Name"
+msgid "Category Name"
+msgstr "Último Nome"
+
+#: cms/forms.py:78 templates/cms/news_form.html:25
+msgid "Article Title"
+msgstr ""
+
+#: cms/forms.py:80
+msgid "Short summary..."
+msgstr ""
+
+#: cms/forms.py:81
+msgid "Write news article content here..."
+msgstr ""
+
+#: cms/forms.py:90
+msgid "The article body cannot be empty."
+msgstr ""
+
+#: cms/forms.py:99 core/views.py:144
+msgid "Monthly Climate Outlook - July 2026"
+msgstr ""
+
+#: cms/forms.py:116
+msgid "e.g. Meteorologist / Senior Officer"
+msgstr ""
+
+#: cms/forms.py:117
+msgid "e.g. Climate Division"
+msgstr ""
+
+#: cms/forms.py:118
+msgid "Dili, Timor-Leste"
+msgstr ""
+
+#: cms/forms.py:120
+msgid "Full job description..."
+msgstr ""
+
+#: cms/forms.py:121
+msgid "Qualifications, skills, experience..."
+msgstr ""
+
+#: cms/forms.py:122
+msgid "Instructions on how to apply..."
+msgstr ""
+
+#: cms/forms.py:141 templates/cms/news_form.html:183
+msgid "Document title"
+msgstr ""
+
+#: cms/forms.py:151
+msgid ""
+"Upload a document or archive file (PDF, Office document, text, CSV, or ZIP), "
+"not an image."
+msgstr ""
+
+#: cms/models.py:9 cms/models.py:33 cms/models.py:173 cms/models.py:231
+msgid "Slug"
+msgstr ""
+
+#: cms/models.py:10 hr/models.py:12 hr/models.py:43 hr/models.py:200
+#: hr/models.py:233
+msgid "Description"
+msgstr ""
+
+#: cms/models.py:14 cms/models.py:40 hr/models.py:231
+#: templates/cms/admin_news_list.html:72 templates/cms/news_form.html:29
+#: templates/cms/public_news_list.html:30 templates/hr/download_list.html:57
+msgid "Category"
+msgstr ""
+
+#: cms/models.py:15
+msgid "Categories"
+msgstr ""
+
+#: cms/models.py:28 cms/models.py:219 templates/cms/admin_career_list.html:80
+#: templates/cms/admin_news_list.html:88
+msgid "Draft"
+msgstr ""
+
+#: cms/models.py:29 templates/cms/admin_news_list.html:86
+msgid "Published"
+msgstr ""
+
+#: cms/models.py:30 templates/cms/admin_news_list.html:90
+#: templates/weather/warning_list.html:98
+msgid "Archived"
+msgstr ""
+
+#: cms/models.py:32 hr/models.py:228 templates/cms/admin_bulletin_list.html:61
+#: templates/cms/admin_news_list.html:71
+msgid "Title"
+msgstr ""
+
+#: cms/models.py:42 templates/cms/news_form.html:33
+msgid "Excerpt / Summary"
+msgstr ""
+
+#: cms/models.py:42
+msgid "Short overview displayed in cards and search results."
+msgstr ""
+
+#: cms/models.py:43
+msgid "Full Article Content"
+msgstr ""
+
+#: cms/models.py:48 templates/cms/news_form.html:61
+msgid "Featured Image"
+msgstr ""
+
+#: cms/models.py:54
+msgid "Publication Status"
+msgstr ""
+
+#: cms/models.py:62 templates/cms/admin_news_list.html:75
+msgid "Author"
+msgstr ""
+
+#: cms/models.py:64 cms/models.py:185 templates/cms/admin_bulletin_list.html:63
+#: templates/cms/admin_news_list.html:74 templates/cms/bulletin_form.html:37
+#: templates/cms/news_form.html:69
+msgid "Publication Date"
+msgstr ""
+
+#: cms/models.py:70
+msgid "News Article"
+msgstr ""
+
+#: cms/models.py:71
+msgid "News Articles"
+msgstr ""
+
+#: cms/models.py:87 cms/models.py:107 cms/models.py:128 cms/models.py:149
+#, fuzzy
+#| msgid "My Profile"
+msgid "Article"
+msgstr "Meu Perfil"
+
+#: cms/models.py:89 hr/models.py:220
+msgid "Image"
+msgstr ""
+
+#: cms/models.py:90
+msgid "Caption / Label"
+msgstr ""
+
+#: cms/models.py:95
+msgid "News Article Image"
+msgstr ""
+
+#: cms/models.py:96
+msgid "News Article Images"
+msgstr ""
+
+#: cms/models.py:109 cms/models.py:283
+msgid "Supporting File"
+msgstr ""
+
+#: cms/models.py:110 cms/models.py:284 templates/cms/career_form.html:75
+#, fuzzy
+#| msgid "Bulletins"
+msgid "File Title"
+msgstr "Boletins"
+
+#: cms/models.py:115
+msgid "News Article Attachment"
+msgstr ""
+
+#: cms/models.py:116
+msgid "News Article Attachments"
+msgstr ""
+
+#: cms/models.py:130
+msgid "Inline Image"
+msgstr ""
+
+#: cms/models.py:131
+#, fuzzy
+#| msgid "Stations"
+msgid "Image Caption"
+msgstr "Estações"
+
+#: cms/models.py:136
+#, fuzzy
+#| msgid "Upload Profile Image"
+msgid "Inline Article Image"
+msgstr "Carregar Imagem de Perfil"
+
+#: cms/models.py:137
+msgid "Inline Article Images"
+msgstr ""
+
+#: cms/models.py:151
+msgid "Inline Supporting File"
+msgstr ""
+
+#: cms/models.py:152 hr/models.py:175
+msgid "Document Title"
+msgstr ""
+
+#: cms/models.py:157
+msgid "Inline Article Attachment"
+msgstr ""
+
+#: cms/models.py:158
+msgid "Inline Article Attachments"
+msgstr ""
+
+#: cms/models.py:166
+msgid "Daily Synoptic Bulletin"
+msgstr ""
+
+#: cms/models.py:167
+msgid "Monthly Climate Outlook"
+msgstr ""
+
+#: cms/models.py:168
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Marine Bulletin"
+msgstr "Boletins"
+
+#: cms/models.py:169
+msgid "Seismic Event Summary"
+msgstr ""
+
+#: cms/models.py:170
+msgid "Special Hydrometeorological Report"
+msgstr ""
+
+#: cms/models.py:172 templates/cms/bulletin_form.html:25
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Bulletin Title"
+msgstr "Boletins"
+
+#: cms/models.py:178 templates/cms/bulletin_form.html:29
+#: templates/cms/public_bulletin_list.html:23
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Bulletin Type"
+msgstr "Boletins"
+
+#: cms/models.py:182 templates/cms/bulletin_form.html:33
+msgid "PDF Document File"
+msgstr ""
+
+#: cms/models.py:184 templates/cms/bulletin_form.html:41
+msgid "Summary / Overview"
+msgstr ""
+
+#: cms/models.py:192 hr/models.py:251 templates/cms/admin_bulletin_list.html:65
+msgid "Uploaded By"
+msgstr ""
+
+#: cms/models.py:199
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Official Bulletin"
+msgstr "Boletins"
+
+#: cms/models.py:200 templates/admin_base.html:125
+#: templates/cms/admin_bulletin_list.html:4
+#: templates/cms/admin_bulletin_list.html:10
+#: templates/cms/public_bulletin_detail.html:4
+#: templates/cms/public_bulletin_detail.html:13
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Official Bulletins"
+msgstr "Boletins"
+
+#: cms/models.py:220 templates/cms/admin_career_list.html:78
+msgid "Open"
+msgstr ""
+
+#: cms/models.py:221 templates/cms/admin_career_list.html:82
+msgid "Closed"
+msgstr ""
+
+#: cms/models.py:224
+msgid "Full Time"
+msgstr ""
+
+#: cms/models.py:225
+msgid "Part Time"
+msgstr ""
+
+#: cms/models.py:226 hr/models.py:65 hr/models.py:166
+#: templates/hr/dashboard.html:58
+#, fuzzy
+#| msgid "Contact"
+msgid "Contract"
+msgstr "Contacto"
+
+#: cms/models.py:227
+msgid "Internship"
+msgstr ""
+
+#: cms/models.py:228
+msgid "Volunteer"
+msgstr ""
+
+#: cms/models.py:230 templates/cms/admin_career_list.html:61
+#: templates/cms/career_form.html:25
+msgid "Job Title"
+msgstr ""
+
+#: cms/models.py:232 hr/forms.py:90 hr/models.py:23 hr/models.py:100
+#: templates/cms/admin_career_list.html:62 templates/cms/career_form.html:29
+#: templates/cms/public_career_detail.html:84
+#: templates/hr/contract_monitoring.html:70
+#: templates/hr/contract_monitoring.html:116
+#: templates/hr/employee_detail.html:47 templates/hr/employee_form.html:63
+#: templates/hr/employee_list.html:104
+#: templates/hr/partials/contract_table.html:7 templates/hr/reports.html:69
+msgid "Department"
+msgstr ""
+
+#: cms/models.py:233 templates/cms/career_form.html:33
+#: templates/cms/public_career_detail.html:91
+#, fuzzy
+#| msgid "Stations"
+msgid "Location"
+msgstr "Estações"
+
+#: cms/models.py:238 hr/forms.py:99 hr/models.py:104
+#: templates/cms/career_form.html:37 templates/cms/public_career_detail.html:77
+#: templates/cms/public_career_list.html:30 templates/hr/dashboard.html:148
+#: templates/hr/employee_form.html:72
+msgid "Employment Type"
+msgstr ""
+
+#: cms/models.py:240 templates/cms/career_form.html:49
+#: templates/cms/public_career_detail.html:34
+msgid "Job Description"
+msgstr ""
+
+#: cms/models.py:241
+msgid "Requirements"
+msgstr ""
+
+#: cms/models.py:242 templates/cms/public_career_detail.html:49
+msgid "How to Apply"
+msgstr ""
+
+#: cms/models.py:243 templates/cms/career_form.html:45
+msgid "Application Deadline"
+msgstr ""
+
+#: cms/models.py:248 templates/cms/admin_career_list.html:64
+#: templates/cms/admin_news_list.html:73 templates/cms/career_form.html:41
+#: templates/cms/news_form.html:65 templates/hr/department_detail.html:39
+#: templates/hr/employee_list.html:108 templates/hr/reports.html:75
+#: templates/hr/staff_level_list.html:24 templates/users/dashboard.html:151
+#: templates/users/dashboard.html:255 templates/users/user_list.html:65
+#: templates/weather/station_list.html:86
+#: templates/weather/warning_list.html:74 weather/models.py:71
+#, fuzzy
+#| msgid "Stations"
+msgid "Status"
+msgstr "Estações"
+
+#: cms/models.py:256 templates/cms/admin_career_list.html:66
+msgid "Posted By"
+msgstr ""
+
+#: cms/models.py:263 cms/models.py:281
+msgid "Job Opening"
+msgstr ""
+
+#: cms/models.py:264
+msgid "Job Openings"
+msgstr ""
+
+#: cms/models.py:289
+#, fuzzy
+#| msgid "Job Opening Editor"
+msgid "Job Opening Attachment"
+msgstr "Editor de Vagas de Emprego"
+
+#: cms/models.py:290
+#, fuzzy
+#| msgid "Job Opening Editor"
+msgid "Job Opening Attachments"
+msgstr "Editor de Vagas de Emprego"
+
+#: cms/views.py:110
+msgid ""
+"Supporting files must be documents, text files, CSV files, or ZIP archives."
+msgstr ""
+
+#: cms/views.py:226
+msgid "Article '{form.cleaned_data['title']}' created successfully."
+msgstr ""
+
+#: cms/views.py:239
+msgid "Article '{form.cleaned_data['title']}' updated successfully."
+msgstr ""
+
+#: cms/views.py:279
+msgid "Bulletin '{form.cleaned_data['title']}' uploaded successfully."
+msgstr ""
+
+#: cms/views.py:290
+msgid "Bulletin '{form.cleaned_data['title']}' updated successfully."
+msgstr ""
+
+#: cms/views.py:403
+msgid "Job opening '{form.cleaned_data['title']}' created successfully."
+msgstr ""
+
+#: cms/views.py:415
+msgid "Job opening '{form.cleaned_data['title']}' updated successfully."
+msgstr ""
+
+#: config/settings.py:120
+msgid "English"
+msgstr "Inglês"
+
+#: config/settings.py:121
+msgid "Tetum"
+msgstr "Tétum"
+
+#: config/settings.py:122
+msgid "Portuguese"
+msgstr "Português"
+
+#: core/views.py:14 templates/base.html:171
+#: templates/cms/public_bulletin_detail.html:12
+#: templates/cms/public_news_detail.html:12 templates/core/home.html:4
+#: templates/weather/interactive_map.html:171
+msgid "Home"
+msgstr "Início"
+
+#: core/views.py:37 core/views.py:47 weather/forms.py:39
+msgid "Partly Cloudy"
+msgstr ""
+
+#: core/views.py:48
+msgid "Presidente Nicolau Lobato International Airport (Dili)"
+msgstr ""
+
+#: core/views.py:49
+msgid "Updated 10 minutes ago"
+msgstr ""
+
+#: core/views.py:110
+msgid "General"
+msgstr ""
+
+#: core/views.py:116
+msgid "DNMG Installs New Automated Weather Stations in Ermera"
+msgstr ""
+
+#: core/views.py:117
+msgid ""
+"To strengthen micro-climate monitoring and support local coffee growers, "
+"three new high-precision automated stations were successfully deployed."
+msgstr ""
+
+#: core/views.py:119
+msgid "Infrastructure"
+msgstr ""
+
+#: core/views.py:122
+msgid "Timor-Leste Weather Forum Focuses on El Niño Mitigation"
+msgstr ""
+
+#: core/views.py:123
+msgid ""
+"National climate scientists and agriculture experts met in Dili to address "
+"water resource management policies ahead of the dry season."
+msgstr ""
+
+#: core/views.py:125 templates/base.html:254
+msgid "Climate"
+msgstr "Clima"
+
+#: core/views.py:145
+msgid "Marine Bulletin for Coastal Shipping"
+msgstr ""
+
+#: core/views.py:146
+msgid "Daily Meteorological Analysis"
+msgstr ""
+
+#: core/views.py:158 templates/base.html:414 templates/core/about_dnmg.html:4
+#: templates/core/about_dnmg.html:9
+msgid "About DNMG"
+msgstr "Sobre DNMG"
+
+#: core/views.py:167 templates/base.html:420
+#: templates/core/dnmg_structure.html:4 templates/core/dnmg_structure.html:9
+msgid "DNMG Structure"
+msgstr "Estrutura da DNMG"
+
+#: core/views.py:179
+msgid "Meteorology and Climate Department"
+msgstr "Departamento de Meteorologia e Climatologia"
+
+#: core/views.py:181 core/views.py:187 core/views.py:193
+msgid "Temporary placeholder department."
+msgstr "Departamento temporário de referência."
+
+#: core/views.py:185
+msgid "Geophysics Department"
+msgstr "Departamento de Geofísica"
+
+#: core/views.py:191
+msgid "Support Services Department"
+msgstr "Departamento de Serviços de Apoio"
+
+#: hr/apps.py:7
+#, fuzzy
+#| msgid "Staff Accounts Management"
+msgid "HR & Staff Management"
+msgstr "Gestão de Contas de Funcionários"
+
+#: hr/forms.py:11
+msgid "e.g. Meteorology Division"
+msgstr ""
+
+#: hr/forms.py:12
+msgid "e.g. MET-DIV"
+msgstr ""
+
+#: hr/forms.py:24
+msgid "e.g. Senior Officer"
+msgstr ""
+
+#: hr/forms.py:25
+msgid "e.g. SNR-OFF"
+msgstr ""
+
+#: hr/forms.py:44
+msgid "e.g. DNMG-2024-001"
+msgstr ""
+
+#: hr/forms.py:70
+msgid "e.g. Employment Contract 2024"
+msgstr ""
+
+#: hr/forms.py:78
+msgid "New Contract End Date"
+msgstr ""
+
+#: hr/forms.py:82
+msgid "Renewal Notes"
+msgstr ""
+
+#: hr/forms.py:94 hr/models.py:89 templates/hr/employee_detail.html:50
+#: templates/hr/employee_form.html:34 templates/hr/reports.html:68
+msgid "Gender"
+msgstr ""
+
+#: hr/forms.py:95
+#, fuzzy
+#| msgid "All Roles"
+msgid "All Genders"
+msgstr "Todos os Cargos"
+
+#: hr/forms.py:100 templates/cms/public_bulletin_list.html:26
+#: templates/cms/public_career_list.html:32 templates/hr/download_list.html:39
+#: templates/hr/employee_list.html:64
+#, fuzzy
+#| msgid "All Roles"
+msgid "All Types"
+msgstr "Todos os Cargos"
+
+#: hr/forms.py:104 hr/models.py:47
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Staff Level"
+msgstr "Login do Pessoal"
+
+#: hr/forms.py:108 hr/models.py:119 templates/hr/dashboard.html:154
+#: templates/hr/employee_form.html:84
+msgid "Employment Status"
+msgstr ""
+
+#: hr/forms.py:109 templates/cms/admin_career_list.html:36
+#: templates/cms/admin_news_list.html:36 templates/hr/employee_list.html:72
+#: templates/users/user_list.html:35 templates/weather/station_list.html:46
+#, fuzzy
+#| msgid "Stations"
+msgid "All Statuses"
+msgstr "Estações"
+
+#: hr/forms.py:113
+msgid "Start Date From"
+msgstr ""
+
+#: hr/forms.py:117
+msgid "Start Date To"
+msgstr ""
+
+#: hr/forms.py:123 templates/hr/employee_list.html:56
+msgid "All Departments"
+msgstr ""
+
+#: hr/forms.py:126
+#, fuzzy
+#| msgid "All Roles"
+msgid "All Levels"
+msgstr "Todos os Cargos"
+
+#: hr/forms.py:141
+msgid "e.g. annual, report, 2024"
+msgstr ""
+
+#: hr/forms.py:144
+msgid "e.g. 1.0"
+msgstr ""
+
+#: hr/models.py:10
+msgid "Department Name"
+msgstr ""
+
+#: hr/models.py:11
+msgid "Department Code"
+msgstr ""
+
+#: hr/models.py:16 templates/core/dnmg_structure.html:42
+msgid "Head of Department"
+msgstr "Chefe de Departamento"
+
+#: hr/models.py:18 hr/models.py:44 hr/models.py:70
+#: templates/hr/dashboard.html:44 templates/hr/department_detail.html:17
+#: templates/hr/department_list.html:45 templates/hr/staff_level_list.html:39
+#: templates/users/dashboard.html:43 templates/users/user_list.html:36
+#: templates/users/user_list.html:100 templates/weather/station_list.html:100
+#: weather/models.py:33
+msgid "Active"
+msgstr "Ativo"
+
+#: hr/models.py:24 templates/admin_base.html:269
+#: templates/hr/department_list.html:4 templates/hr/department_list.html:12
+msgid "Departments"
+msgstr ""
+
+#: hr/models.py:37 templates/hr/staff_level_list.html:22
+#, fuzzy
+#| msgid "Last Name"
+msgid "Level Name"
+msgstr "Último Nome"
+
+#: hr/models.py:38 templates/hr/staff_level_list.html:23
+#: templates/weather/station_list.html:82
+msgid "Code"
+msgstr ""
+
+#: hr/models.py:40
+msgid "Rank Order"
+msgstr ""
+
+#: hr/models.py:41
+msgid "Lower number = higher rank (1 = most senior)"
+msgstr ""
+
+#: hr/models.py:48 templates/admin_base.html:294
+#: templates/hr/staff_level_list.html:4
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Staff Levels"
+msgstr "Login do Pessoal"
+
+#: hr/models.py:59 templates/hr/dashboard.html:83
+msgid "Male"
+msgstr ""
+
+#: hr/models.py:60 templates/hr/dashboard.html:90
+msgid "Female"
+msgstr ""
+
+#: hr/models.py:61 hr/models.py:169 hr/models.py:221
+msgid "Other"
+msgstr ""
+
+#: hr/models.py:64 templates/hr/dashboard.html:51
+msgid "Permanent"
+msgstr ""
+
+#: hr/models.py:66
+msgid "Consultant"
+msgstr ""
+
+#: hr/models.py:67
+msgid "Intern"
+msgstr ""
+
+#: hr/models.py:71 templates/hr/dashboard.html:97
+msgid "On Leave"
+msgstr ""
+
+#: hr/models.py:72
+msgid "Retired"
+msgstr ""
+
+#: hr/models.py:73
+msgid "Resigned"
+msgstr ""
+
+#: hr/models.py:74
+msgid "Terminated"
+msgstr ""
+
+#: hr/models.py:77 templates/hr/employee_form.html:24
+#, fuzzy
+#| msgid "Phone Number"
+msgid "Employee Number"
+msgstr "Número de Telefone"
+
+#: hr/models.py:81 templates/hr/employee_form.html:88
+msgid "Linked User Account"
+msgstr ""
+
+#: hr/models.py:84
+msgid "Photo"
+msgstr ""
+
+#: hr/models.py:88 templates/hr/employee_form.html:29
+#, fuzzy
+#| msgid "First Name"
+msgid "Full Name"
+msgstr "Primeiro Nome"
+
+#: hr/models.py:90 templates/hr/employee_form.html:38
+msgid "Date of Birth"
+msgstr ""
+
+#: hr/models.py:91 templates/hr/employee_detail.html:52
+#: templates/hr/employee_form.html:42
+msgid "Nationality"
+msgstr ""
+
+#: hr/models.py:94 templates/hr/employee_form.html:46
+#: templates/users/profile.html:47 templates/users/user_form.html:66
+#: users/models.py:33
+msgid "Phone Number"
+msgstr "Número de Telefone"
+
+#: hr/models.py:95 templates/hr/employee_form.html:50
+#: templates/users/password_reset_form.html:44 templates/users/profile.html:39
+#: templates/users/user_form.html:39
+msgid "Email Address"
+msgstr "Endereço de Email"
+
+#: hr/models.py:102 templates/hr/employee_form.html:67
+msgid "Position / Job Title"
+msgstr ""
+
+#: hr/models.py:109 templates/hr/employee_form.html:76
+msgid "Staff Level / Grade"
+msgstr ""
+
+#: hr/models.py:111 templates/hr/employee_form.html:80
+msgid "Salary Grade"
+msgstr ""
+
+#: hr/models.py:114 templates/hr/employee_detail.html:55
+#: templates/hr/employee_form.html:97 templates/hr/reports.html:73
+msgid "Start Date"
+msgstr ""
+
+#: hr/models.py:115 templates/hr/employee_form.html:102
+msgid "Contract End Date"
+msgstr ""
+
+#: hr/models.py:124 templates/hr/employee_detail.html:76
+#: templates/hr/employee_form.html:108
+msgid "Notes"
+msgstr ""
+
+#: hr/models.py:129 hr/models.py:173 templates/hr/contract_monitoring.html:69
+#: templates/hr/contract_monitoring.html:115
+#: templates/hr/department_detail.html:36 templates/hr/employee_list.html:103
+#: templates/hr/partials/contract_table.html:6
+msgid "Employee"
+msgstr ""
+
+#: hr/models.py:130
+msgid "Employees"
+msgstr ""
+
+#: hr/models.py:167
+msgid "Identification"
+msgstr ""
+
+#: hr/models.py:168
+msgid "Certificate"
+msgstr ""
+
+#: hr/models.py:177
+msgid "Document Type"
+msgstr ""
+
+#: hr/models.py:180 hr/models.py:238 templates/cms/admin_bulletin_list.html:64
+#: templates/cms/career_form.html:70 templates/hr/download_list.html:56
+msgid "File"
+msgstr ""
+
+#: hr/models.py:184
+msgid "Employee Document"
+msgstr ""
+
+#: hr/models.py:185
+msgid "Employee Documents"
+msgstr ""
+
+#: hr/models.py:201
+msgid "Display Order"
+msgstr ""
+
+#: hr/models.py:204
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download Category"
+msgstr "Downloads"
+
+#: hr/models.py:205
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download Categories"
+msgstr "Downloads"
+
+#: hr/models.py:216
+msgid "PDF Document"
+msgstr ""
+
+#: hr/models.py:217
+msgid "Excel Spreadsheet"
+msgstr ""
+
+#: hr/models.py:218
+msgid "Word Document"
+msgstr ""
+
+#: hr/models.py:219
+msgid "ZIP Archive"
+msgstr ""
+
+#: hr/models.py:224
+msgid "Public (Visible on public website)"
+msgstr ""
+
+#: hr/models.py:225
+msgid "Staff Only (Internal access required)"
+msgstr ""
+
+#: hr/models.py:235
+msgid "Tags"
+msgstr ""
+
+#: hr/models.py:236
+msgid "Comma-separated tags for search"
+msgstr ""
+
+#: hr/models.py:240
+msgid "File Type"
+msgstr ""
+
+#: hr/models.py:242 templates/hr/download_list.html:59
+msgid "Version"
+msgstr ""
+
+#: hr/models.py:244
+msgid "Access Level"
+msgstr ""
+
+#: hr/models.py:247
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download Count"
+msgstr "Downloads"
+
+#: hr/models.py:257
+#, fuzzy
+#| msgid "Downloads"
+msgid "Downloadable File"
+msgstr "Downloads"
+
+#: hr/models.py:258
+#, fuzzy
+#| msgid "Downloads"
+msgid "Downloadable Files"
+msgstr "Downloads"
+
+#: hr/permissions.py:23
+msgid "You do not have permission to access the HR Management system."
+msgstr ""
+
+#: hr/permissions.py:46
+msgid "You do not have permission to access the HR module."
+msgstr ""
+
+#: hr/views.py:123
+msgid "Employee record created successfully."
+msgstr ""
+
+#: hr/views.py:128
+msgid "Add New Employee"
+msgstr ""
+
+#: hr/views.py:147
+msgid "Employee record updated successfully."
+msgstr ""
+
+#: hr/views.py:152
+msgid "Edit Employee"
+msgstr ""
+
+#: hr/views.py:166
+msgid "Employee record deleted."
+msgstr ""
+
+#: hr/views.py:182
+msgid "Document uploaded successfully."
+msgstr ""
+
+#: hr/views.py:184
+msgid "Failed to upload document. Please check the file."
+msgstr ""
+
+#: hr/views.py:198
+msgid "Document deleted."
+msgstr ""
+
+#: hr/views.py:243
+msgid "Department created successfully."
+msgstr ""
+
+#: hr/views.py:248 templates/hr/department_list.html:17
+msgid "Add Department"
+msgstr ""
+
+#: hr/views.py:264
+msgid "Department updated."
+msgstr ""
+
+#: hr/views.py:269 templates/hr/department_detail.html:21
+msgid "Edit Department"
+msgstr ""
+
+#: hr/views.py:283
+msgid "Department deleted."
+msgstr ""
+
+#: hr/views.py:308
+msgid "Staff level created."
+msgstr ""
+
+#: hr/views.py:320
+msgid "Staff level updated."
+msgstr ""
+
+#: hr/views.py:357
+msgid "Contract renewed successfully."
+msgstr ""
+
+#: hr/views.py:359
+msgid "Invalid renewal date."
+msgstr ""
+
+#: hr/views.py:372
+msgid "Contract marked as expired. Employee status set to Terminated."
+msgstr ""
+
+#: hr/views.py:464
+msgid "Unsupported export format."
+msgstr ""
+
+#: hr/views.py:522
+msgid "File uploaded successfully."
+msgstr ""
+
+#: hr/views.py:534
+msgid "File updated."
+msgstr ""
+
+#: hr/views.py:549
+msgid "File deleted."
+msgstr ""
+
+#: hr/views.py:567
+msgid "File not found."
+msgstr ""
+
+#: templates/admin_base.html:71 templates/base.html:129 templates/base.html:132
+#: templates/base.html:470 templates/users/profile.html:4
+#: templates/users/profile.html:6
+msgid "My Profile"
+msgstr "Meu Perfil"
+
+#: templates/admin_base.html:86 templates/admin_base.html:97
+#: templates/users/dashboard.html:6
+msgid "Dashboard"
+msgstr ""
+
+#: templates/admin_base.html:113 templates/cms/admin_news_list.html:4
+#: templates/cms/admin_news_list.html:10
+msgid "News & Articles"
+msgstr ""
+
+#: templates/admin_base.html:137
+msgid "Career / Jobs"
+msgstr "Carreira / Vagas"
+
+#: templates/admin_base.html:154 templates/core/about_dnmg.html:64
+#: templates/weather/warning_list.html:4 weather/models.py:268
+msgid "Early Warnings"
+msgstr "Alertas Precoces"
+
+#: templates/admin_base.html:170 templates/base.html:236
+#: templates/weather/station_list.html:4 templates/weather/station_list.html:10
+#: weather/models.py:80
+#, fuzzy
+#| msgid "Stations"
+msgid "Weather Stations"
+msgstr "Estações"
+
+#: templates/admin_base.html:182 templates/base.html:200
+#: templates/base.html:206
+msgid "Observations"
+msgstr "Observações"
+
+#: templates/admin_base.html:194
+#, fuzzy
+#| msgid "Forecast"
+msgid "Forecasts"
+msgstr "Previsão"
+
+#: templates/admin_base.html:210 templates/users/user_list.html:6
+msgid "User Management"
+msgstr ""
+
+#: templates/admin_base.html:226 templates/users/audit_logs.html:13
+msgid "Audit Trails"
+msgstr "Trilhas de Auditoria"
+
+#: templates/admin_base.html:234
+msgid "HR & Staff"
+msgstr ""
+
+#: templates/admin_base.html:245 templates/hr/dashboard.html:4
+#: templates/hr/dashboard.html:21
+msgid "HR Dashboard"
+msgstr ""
+
+#: templates/admin_base.html:257 templates/hr/employee_list.html:5
+#: templates/hr/employee_list.html:6
+msgid "Staff Directory"
+msgstr ""
+
+#: templates/admin_base.html:282 templates/hr/contract_monitoring.html:4
+msgid "Contract Monitoring"
+msgstr ""
+
+#: templates/admin_base.html:306 templates/hr/reports.html:4
+msgid "HR Reports"
+msgstr ""
+
+#: templates/admin_base.html:319 templates/hr/download_list.html:5
+#: templates/hr/download_list.html:6 templates/hr/download_list.html:13
+#, fuzzy
+#| msgid "Downloads"
+msgid "Downloads Hub"
+msgstr "Downloads"
+
+#: templates/admin_base.html:327
+msgid "Public Website"
+msgstr ""
+
+#: templates/admin_base.html:337 templates/base.html:134
+#: templates/base.html:491
+msgid "Log Out"
+msgstr "Sair"
+
+#: templates/base.html:139 templates/base.html:508
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Login"
+msgstr "Login do Pessoal"
+
+#: templates/base.html:186
+msgid "Forecast"
+msgstr "Previsão"
+
+#: templates/base.html:216
+#, fuzzy
+#| msgid "Observations"
+msgid "Observations Data"
+msgstr "Observações"
+
+#: templates/base.html:226
+msgid "Interactive GIS Map"
+msgstr ""
+
+#: templates/base.html:268
+msgid "Seismic"
+msgstr "Sísmico"
+
+#: templates/base.html:283 templates/cms/public_news_detail.html:13
+msgid "News"
+msgstr "Notícias"
+
+#: templates/base.html:298
+msgid "Bulletins"
+msgstr "Boletins"
+
+#: templates/base.html:313
+msgid "Alerts"
+msgstr ""
+
+#: templates/base.html:327
+msgid "Career"
+msgstr "Carreira"
+
+#: templates/base.html:342
+msgid "DSS System"
+msgstr ""
+
+#: templates/base.html:354
+msgid "DRR (Disaster Risk Reduction)"
+msgstr ""
+
+#: templates/base.html:365
+msgid "OSFAS (Ocean State Forecasting)"
+msgstr ""
+
+#: templates/base.html:376
+msgid "CRISH (Climate Risk Information System for Public Health)"
+msgstr ""
+
+#: templates/base.html:387
+msgid "ADSS (Agricultural DSS)"
+msgstr ""
+
+#: templates/base.html:406
+#, fuzzy
+#| msgid "My Profile"
+msgid "Profile"
+msgstr "Meu Perfil"
+
+#: templates/base.html:475 templates/users/dashboard.html:4
+msgid "Staff Dashboard"
+msgstr ""
+
+#: templates/base.html:591
+msgid ""
+"The official digital meteorological and geophysical information service "
+"portal for the Democratic Republic of Timor-Leste."
+msgstr ""
+
+#: templates/base.html:610
+msgid "Quick Links"
+msgstr ""
+
+#: templates/base.html:614 templates/weather/forecast_list.html:4
+#: templates/weather/forecast_list.html:10 weather/models.py:226
+msgid "Weather Forecasts"
+msgstr ""
+
+#: templates/base.html:616
+msgid "Severe Weather Warnings"
+msgstr ""
+
+#: templates/base.html:618
+msgid "Live Weather Stations"
+msgstr ""
+
+#: templates/base.html:620
+msgid "Public Downloads"
+msgstr ""
+
+#: templates/base.html:628
+msgid "Contact Information"
+msgstr ""
+
+#: templates/base.html:648
+msgid "Government of Timor-Leste"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:5
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Official Reports & Bulletins"
+msgstr "Boletins"
+
+#: templates/cms/admin_bulletin_list.html:11
+msgid ""
+"Upload and publish downloadable climate, marine, and seismic PDF reports"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:16 templates/cms/bulletin_form.html:4
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Upload Bulletin"
+msgstr "Boletins"
+
+#: templates/cms/admin_bulletin_list.html:29
+msgid "Search title, description, uploader..."
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:36
+#, fuzzy
+#| msgid "Bulletins"
+msgid "All Bulletin Types"
+msgstr "Boletins"
+
+#: templates/cms/admin_bulletin_list.html:46
+#: templates/cms/admin_career_list.html:46
+#: templates/cms/admin_news_list.html:56 templates/hr/employee_list.html:87
+#: templates/users/audit_logs.html:42 templates/weather/forecast_list.html:62
+#: templates/weather/observation_list.html:62
+#: templates/weather/station_list.html:66
+#: templates/weather/warning_list.html:55
+msgid "Filter"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:48
+#: templates/cms/admin_career_list.html:48
+#: templates/cms/admin_news_list.html:58
+#: templates/weather/forecast_list.html:64
+#: templates/weather/observation_list.html:64
+#: templates/weather/station_list.html:68
+#: templates/weather/warning_list.html:57
+msgid "Reset Filters"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:62
+#: templates/cms/admin_career_list.html:63 templates/hr/download_list.html:58
+#: templates/hr/employee_detail.html:49 templates/hr/employee_list.html:106
+#: templates/hr/reports.html:71 templates/weather/station_list.html:84
+msgid "Type"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:66
+#: templates/cms/admin_career_list.html:67
+#: templates/cms/admin_news_list.html:76 templates/hr/download_list.html:63
+#: templates/hr/employee_list.html:109
+#: templates/hr/partials/contract_table.html:11
+#: templates/hr/staff_level_list.html:25 templates/users/user_list.html:67
+#: templates/weather/forecast_list.html:83
+#: templates/weather/station_list.html:87
+#: templates/weather/warning_list.html:76
+#, fuzzy
+#| msgid "Stations"
+msgid "Actions"
+msgstr "Estações"
+
+#: templates/cms/admin_bulletin_list.html:78
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download PDF"
+msgstr "Downloads"
+
+#: templates/cms/admin_bulletin_list.html:81
+msgid "No file"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:87
+#: templates/cms/admin_career_list.html:91
+#: templates/cms/admin_news_list.html:99 templates/hr/department_list.html:56
+#: templates/hr/employee_list.html:160
+msgid "View"
+msgstr "Ver"
+
+#: templates/cms/admin_bulletin_list.html:91
+#: templates/cms/admin_career_list.html:96
+#: templates/cms/admin_news_list.html:104 templates/hr/department_list.html:58
+#: templates/hr/download_list.html:91 templates/hr/employee_list.html:161
+#: templates/weather/forecast_list.html:101
+#: templates/weather/station_list.html:110
+#: templates/weather/warning_list.html:114
+msgid "Edit"
+msgstr ""
+
+#: templates/cms/admin_bulletin_list.html:100
+msgid "No official bulletins found matching your search."
+msgstr ""
+
+#: templates/cms/admin_career_list.html:4
+#: templates/cms/admin_career_list.html:10
+msgid "Career & Job Openings"
+msgstr "Carreira e Vagas de Emprego"
+
+#: templates/cms/admin_career_list.html:5 templates/cms/admin_news_list.html:5
+msgid "Portal Content Management System"
+msgstr "Sistema de Gestão de Conteúdos do Portal"
+
+#: templates/cms/admin_career_list.html:11
+msgid ""
+"Manage job vacancies, recruitment announcements, and career opportunities"
+msgstr ""
+"Gerir vagas de emprego, anúncios de recrutamento e oportunidades de carreira"
+
+#: templates/cms/admin_career_list.html:16
+msgid "Post New Job"
+msgstr "Publicar Nova Vaga"
+
+#: templates/cms/admin_career_list.html:29
+msgid "Search job title, department, description..."
+msgstr "Pesquisar cargo, departamento, descrição..."
+
+#: templates/cms/admin_career_list.html:65
+#: templates/cms/public_career_detail.html:22
+#: templates/cms/public_career_detail.html:99
+#: templates/cms/public_career_list.html:66
+msgid "Deadline"
+msgstr ""
+
+#: templates/cms/admin_career_list.html:106
+msgid "No job openings found matching your search."
+msgstr "Nenhuma vaga de emprego encontrada para a sua pesquisa."
+
+#: templates/cms/admin_news_list.html:11
+msgid "Publish portal news, press releases, and scientific updates"
+msgstr ""
+
+#: templates/cms/admin_news_list.html:16
+msgid "Create Article"
+msgstr ""
+
+#: templates/cms/admin_news_list.html:29
+msgid "Search title, excerpt, content..."
+msgstr ""
+
+#: templates/cms/admin_news_list.html:46 templates/cms/public_news_list.html:32
+#: templates/hr/download_list.html:31
+#, fuzzy
+#| msgid "All Roles"
+msgid "All Categories"
+msgstr "Todos os Cargos"
+
+#: templates/cms/admin_news_list.html:114
+msgid "No news articles found matching your search."
+msgstr ""
+
+#: templates/cms/bulletin_form.html:4 templates/cms/bulletin_form.html:14
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Edit Bulletin"
+msgstr "Boletins"
+
+#: templates/cms/bulletin_form.html:5
+msgid "Official Bulletin Upload"
+msgstr ""
+
+#: templates/cms/bulletin_form.html:16
+msgid "Upload Official PDF Bulletin"
+msgstr ""
+
+#: templates/cms/bulletin_form.html:46 templates/cms/career_form.html:86
+#: templates/cms/news_form.html:74
+#: templates/hr/department_confirm_delete.html:16
+#: templates/hr/department_form.html:25
+#: templates/hr/download_confirm_delete.html:16
+#: templates/hr/download_form.html:26
+#: templates/hr/employee_confirm_delete.html:16
+#: templates/hr/employee_form.html:113
+#: templates/hr/partials/renew_modal.html:28
+#: templates/hr/staff_level_form.html:25
+#: templates/users/admin_password_reset.html:46
+#: templates/users/user_form.html:126 templates/weather/forecast_form.html:58
+#: templates/weather/observation_form.html:60
+#: templates/weather/station_form.html:64
+#: templates/weather/warning_form.html:59
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: templates/cms/bulletin_form.html:47
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Save Bulletin"
+msgstr "Boletins"
+
+#: templates/cms/career_form.html:4 templates/cms/career_form.html:14
+msgid "Edit Job Opening"
+msgstr "Editar Vaga de Emprego"
+
+#: templates/cms/career_form.html:4
+msgid "New Job Opening"
+msgstr "Nova Vaga de Emprego"
+
+#: templates/cms/career_form.html:5
+msgid "Job Opening Editor"
+msgstr "Editor de Vagas de Emprego"
+
+#: templates/cms/career_form.html:16
+msgid "Post New Job Opportunity"
+msgstr "Publicar Nova Oportunidade de Emprego"
+
+#: templates/cms/career_form.html:53 templates/cms/public_career_detail.html:41
+msgid "Requirements & Qualifications"
+msgstr ""
+
+#: templates/cms/career_form.html:57
+msgid "How to Apply (Instructions)"
+msgstr "Como Candidatar-se (Instruções)"
+
+#: templates/cms/career_form.html:62 templates/cms/public_career_detail.html:57
+msgid "Job Documents"
+msgstr ""
+
+#: templates/cms/career_form.html:63
+msgid ""
+"Upload job descriptions, application forms, or other supporting files. "
+"Images are not accepted here."
+msgstr ""
+
+#: templates/cms/career_form.html:80
+msgid "Remove"
+msgstr ""
+
+#: templates/cms/career_form.html:87
+msgid "Save Job Opening"
+msgstr "Guardar Vaga"
+
+#: templates/cms/news_form.html:4 templates/cms/news_form.html:14
+#, fuzzy
+#| msgid "My Profile"
+msgid "Edit Article"
+msgstr "Meu Perfil"
+
+#: templates/cms/news_form.html:4
+msgid "New Article"
+msgstr ""
+
+#: templates/cms/news_form.html:5
+msgid "Article Editor"
+msgstr ""
+
+#: templates/cms/news_form.html:16
+msgid "Create New News Article"
+msgstr ""
+
+#: templates/cms/news_form.html:37
+msgid "Full Article Body"
+msgstr ""
+
+#: templates/cms/news_form.html:41
+msgid "Bold"
+msgstr ""
+
+#: templates/cms/news_form.html:42
+msgid "Italic"
+msgstr ""
+
+#: templates/cms/news_form.html:43
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Bullet list"
+msgstr "Boletins"
+
+#: templates/cms/news_form.html:44
+msgid "Heading"
+msgstr ""
+
+#: templates/cms/news_form.html:45
+msgid "Insert image with caption"
+msgstr ""
+
+#: templates/cms/news_form.html:46
+msgid "Insert Image"
+msgstr ""
+
+#: templates/cms/news_form.html:49
+msgid "Attach a supporting document"
+msgstr ""
+
+#: templates/cms/news_form.html:50
+#, fuzzy
+#| msgid "Search & Filter"
+msgid "Attach File"
+msgstr "Pesquisar e Filtrar"
+
+#: templates/cms/news_form.html:54
+msgid ""
+"Write the article. Place the cursor between paragraphs to insert an image."
+msgstr ""
+
+#: templates/cms/news_form.html:57
+msgid ""
+"Insert captioned images or attach supporting documents anywhere between "
+"paragraphs."
+msgstr ""
+
+#: templates/cms/news_form.html:75
+msgid "Save Article"
+msgstr ""
+
+#: templates/cms/news_form.html:145
+msgid "Image caption or label"
+msgstr ""
+
+#: templates/cms/news_form.html:208
+msgid "Attached file"
+msgstr ""
+
+#: templates/cms/public_bulletin_detail.html:38
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Official bulletin document"
+msgstr "Boletins"
+
+#: templates/cms/public_bulletin_detail.html:39
+msgid "Open or download the complete PDF."
+msgstr ""
+
+#: templates/cms/public_bulletin_detail.html:43
+msgid "Open PDF"
+msgstr ""
+
+#: templates/cms/public_bulletin_detail.html:50
+#, fuzzy
+#| msgid "Bulletins"
+msgid "Back to Bulletins"
+msgstr "Boletins"
+
+#: templates/cms/public_bulletin_list.html:4
+msgid "Official Bulletins & Documents"
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:11
+msgid "Official Bulletins & Reports"
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:12
+msgid ""
+"Download official PDF bulletins, monthly climate outlooks, marine forecasts, "
+"and seismic reports."
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:47
+msgid "Official document published by DNMG."
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:52
+msgid "Read More"
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:57
+msgid "Download PDF Bulletin"
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:60
+msgid "File Unavailable"
+msgstr ""
+
+#: templates/cms/public_bulletin_list.html:69
+msgid "No official bulletins available."
+msgstr ""
+
+#: templates/cms/public_career_detail.html:4
+msgid "Careers"
+msgstr "Carreiras"
+
+#: templates/cms/public_career_detail.html:10
+msgid "Back to Careers"
+msgstr "Voltar para Carreiras"
+
+#: templates/cms/public_career_detail.html:72
+msgid "Summary"
+msgstr "Resumo"
+
+#: templates/cms/public_career_detail.html:106
+msgid "Submit Application"
+msgstr ""
+
+#: templates/cms/public_career_list.html:4
+msgid "Careers & Job Opportunities"
+msgstr "Carreiras e Oportunidades de Emprego"
+
+#: templates/cms/public_career_list.html:11
+msgid "Careers & Opportunities"
+msgstr "Carreiras e Oportunidades"
+
+#: templates/cms/public_career_list.html:12
+msgid ""
+"Join the National Directorate of Meteorology and Geophysics (DNMG) of Timor-"
+"Leste."
+msgstr ""
+"Faça parte da Direção Nacional de Meteorologia e Geofísica (DNMG) de Timor-"
+"Leste"
+
+#: templates/cms/public_career_list.html:23
+#: templates/cms/public_news_list.html:23
+msgid "Search & Filter"
+msgstr "Pesquisar e Filtrar"
+
+#: templates/cms/public_career_list.html:26
+msgid "Search jobs..."
+msgstr "Pesquisar vagas..."
+
+#: templates/cms/public_career_list.html:39
+msgid "Filter Openings"
+msgstr "Filtrar Vagas"
+
+#: templates/cms/public_career_list.html:41 templates/hr/employee_list.html:88
+#: templates/hr/reports.html:24 templates/users/audit_logs.html:43
+#: templates/users/user_list.html:42
+msgid "Reset"
+msgstr "Redefinir"
+
+#: templates/cms/public_career_list.html:78
+msgid "Posted"
+msgstr "Publicado em"
+
+#: templates/cms/public_career_list.html:81
+msgid "View Details & Apply"
+msgstr "Ver Detalhes e Candidatar-se"
+
+#: templates/cms/public_career_list.html:90
+msgid "No open job positions at this time."
+msgstr "Não há vagas abertas no momento."
+
+#: templates/cms/public_career_list.html:91
+msgid "Please check back later for new career opportunities."
+msgstr "Por favor, volte mais tarde para novas oportunidades de carreira."
+
+#: templates/cms/public_news_detail.html:49
+msgid "Supporting document"
+msgstr ""
+
+#: templates/cms/public_news_detail.html:56
+msgid "Back to News List"
+msgstr ""
+
+#: templates/cms/public_news_list.html:4
+msgid "News & Updates"
+msgstr ""
+
+#: templates/cms/public_news_list.html:11
+msgid "Meteorological & Geophysical News"
+msgstr ""
+
+#: templates/cms/public_news_list.html:12
+msgid ""
+"Latest announcements, climate updates, and operational press releases from "
+"DNMG Timor-Leste."
+msgstr ""
+
+#: templates/cms/public_news_list.html:26
+msgid "Search news..."
+msgstr ""
+
+#: templates/cms/public_news_list.html:39
+msgid "Filter Results"
+msgstr ""
+
+#: templates/core/home.html:319
+msgid "The National Directorate of Meteorology and Geophysics (Direção Nacional de Meteorologia e Geofísica - DNMG) operates under the Ministry of Transport and Communications of Timor-Leste. We provide vital weather, oceanographic, and seismic monitoring services to protect lives, property, and national infrastructure."
+msgstr "A Direção Nacional de Meteorologia e Geofísica (DNMG) funciona sob a tutela do Ministério dos Transportes e Comunicações de Timor-Leste. Prestamos serviços essenciais de monitorização meteorológica, oceanográfica e sísmica para proteger vidas, bens e as infraestruturas nacionais."
+
+#: templates/cms/public_news_list.html:65 templates/core/home.html:353
+#: templates/core/home.html:357
+msgid "Read Full Article"
+msgstr ""
+
+#: templates/cms/public_news_list.html:73
+msgid "No news articles found matching your criteria."
+msgstr ""
+
+#: templates/components/language_switcher.html:4
+msgid "Choose language"
+msgstr "Escolher idioma"
+
+#: templates/components/pagination.html:9
+#: templates/components/pagination.html:15 templates/core/home.html:59
+msgid "Previous"
+msgstr "Anterior"
+
+#: templates/components/pagination.html:35
+#: templates/components/pagination.html:41 templates/core/home.html:63
+msgid "Next"
+msgstr "Seguinte"
+
+#: templates/core/about_dnmg.html:10
+msgid "National Directorate of Meteorology and Geophysics"
+msgstr "Direção Nacional de Meteorologia e Geofísica"
+
+#: templates/core/about_dnmg.html:21
+msgid "Our Mission"
+msgstr "A Nossa Missão"
+
+#: templates/core/about_dnmg.html:23
+msgid ""
+"To provide reliable, responsible, and timely meteorological, climatological, "
+"and geophysical information and services to support public safety, "
+"contribute to national development, and actively participate in "
+"international activities and cooperation."
+msgstr ""
+"Fornecer informação e serviços meteorológicos, climatológicos e geofísicos "
+"fiáveis, responsáveis e atempados para apoiar a segurança pública, "
+"contribuir para o desenvolvimento nacional e participar ativamente em "
+"atividades e cooperação internacionais."
+
+#: templates/core/about_dnmg.html:33
+msgid "Our Vision"
+msgstr "A Nossa Visão"
+
+#: templates/core/about_dnmg.html:35
+msgid ""
+"To achieve DNMG’s vision through a clear mission focused on the following "
+"key areas:"
+msgstr ""
+"Alcançar a visão da DNMG através de uma missão clara centrada nas seguintes "
+"áreas principais:"
+
+#: templates/core/about_dnmg.html:37
+msgid ""
+"Analyze and understand meteorological, climatological, and geophysical "
+"phenomena."
+msgstr ""
+"Analisar e compreender fenómenos meteorológicos, climatológicos e geofísicos."
+
+#: templates/core/about_dnmg.html:38
+msgid ""
+"Prepare and provide efficient, effective, and reliable meteorological, "
+"climatological, and geophysical data and information."
+msgstr ""
+"Preparar e fornecer dados e informação meteorológicos, climatológicos e "
+"geofísicos eficientes, eficazes e fiáveis."
+
+#: templates/core/about_dnmg.html:39
+msgid ""
+"Fulfill and comply with international obligations and standards in the "
+"fields of meteorology, climatology, and geophysics."
+msgstr ""
+"Cumprir as obrigações e normas internacionais nas áreas da meteorologia, "
+"climatologia e geofísica."
+
+#: templates/core/about_dnmg.html:40
+msgid ""
+"Coordinate and facilitate activities related to meteorology, climatology, "
+"and geophysics."
+msgstr ""
+"Coordenar e facilitar atividades relacionadas com a meteorologia, "
+"climatologia e geofísica."
+
+#: templates/core/about_dnmg.html:51
+msgid "Our Services"
+msgstr "Os Nossos Serviços"
+
+#: templates/core/about_dnmg.html:57
+msgid "24/7 Meteorological Monitoring"
+msgstr "Monitorização Meteorológica 24/7"
+
+#: templates/core/about_dnmg.html:58
+msgid ""
+"Continuous monitoring of weather conditions to provide timely and reliable "
+"information."
+msgstr ""
+"Monitorização contínua das condições meteorológicas para fornecer informação "
+"atempada e fiável."
+
+#: templates/core/about_dnmg.html:65
+msgid ""
+"Early warnings for hydrometeorological and seismic events to help "
+"communities and authorities prepare for potential hazards."
+msgstr ""
+"Alertas precoces para eventos hidrometeorológicos e sísmicos, ajudando as "
+"comunidades e autoridades a prepararem-se para potenciais perigos."
+
+#: templates/core/about_dnmg.html:71
+msgid "Historical Climate Data Analysis"
+msgstr "Análise de Dados Climáticos Históricos"
+
+#: templates/core/about_dnmg.html:72
+msgid ""
+"Analysis of historical climate data to support research, planning, decision-"
+"making, and climate-related assessments."
+msgstr ""
+"Análise de dados climáticos históricos para apoiar a investigação, o "
+"planeamento, a tomada de decisões e avaliações relacionadas com o clima."
+
+#: templates/core/about_dnmg.html:78
+msgid "Extreme Event Alert System"
+msgstr "Sistema de Alerta de Eventos Extremos"
+
+#: templates/core/about_dnmg.html:79
+msgid ""
+"An alert system designed to provide timely information about extreme weather "
+"and other potentially hazardous events."
+msgstr ""
+"Um sistema de alerta concebido para fornecer informação atempada sobre "
+"fenómenos meteorológicos extremos e outros eventos potencialmente perigosos."
+
+#: templates/core/about_dnmg.html:90
+msgid "Our Team"
+msgstr "A Nossa Equipa"
+
+#: templates/core/about_dnmg.html:91
+msgid ""
+"We have a team of qualified professionals specializing in meteorology, "
+"geophysics, and environmental sciences. Our team is committed to technical "
+"excellence, reliable information, and quality public service."
+msgstr ""
+"Temos uma equipa de profissionais qualificados especializados em "
+"meteorologia, geofísica e ciências ambientais. A nossa equipa está empenhada "
+"na excelência técnica, informação fiável e serviço público de qualidade."
+
+#: templates/core/about_dnmg.html:98
+msgid "Contact Us"
+msgstr "Contacte-nos"
+
+#: templates/core/about_dnmg.html:99
+msgid "For more information, services, or inquiries, please contact DNMG."
+msgstr "Para mais informações, serviços ou esclarecimentos, contacte a DNMG."
+
+#: templates/core/dnmg_structure.html:10
+msgid "DNMG's organisational hierarchy"
+msgstr "Hierarquia organizacional da DNMG"
+
+#: templates/core/dnmg_structure.html:19
+msgid "Organisational Structure"
+msgstr "Estrutura Organizacional"
+
+#: templates/core/dnmg_structure.html:20
+msgid ""
+"Departments are maintained by the HR Admin Portal and update here "
+"automatically."
+msgstr ""
+"Os departamentos são geridos no Portal Administrativo de RH e são "
+"atualizados aqui automaticamente."
+
+#: templates/core/dnmg_structure.html:23
+msgid "Temporary structure data"
+msgstr "Dados de estrutura temporários"
+
+#: templates/core/dnmg_structure.html:27
+msgid "DNMG organisational chart"
+msgstr "Organigrama da DNMG"
+
+#: templates/core/dnmg_structure.html:31
+msgid "Director"
+msgstr "Diretor"
+
+#: templates/core/home.html:15
+msgid "National Portal for Meteorological, Climate and Geophysical Information"
+msgstr "Portal Nacional de Informação Meteorológica, Climática e Geofísica"
+
+#: templates/core/home.html:18
+msgid ""
+"Official weather forecasts, climate summaries, marine advisories, and "
+"seismic warnings for the Democratic Republic of Timor-Leste."
+msgstr ""
+"Previsões meteorológicas oficiais, sínteses climáticas, avisos marítimos e "
+"alertas sísmicos da República Democrática de Timor-Leste."
+
+#: templates/core/home.html:24
+msgid "System Operational"
+msgstr "Sistema Operacional"
+
+#: templates/core/home.html:36
+#, fuzzy, python-format
+#| msgid "Active Safety Alerts"
+msgid "Active Safety Alerts (%(count)s)"
+msgstr "Alertas de Segurança Ativos"
+
+#: templates/core/home.html:49
+msgid "Affected Areas:"
+msgstr ""
+
+#: templates/core/home.html:80
+msgid "10-Day Municipal Weather Forecast — CDIS-ECMWF-IFS"
+msgstr "Previsão do Tempo Municipal para 10 Dias — CDIS-ECMWF-IFS"
+
+#: templates/core/home.html:82
+msgid "Municipality-level daily forecast — click any day card or municipality polygon for details."
+msgstr "Previsão diária por município — clique em qualquer painel diário ou polígono municipal para visualizar os detalhes da previsão."
+
+
+#: templates/core/home.html:107
+msgid "Full Map"
+msgstr ""
+
+#: templates/core/home.html:130
+msgid "10-day forecast selector"
+msgstr ""
+
+#: templates/core/home.html:132
+msgid "Select a forecast day"
+msgstr ""
+
+#: templates/core/home.html:157
+msgid "National Meteorological Station Network"
+msgstr ""
+
+#: templates/core/home.html:158
+msgid "Live telemetry from 15 active network stations across Timor-Leste"
+msgstr ""
+
+#: templates/core/home.html:162 templates/hr/employee_list.html:80
+#, fuzzy
+#| msgid "See All"
+msgid "All"
+msgstr "Ver Tudo"
+
+#: templates/core/home.html:163 templates/weather/interactive_map.html:185
+msgid "AWS"
+msgstr ""
+
+#: templates/core/home.html:164 templates/weather/interactive_map.html:186
+msgid "Tide Gauge"
+msgstr ""
+
+#: templates/core/home.html:165 templates/users/dashboard.html:123
+#, fuzzy
+#| msgid "Marine"
+msgid "Marine Buoy"
+msgstr "Marítimo"
+
+#: templates/core/home.html:177
+msgid "Latest Weather Bulletins"
+msgstr "Boletins Meteorológicos Recentes"
+
+#: templates/core/home.html:202
+msgid "Quick Downloads"
+msgstr "Downloads Rápidos"
+
+#: templates/core/home.html:203
+msgid "Access historical climate archives, marine advisories, and bulletins."
+msgstr ""
+
+#: templates/core/home.html:206
+msgid "Official Bulletins (PDF)"
+msgstr ""
+
+#: templates/core/home.html:209
+msgid "Open GIS Explorer Map"
+msgstr ""
+
+#: templates/core/home.html:226
+msgid "Marine & Ocean"
+msgstr ""
+
+#: templates/core/home.html:228
+msgid ""
+"Wave heights, tidal heights for Dili and Tibar ports, coastal winds, and "
+"shipping lane warnings."
+msgstr ""
+
+#: templates/core/home.html:242
+msgid "Climate & Environment"
+msgstr ""
+
+#: templates/core/home.html:244
+msgid ""
+"Timor-Leste historical temperature grids, rainfall patterns, drought "
+"monitoring indexes, and El Niño outlooks."
+msgstr ""
+
+#: templates/core/home.html:258
+msgid "Seismic Activity"
+msgstr ""
+
+#: templates/core/home.html:260
+msgid ""
+"Real-time tectonic movement detection, recent earthquakes records, "
+"magnitudes, and tsunami advisories."
+msgstr ""
+
+#: templates/core/home.html:271
+msgid "Decision Support Systems (DSS)"
+msgstr ""
+
+#: templates/core/home.html:272
+msgid ""
+"Specialized meteorological decision suites for disaster management, ocean "
+"safety, climate impact, and agriculture."
+msgstr ""
+
+#: templates/core/home.html:278
+msgid "Disaster Risk Reduction"
+msgstr ""
+
+#: templates/core/home.html:279
+msgid ""
+"Early warning integration for flash floods, landslides, and heavy rainfall "
+"risks."
+msgstr ""
+
+#: templates/core/home.html:287
+msgid "Ocean State Forecasting"
+msgstr ""
+
+#: templates/core/home.html:288
+msgid ""
+"High-resolution wave, tide, and coastal surge forecasting for shipping lanes."
+msgstr ""
+
+#: templates/core/home.html:296
+msgid "Climate Risk Info for Public Health"
+msgstr ""
+
+#: templates/core/home.html:297
+msgid ""
+"Climate Risk Information System for Public Health: vector-borne disease "
+"early warning, heat stress indexes, and health resilience models."
+msgstr ""
+
+#: templates/core/home.html:305
+msgid "Agricultural DSS"
+msgstr ""
+
+#: templates/core/home.html:306
+msgid ""
+"Agro-meteorological advisories for coffee, rice, and corn farming seasonal "
+"planning."
+msgstr ""
+
+#: templates/core/home.html:317
+msgid "About DNMG Timor-Leste"
+msgstr ""
+
+#: templates/core/home.html:324
+msgid "Learn More"
+msgstr ""
+
+#: templates/core/home.html:335
+msgid "Latest News"
+msgstr "Últimas Notícias"
+
+#: templates/core/home.html:337
+#, fuzzy
+#| msgid "View logs"
+msgid "View All News"
+msgstr "Visualizar registros"
+
+#: templates/hr/contract_monitoring.html:5
+msgid "Contract Monitoring & Renewals"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:13
+msgid "Expiring ≤ 30 Days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:19
+msgid "Expiring ≤ 60 Days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:25
+msgid "Expiring ≤ 90 Days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:31
+#: templates/hr/contract_monitoring.html:63
+msgid "Expired Contracts"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:39
+msgid "Critical: Contracts Ending Within 30 Days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:47
+msgid "Warning: Contracts Ending Within 60 Days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:55
+msgid "Notice: Contracts Ending Within 90 Days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:71
+#, fuzzy
+#| msgid "Contact"
+msgid "Contract Ended"
+msgstr "Contacto"
+
+#: templates/hr/contract_monitoring.html:72
+msgid "Days Ago"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:73 users/models.py:102
+msgid "Action"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:85
+msgid "days ago"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:89
+msgid "Mark Terminated"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:93
+#: templates/hr/partials/contract_table.html:27
+msgid "Renew"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:99
+msgid "No expired contracts."
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:109
+msgid "Recently Renewed Contracts (Last 30 Days)"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:117
+msgid "New End Date"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:118
+msgid "Days Remaining"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:129
+#: templates/hr/partials/contract_table.html:24
+msgid "days"
+msgstr ""
+
+#: templates/hr/contract_monitoring.html:132
+msgid "No recently renewed contracts."
+msgstr ""
+
+#: templates/hr/dashboard.html:5
+msgid "HR & Staff Management Dashboard"
+msgstr ""
+
+#: templates/hr/dashboard.html:22
+msgid "Real-time overview of DNMG workforce statistics."
+msgstr ""
+
+#: templates/hr/dashboard.html:26 templates/hr/employee_list.html:40
+msgid "Add Employee"
+msgstr ""
+
+#: templates/hr/dashboard.html:37 templates/hr/dashboard.html:252
+#, fuzzy
+#| msgid "Update Staff"
+msgid "Total Staff"
+msgstr "Atualizar Funcionário"
+
+#: templates/hr/dashboard.html:65
+msgid "Consultants"
+msgstr ""
+
+#: templates/hr/dashboard.html:72
+msgid "Interns"
+msgstr ""
+
+#: templates/hr/dashboard.html:104
+msgid "Retired/Resigned/Terminated"
+msgstr ""
+
+#: templates/hr/dashboard.html:117
+msgid "Contract Expiry Alerts"
+msgstr ""
+
+#: templates/hr/dashboard.html:118
+msgid "Click to manage contract renewals"
+msgstr ""
+
+#: templates/hr/dashboard.html:121
+msgid "≤30 days"
+msgstr ""
+
+#: templates/hr/dashboard.html:124
+msgid "≤60 days"
+msgstr ""
+
+#: templates/hr/dashboard.html:127
+msgid "≤90 days"
+msgstr ""
+
+#: templates/hr/dashboard.html:130 templates/hr/employee_detail.html:62
+msgid "Expired"
+msgstr ""
+
+#: templates/hr/dashboard.html:142
+msgid "Gender Distribution"
+msgstr ""
+
+#: templates/hr/dashboard.html:164
+msgid "Staff by Department"
+msgstr ""
+
+#: templates/hr/dashboard.html:170
+#, fuzzy
+#| msgid "Staff Distribution by Role"
+msgid "Staff Level Distribution"
+msgstr "Distribuição de Pessoal por Cargo"
+
+#: templates/hr/dashboard.html:180
+#, fuzzy
+#| msgid "Staff Distribution by Role"
+msgid "Age Distribution"
+msgstr "Distribuição de Pessoal por Cargo"
+
+#: templates/hr/dashboard.html:186
+msgid "Staff Growth (12 months)"
+msgstr ""
+
+#: templates/hr/department_confirm_delete.html:4
+msgid "Confirm Delete Department"
+msgstr ""
+
+#: templates/hr/department_confirm_delete.html:5
+msgid "Delete Department"
+msgstr ""
+
+#: templates/hr/department_confirm_delete.html:11
+msgid "Delete Department?"
+msgstr ""
+
+#: templates/hr/department_confirm_delete.html:12
+#, python-format
+msgid ""
+"Are you sure you want to delete <strong>%(name)s</strong>? Staff assigned to "
+"this department will not be deleted but will lose their department "
+"assignment."
+msgstr ""
+
+#: templates/hr/department_confirm_delete.html:15
+#: templates/hr/download_confirm_delete.html:15
+#: templates/hr/employee_confirm_delete.html:15
+msgid "Yes, Delete"
+msgstr ""
+
+#: templates/hr/department_detail.html:5
+#, fuzzy
+#| msgid "Update Details for"
+msgid "Department Detail"
+msgstr "Atualizar Detalhes de"
+
+#: templates/hr/department_detail.html:15
+msgid "Head:"
+msgstr ""
+
+#: templates/hr/department_detail.html:16
+#, fuzzy
+#| msgid "Update Staff"
+msgid "Active Staff:"
+msgstr "Atualizar Funcionário"
+
+#: templates/hr/department_detail.html:17 templates/hr/department_list.html:45
+#: templates/hr/staff_level_list.html:39
+#: templates/weather/station_list.html:104 weather/models.py:35
+#, fuzzy
+#| msgid "Active"
+msgid "Inactive"
+msgstr "Ativo"
+
+#: templates/hr/department_detail.html:22 templates/hr/department_list.html:59
+#: templates/hr/download_list.html:92 templates/hr/employee_list.html:162
+msgid "Delete"
+msgstr ""
+
+#: templates/hr/department_detail.html:30
+#, fuzzy
+#| msgid "Staff Accounts Management"
+msgid "Staff in this Department"
+msgstr "Gestão de Contas de Funcionários"
+
+#: templates/hr/department_detail.html:37 templates/hr/employee_list.html:105
+#: templates/hr/partials/contract_table.html:8 templates/hr/reports.html:70
+msgid "Position"
+msgstr ""
+
+#: templates/hr/department_detail.html:38 templates/hr/employee_detail.html:48
+#: templates/hr/employee_list.html:107 templates/hr/reports.html:72
+msgid "Level"
+msgstr ""
+
+#: templates/hr/department_detail.html:61
+#, fuzzy
+#| msgid "No staff accounts found."
+msgid "No staff assigned."
+msgstr "Nenhuma conta de funcionário encontrada."
+
+#: templates/hr/department_form.html:24 templates/hr/staff_level_form.html:24
+msgid "Save"
+msgstr ""
+
+#: templates/hr/department_list.html:5
+#, fuzzy
+#| msgid "Staff Accounts Management"
+msgid "Department Management"
+msgstr "Gestão de Contas de Funcionários"
+
+#: templates/hr/department_list.html:13
+msgid "Manage all DNMG departments and their heads."
+msgstr ""
+
+#: templates/hr/department_list.html:25
+#, fuzzy
+#| msgid "Search by name, user or email..."
+msgid "Search department name or code..."
+msgstr "Pesquisar por nome, usuário ou email..."
+
+#: templates/hr/department_list.html:52
+msgid "No HOD assigned"
+msgstr ""
+
+#: templates/hr/department_list.html:55
+msgid "staff"
+msgstr ""
+
+#: templates/hr/department_list.html:68
+#, fuzzy
+#| msgid "No staff accounts found."
+msgid "No departments found."
+msgstr "Nenhuma conta de funcionário encontrada."
+
+#: templates/hr/download_confirm_delete.html:4
+msgid "Confirm Delete File"
+msgstr ""
+
+#: templates/hr/download_confirm_delete.html:5
+msgid "Delete File"
+msgstr ""
+
+#: templates/hr/download_confirm_delete.html:11
+msgid "Delete File?"
+msgstr ""
+
+#: templates/hr/download_confirm_delete.html:12
+#, python-format
+msgid ""
+"Are you sure you want to permanently delete <strong>%(title)s</strong>? This "
+"action cannot be undone."
+msgstr ""
+
+#: templates/hr/download_form.html:4
+msgid "Upload / Edit File"
+msgstr ""
+
+#: templates/hr/download_form.html:5
+#, fuzzy
+#| msgid "Staff Accounts Management"
+msgid "Downloads Management"
+msgstr "Gestão de Contas de Funcionários"
+
+#: templates/hr/download_form.html:10
+#, fuzzy
+#| msgid "Details"
+msgid "File Details"
+msgstr "Detalhes"
+
+#: templates/hr/download_form.html:11
+msgid "Upload a new downloadable document or update file information."
+msgstr ""
+
+#: templates/hr/download_form.html:25
+msgid "Save File"
+msgstr ""
+
+#: templates/hr/download_list.html:14
+msgid "Internal staff documents, reports, and official files."
+msgstr ""
+
+#: templates/hr/download_list.html:18
+#, fuzzy
+#| msgid "Upload Profile Image"
+msgid "Upload File"
+msgstr "Carregar Imagem de Perfil"
+
+#: templates/hr/download_list.html:26
+msgid "Search title or tags..."
+msgstr ""
+
+#: templates/hr/download_list.html:60
+msgid "Access"
+msgstr ""
+
+#: templates/hr/download_list.html:61
+msgid "Downloads"
+msgstr "Downloads"
+
+#: templates/hr/download_list.html:62
+msgid "Uploaded"
+msgstr ""
+
+#: templates/hr/download_list.html:83
+msgid "Public"
+msgstr ""
+
+#: templates/hr/download_list.html:83
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Staff Only"
+msgstr "Login do Pessoal"
+
+#: templates/hr/download_list.html:89
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download"
+msgstr "Downloads"
+
+#: templates/hr/download_list.html:100
+#, fuzzy
+#| msgid "No staff accounts found."
+msgid "No files found."
+msgstr "Nenhuma conta de funcionário encontrada."
+
+#: templates/hr/employee_confirm_delete.html:4
+msgid "Confirm Delete Employee"
+msgstr ""
+
+#: templates/hr/employee_confirm_delete.html:5
+msgid "Delete Employee"
+msgstr ""
+
+#: templates/hr/employee_confirm_delete.html:11
+msgid "Delete Employee Record?"
+msgstr ""
+
+#: templates/hr/employee_confirm_delete.html:12
+#, python-format
+msgid ""
+"Are you sure you want to permanently delete the record for <strong>%(name)s</"
+"strong>? This action cannot be undone."
+msgstr ""
+
+#: templates/hr/employee_detail.html:5
+#, fuzzy
+#| msgid "My Profile"
+msgid "Employee Profile"
+msgstr "Meu Perfil"
+
+#: templates/hr/employee_detail.html:34
+#, fuzzy
+#| msgid "My Profile"
+msgid "Edit Profile"
+msgstr "Meu Perfil"
+
+#: templates/hr/employee_detail.html:37
+msgid "Delete Record"
+msgstr ""
+
+#: templates/hr/employee_detail.html:46
+msgid "Emp. No."
+msgstr ""
+
+#: templates/hr/employee_detail.html:51
+msgid "Age"
+msgstr ""
+
+#: templates/hr/employee_detail.html:53
+msgid "Phone"
+msgstr ""
+
+#: templates/hr/employee_detail.html:54
+msgid "Email"
+msgstr ""
+
+#: templates/hr/employee_detail.html:59
+#: templates/hr/partials/contract_table.html:9 templates/hr/reports.html:74
+#, fuzzy
+#| msgid "Contact"
+msgid "Contract End"
+msgstr "Contacto"
+
+#: templates/hr/employee_detail.html:63
+msgid "d left"
+msgstr ""
+
+#: templates/hr/employee_detail.html:77
+msgid "Documents"
+msgstr ""
+
+#: templates/hr/employee_detail.html:86
+msgid "No notes recorded."
+msgstr ""
+
+#: templates/hr/employee_detail.html:95
+msgid "Upload Document"
+msgstr ""
+
+#: templates/hr/employee_detail.html:101
+msgid "Upload"
+msgstr ""
+
+#: templates/hr/employee_detail.html:119
+#, fuzzy
+#| msgid "Reactivate this account?"
+msgid "Delete this document?"
+msgstr "Reativar esta conta?"
+
+#: templates/hr/employee_detail.html:127
+msgid "No documents uploaded."
+msgstr ""
+
+#: templates/hr/employee_form.html:11
+msgid "Fill in the employee details below. All fields marked * are required."
+msgstr ""
+
+#: templates/hr/employee_form.html:21
+msgid "Personal Information"
+msgstr ""
+
+#: templates/hr/employee_form.html:54
+#, fuzzy
+#| msgid "My Profile"
+msgid "Profile Photo"
+msgstr "Meu Perfil"
+
+#: templates/hr/employee_form.html:60
+msgid "Employment Details"
+msgstr ""
+
+#: templates/hr/employee_form.html:94
+#, fuzzy
+#| msgid "Contact"
+msgid "Contract Dates"
+msgstr "Contacto"
+
+#: templates/hr/employee_form.html:102
+msgid "leave blank if permanent"
+msgstr ""
+
+#: templates/hr/employee_form.html:112
+msgid "Save Employee"
+msgstr ""
+
+#: templates/hr/employee_list.html:22
+msgid "Employee Directory"
+msgstr ""
+
+#: templates/hr/employee_list.html:23
+msgid "All staff members of DNMG"
+msgstr ""
+
+#: templates/hr/employee_list.html:26 templates/hr/employee_list.html:197
+msgid "selected"
+msgstr ""
+
+#: templates/hr/employee_list.html:31
+msgid "Export Staff Data"
+msgstr ""
+
+#: templates/hr/employee_list.html:34
+msgid "Export to Excel (.xlsx)"
+msgstr ""
+
+#: templates/hr/employee_list.html:35
+msgid "Export to PDF (.pdf)"
+msgstr ""
+
+#: templates/hr/employee_list.html:36
+msgid "Export to CSV (.csv)"
+msgstr ""
+
+#: templates/hr/employee_list.html:51
+#, fuzzy
+#| msgid "Search by name, user or email..."
+msgid "Search name, number, position..."
+msgstr "Pesquisar por nome, usuário ou email..."
+
+#: templates/hr/employee_list.html:170
+msgid "No employees found matching your filters."
+msgstr ""
+
+#: templates/hr/partials/contract_table.html:10
+msgid "Days Left"
+msgstr ""
+
+#: templates/hr/partials/contract_table.html:33
+msgid "No contracts in this window."
+msgstr ""
+
+#: templates/hr/partials/renew_modal.html:7
+#, fuzzy
+#| msgid "Contact"
+msgid "Renew Contract"
+msgstr "Contacto"
+
+#: templates/hr/partials/renew_modal.html:13
+#, python-format
+msgid "Renewing contract for <strong>%(name)s</strong>."
+msgstr ""
+
+#: templates/hr/partials/renew_modal.html:15
+#, python-format
+msgid "Current end date: %(d)s."
+msgstr ""
+
+#: templates/hr/partials/renew_modal.html:30
+#, fuzzy
+#| msgid "Confirm New Password"
+msgid "Confirm Renewal"
+msgstr "Confirmar Nova Senha"
+
+#: templates/hr/reports.html:5
+msgid "HR Reports & Exports"
+msgstr ""
+
+#: templates/hr/reports.html:12
+msgid "Report Filters"
+msgstr ""
+
+#: templates/hr/reports.html:22
+msgid "Generate Report"
+msgstr ""
+
+#: templates/hr/reports.html:30
+msgid "Export Report"
+msgstr ""
+
+#: templates/hr/reports.html:34
+msgid "Export Excel (.xlsx)"
+msgstr ""
+
+#: templates/hr/reports.html:38
+msgid "Export PDF (.pdf)"
+msgstr ""
+
+#: templates/hr/reports.html:42
+msgid "Export CSV (.csv)"
+msgstr ""
+
+#: templates/hr/reports.html:45
+msgid "Print"
+msgstr ""
+
+#: templates/hr/reports.html:58
+msgid "Report Results"
+msgstr ""
+
+#: templates/hr/reports.html:59
+msgid "employees found"
+msgstr ""
+
+#: templates/hr/reports.html:66
+msgid "No."
+msgstr ""
+
+#: templates/hr/reports.html:67
+#, fuzzy
+#| msgid "Last Name"
+msgid "Name"
+msgstr "Último Nome"
+
+#: templates/hr/reports.html:110
+msgid "No employees match the selected filters."
+msgstr ""
+
+#: templates/hr/reports.html:119
+#, fuzzy
+#| msgid "Create Staff Account"
+msgid "Generate a Staff Report"
+msgstr "Criar Conta de Funcionário"
+
+#: templates/hr/reports.html:120
+msgid ""
+"Use the filter panel on the left to generate a filtered employee report, "
+"then export it to CSV, Excel, or print."
+msgstr ""
+
+#: templates/hr/staff_level_form.html:4 templates/hr/staff_level_form.html:5
+#: templates/hr/staff_level_form.html:10
+#, fuzzy
+#| msgid "Add Staff User"
+msgid "Edit Staff Level"
+msgstr "Adicionar Usuário"
+
+#: templates/hr/staff_level_list.html:5
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Staff Level Configuration"
+msgstr "Login do Pessoal"
+
+#: templates/hr/staff_level_list.html:13
+msgid "Staff Levels & Grades"
+msgstr ""
+
+#: templates/hr/staff_level_list.html:14
+msgid "Configure and reorder organizational staff levels."
+msgstr ""
+
+#: templates/hr/staff_level_list.html:21
+msgid "Rank"
+msgstr ""
+
+#: templates/hr/staff_level_list.html:47
+msgid "No staff levels configured yet."
+msgstr ""
+
+#: templates/hr/staff_level_list.html:56
+#, fuzzy
+#| msgid "Add Staff User"
+msgid "Add New Staff Level"
+msgstr "Adicionar Usuário"
+
+#: templates/hr/staff_level_list.html:67
+msgid "Add Level"
+msgstr ""
+
+#: templates/users/admin_password_reset.html:4
+#: templates/users/admin_password_reset.html:6
+msgid "Direct Password Reset"
+msgstr "Redefinição Direta de Senha"
+
+#: templates/users/admin_password_reset.html:13
+#, fuzzy
+#| msgid "Password"
+msgid "Reset Password for"
+msgstr "Palavra-passe"
+
+#: templates/users/admin_password_reset.html:14
+msgid "Manually overwrite the password for this staff member."
+msgstr "Substituir manualmente a senha para este funcionário."
+
+#: templates/users/admin_password_reset.html:21
+msgid ""
+"Resetting the password directly will require this user to use their new "
+"password on their next login attempt."
+msgstr ""
+
+#: templates/users/admin_password_reset.html:29
+#: templates/users/password_reset_confirm.html:29 users/forms.py:137
+#: users/forms.py:138
+msgid "New Password"
+msgstr "Nova Senha"
+
+#: templates/users/admin_password_reset.html:37
+msgid "Confirm New Password"
+msgstr "Confirmar Nova Senha"
+
+#: templates/users/admin_password_reset.html:49
+#: templates/users/password_reset_confirm.html:51
+msgid "Change Password"
+msgstr "Alterar Senha"
+
+#: templates/users/audit_logs.html:4 templates/users/audit_logs.html:6
+msgid "System Audit Trails"
+msgstr "Trilhas de Auditoria do Sistema"
+
+#: templates/users/audit_logs.html:14
+msgid "Review database modifications and system operations logged."
+msgstr ""
+
+#: templates/users/audit_logs.html:17
+msgid "Refresh"
+msgstr ""
+
+#: templates/users/audit_logs.html:26
+#, fuzzy
+#| msgid "Search by name, user or email..."
+msgid "Search action, user, or IP address..."
+msgstr "Pesquisar por nome, usuário ou email..."
+
+#: templates/users/audit_logs.html:31 templates/weather/forecast_list.html:46
+#: templates/weather/observation_list.html:46
+msgid "From"
+msgstr ""
+
+#: templates/users/audit_logs.html:37 templates/weather/forecast_list.html:54
+#: templates/weather/observation_list.html:54
+msgid "To"
+msgstr ""
+
+#: templates/users/audit_logs.html:53 users/models.py:105
+msgid "Timestamp"
+msgstr "Data e Hora"
+
+#: templates/users/audit_logs.html:54 users/models.py:37 users/models.py:100
+msgid "User"
+msgstr "Usuário"
+
+#: templates/users/audit_logs.html:55
+msgid "Action/Method"
+msgstr "Ação/Método"
+
+#: templates/users/audit_logs.html:56 users/models.py:103
+msgid "IP Address"
+msgstr "Endereço IP"
+
+#: templates/users/audit_logs.html:57 users/models.py:104
+msgid "User Agent"
+msgstr "Agente do Usuário"
+
+#: templates/users/audit_logs.html:58 users/models.py:106
+msgid "Details"
+msgstr "Detalhes"
+
+#: templates/users/audit_logs.html:93
+msgid "Detailed Data Logged"
+msgstr ""
+
+#: templates/users/audit_logs.html:102
+msgid "No log entries found matching your search."
+msgstr ""
+
+#: templates/users/dashboard.html:17
+#, fuzzy
+#| msgid "Stations"
+msgid "Network Stations"
+msgstr "Estações"
+
+#: templates/users/dashboard.html:25
+#, fuzzy
+#| msgid "Active"
+msgid "Active Data"
+msgstr "Ativo"
+
+#: templates/users/dashboard.html:35
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Staff Accounts"
+msgstr "Login do Pessoal"
+
+#: templates/users/dashboard.html:53
+#, fuzzy
+#| msgid "Access Permissions"
+msgid "Online Sessions"
+msgstr "Permissões de Acesso"
+
+#: templates/users/dashboard.html:61
+msgid "Real-time"
+msgstr "Tempo Real"
+
+#: templates/users/dashboard.html:71
+#, fuzzy
+#| msgid "System Audit Trails"
+msgid "Audit Log Count"
+msgstr "Trilhas de Auditoria do Sistema"
+
+#: templates/users/dashboard.html:79
+msgid "View logs"
+msgstr "Visualizar registros"
+
+#: templates/users/dashboard.html:94
+msgid "Live Station Telemetry & Coordinates — Last 24 Hours"
+msgstr ""
+
+#: templates/users/dashboard.html:97
+#, python-brace-format
+msgid ""
+"Live data ingestion from DNMG API (https://ms-obs.dnmg.gov.tl/station-data/"
+"{id}). Coordinates saved in backend."
+msgstr ""
+
+#: templates/users/dashboard.html:103
+msgid "Sync Live API Now"
+msgstr ""
+
+#: templates/users/dashboard.html:113
+#, fuzzy
+#| msgid "Stations"
+msgid "AWS Stations"
+msgstr "Estações"
+
+#: templates/users/dashboard.html:118
+msgid "Tide Gauges"
+msgstr ""
+
+#: templates/users/dashboard.html:131
+#, fuzzy
+#| msgid "Stations"
+msgid "All Status"
+msgstr "Estações"
+
+#: templates/users/dashboard.html:134
+msgid "Online Only"
+msgstr ""
+
+#: templates/users/dashboard.html:137
+msgid "Offline Only"
+msgstr ""
+
+#: templates/users/dashboard.html:150 templates/users/dashboard.html:249
+#: templates/users/dashboard.html:326 templates/weather/station_form.html:25
+#: templates/weather/station_list.html:81 weather/models.py:44
+#, fuzzy
+#| msgid "Stations"
+msgid "Station Name"
+msgstr "Estações"
+
+#: templates/users/dashboard.html:152 templates/users/dashboard.html:251
+#: templates/users/dashboard.html:328
+msgid "Coordinates (Lat, Lon)"
+msgstr ""
+
+#: templates/users/dashboard.html:153
+#: templates/weather/observation_list.html:79
+msgid "Temp (°C)"
+msgstr ""
+
+#: templates/users/dashboard.html:154
+msgid "Humidity"
+msgstr ""
+
+#: templates/users/dashboard.html:155
+msgid "Wind Speed"
+msgstr ""
+
+#: templates/users/dashboard.html:156
+msgid "Pressure"
+msgstr ""
+
+#: templates/users/dashboard.html:157
+msgid "Rain Today"
+msgstr ""
+
+#: templates/users/dashboard.html:158
+msgid "Solar Rad"
+msgstr ""
+
+#: templates/users/dashboard.html:159 templates/users/dashboard.html:256
+#: templates/users/dashboard.html:333
+#: templates/weather/observation_list.html:77 weather/models.py:173
+msgid "Recorded At"
+msgstr ""
+
+#: templates/users/dashboard.html:228 templates/users/dashboard.html:305
+#: templates/users/dashboard.html:382
+msgid "No Data"
+msgstr ""
+
+#: templates/users/dashboard.html:234
+#, fuzzy
+#| msgid "No staff accounts found."
+msgid "No AWS stations found."
+msgstr "Nenhuma conta de funcionário encontrada."
+
+#: templates/users/dashboard.html:250 templates/users/dashboard.html:327
+#: templates/weather/forecast_form.html:25
+#: templates/weather/forecast_list.html:78
+#: templates/weather/station_form.html:35
+#: templates/weather/station_list.html:83 weather/models.py:50
+#: weather/models.py:197
+msgid "Municipality"
+msgstr ""
+
+#: templates/users/dashboard.html:252
+msgid "Air Temp (°C)"
+msgstr ""
+
+#: templates/users/dashboard.html:253
+msgid "Barometer (hPa)"
+msgstr ""
+
+#: templates/users/dashboard.html:254 weather/models.py:135
+msgid "Tide Level (mm)"
+msgstr ""
+
+#: templates/users/dashboard.html:311
+#, fuzzy
+#| msgid "No staff accounts found."
+msgid "No Tide Gauge stations found."
+msgstr "Nenhuma conta de funcionário encontrada."
+
+#: templates/users/dashboard.html:329 weather/models.py:128
+msgid "Wave Height (m)"
+msgstr ""
+
+#: templates/users/dashboard.html:330 weather/models.py:142
+msgid "Peak Period (s)"
+msgstr ""
+
+#: templates/users/dashboard.html:331 weather/models.py:163
+msgid "Sea Surface Temp (°C)"
+msgstr ""
+
+#: templates/users/dashboard.html:332
+#, fuzzy
+#| msgid "Stations"
+msgid "Battery Status"
+msgstr "Estações"
+
+#: templates/users/dashboard.html:388
+msgid "No Marine Buoy stations found."
+msgstr ""
+
+#: templates/users/dashboard.html:406
+msgid "Staff Distribution by Role"
+msgstr "Distribuição de Pessoal por Cargo"
+
+#: templates/users/dashboard.html:417
+msgid "Recent System Logs"
+msgstr "Registros Recentes do Sistema"
+
+#: templates/users/dashboard.html:418
+msgid "See All"
+msgstr "Ver Tudo"
+
+#: templates/users/dashboard.html:439
+msgid "No logs recorded yet."
+msgstr ""
+
+#: templates/users/dashboard.html:452
+msgid "Staff Quick Actions"
+msgstr "Ações Rápidas do Pessoal"
+
+#: templates/users/dashboard.html:458 templates/users/user_list.html:50
+msgid "Add Staff User"
+msgstr "Adicionar Usuário"
+
+#: templates/users/dashboard.html:464
+msgid "Manage Users"
+msgstr "Gerir Usuários"
+
+#: templates/users/dashboard.html:471
+#, fuzzy
+#| msgid "Stations"
+msgid "Manage Stations"
+msgstr "Estações"
+
+#: templates/users/dashboard.html:477
+#, fuzzy
+#| msgid "My Profile"
+msgid "Edit My Profile"
+msgstr "Meu Perfil"
+
+#: templates/users/login.html:7 templates/users/login.html:72
+msgid "Staff Login"
+msgstr "Login do Pessoal"
+
+#: templates/users/login.html:56
+msgid "National Staff Portal"
+msgstr ""
+
+#: templates/users/login.html:79 templates/users/login.html:82
+#: templates/users/user_form.html:30 users/forms.py:21
+msgid "Username"
+msgstr "Nome de usuário"
+
+#: templates/users/login.html:88 templates/users/login.html:91
+#: users/forms.py:26 users/forms.py:51 users/forms.py:52
+msgid "Password"
+msgstr "Palavra-passe"
+
+#: templates/users/login.html:101 users/forms.py:12
+msgid "Remember Me"
+msgstr "Lembrar-me"
+
+#: templates/users/login.html:106
+msgid "Forgot Password?"
+msgstr ""
+
+#: templates/users/login.html:111
+msgid "Log In"
+msgstr ""
+
+#: templates/users/login.html:120
+msgid "Back to Portal Home"
+msgstr ""
+
+#: templates/users/password_reset_complete.html:7
+msgid "Password Reset Complete"
+msgstr ""
+
+#: templates/users/password_reset_complete.html:29
+msgid "Password Changed"
+msgstr ""
+
+#: templates/users/password_reset_complete.html:31
+msgid ""
+"Your password has been successfully reset. You may now log in to the "
+"administrative system with your new password."
+msgstr ""
+
+#: templates/users/password_reset_complete.html:35
+msgid "Log In Now"
+msgstr ""
+
+#: templates/users/password_reset_confirm.html:7
+msgid "Confirm Password Reset"
+msgstr ""
+
+#: templates/users/password_reset_confirm.html:31
+msgid "Please enter your new password twice to confirm changes."
+msgstr ""
+
+#: templates/users/password_reset_confirm.html:57
+msgid "Invalid Link"
+msgstr ""
+
+#: templates/users/password_reset_confirm.html:59
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used or has expired."
+msgstr ""
+
+#: templates/users/password_reset_confirm.html:62
+msgid "Request New Link"
+msgstr ""
+
+#: templates/users/password_reset_done.html:7
+msgid "Reset Email Sent"
+msgstr ""
+
+#: templates/users/password_reset_done.html:29
+msgid "Reset Link Sent"
+msgstr ""
+
+#: templates/users/password_reset_done.html:31
+msgid ""
+"We have emailed you instructions for resetting your password. If an account "
+"exists with that email address, you will receive it shortly."
+msgstr ""
+
+#: templates/users/password_reset_done.html:34
+msgid ""
+"If you do not receive an email, please check your spam folder or contact the "
+"IT administrator."
+msgstr ""
+
+#: templates/users/password_reset_done.html:38
+msgid "Return to Login"
+msgstr ""
+
+#: templates/users/password_reset_email.html:2
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at the Portal DNMG staff area."
+msgstr ""
+
+#: templates/users/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/users/password_reset_email.html:7
+msgid "Your username, in case you’ve forgotten:"
+msgstr ""
+
+#: templates/users/password_reset_email.html:9
+msgid "Thanks for using our site!"
+msgstr ""
+
+#: templates/users/password_reset_email.html:11
+msgid "The Portal DNMG Team"
+msgstr ""
+
+#: templates/users/password_reset_form.html:7
+msgid "Password Reset"
+msgstr ""
+
+#: templates/users/password_reset_form.html:31
+msgid "Password Recovery"
+msgstr ""
+
+#: templates/users/password_reset_form.html:36
+msgid "Reset Password"
+msgstr ""
+
+#: templates/users/password_reset_form.html:38
+msgid ""
+"Enter your email address below and we will send you links to choose a new "
+"password."
+msgstr ""
+
+#: templates/users/password_reset_form.html:52
+msgid "Send Reset Link"
+msgstr ""
+
+#: templates/users/password_reset_form.html:60
+msgid "Back to Login"
+msgstr ""
+
+#: templates/users/profile.html:14
+msgid "Edit Personal Details"
+msgstr "Editar Detalhes Pessoais"
+
+#: templates/users/profile.html:15
+msgid "Update your contact information and profile picture."
+msgstr ""
+
+#: templates/users/profile.html:23 templates/users/user_form.html:48
+msgid "First Name"
+msgstr "Primeiro Nome"
+
+#: templates/users/profile.html:31 templates/users/user_form.html:57
+msgid "Last Name"
+msgstr "Último Nome"
+
+#: templates/users/profile.html:55 users/models.py:28
+msgid "Profile Picture"
+msgstr ""
+
+#: templates/users/profile.html:66
+msgid "Accepted formats: PNG, JPG, JPEG. Max size 2MB."
+msgstr ""
+
+#: templates/users/profile.html:77
+msgid "Save Changes"
+msgstr "Salvar Alterações"
+
+#: templates/users/profile.html:106
+msgid "Access Permissions"
+msgstr "Permissões de Acesso"
+
+#: templates/users/profile.html:111
+msgid "Administrative Panel"
+msgstr ""
+
+#: templates/users/profile.html:112 templates/users/profile.html:117
+#: templates/users/profile.html:125 templates/users/profile.html:133
+msgid "Granted"
+msgstr ""
+
+#: templates/users/profile.html:115
+msgid "Weather Observations Write"
+msgstr ""
+
+#: templates/users/profile.html:119
+msgid "Read Only"
+msgstr ""
+
+#: templates/users/profile.html:123
+msgid "HR Records Read/Write"
+msgstr ""
+
+#: templates/users/profile.html:127 templates/users/profile.html:135
+msgid "Denied"
+msgstr ""
+
+#: templates/users/profile.html:131
+msgid "News & CMS Publishing"
+msgstr ""
+
+#: templates/users/user_form.html:5
+msgid "Update Staff Account"
+msgstr "Atualizar Conta de Funcionário"
+
+#: templates/users/user_form.html:5
+msgid "Create Staff Account"
+msgstr "Criar Conta de Funcionário"
+
+#: templates/users/user_form.html:9
+msgid "Update Staff"
+msgstr "Atualizar Funcionário"
+
+#: templates/users/user_form.html:9
+msgid "Add Staff"
+msgstr "Adicionar Funcionário"
+
+#: templates/users/user_form.html:18
+msgid "Update Details for"
+msgstr "Atualizar Detalhes de"
+
+#: templates/users/user_form.html:18
+msgid "Register New Staff Account"
+msgstr "Registrar Nova Conta de Funcionário"
+
+#: templates/users/user_form.html:20
+msgid ""
+"Fill out the fields below. Roles determine permissions inside the portal."
+msgstr ""
+
+#: templates/users/user_form.html:75
+msgid "Role Access Assignment"
+msgstr "Atribuição de Cargo de Acesso"
+
+#: templates/users/user_form.html:84
+msgid "Upload Profile Image"
+msgstr "Carregar Imagem de Perfil"
+
+#: templates/users/user_form.html:96
+msgid "Account Active Status"
+msgstr "Estado Ativo da Conta"
+
+#: templates/users/user_form.html:107
+#, fuzzy
+#| msgid "Password"
+msgid "Initial Password"
+msgstr "Palavra-passe"
+
+#: templates/users/user_form.html:115 users/forms.py:55 users/forms.py:56
+#: users/forms.py:141 users/forms.py:142
+#, fuzzy
+#| msgid "Password"
+msgid "Confirm Password"
+msgstr "Palavra-passe"
+
+#: templates/users/user_form.html:129
+msgid "Save Account"
+msgstr "Salvar Conta"
+
+#: templates/users/user_list.html:4
+msgid "Staff Accounts Management"
+msgstr "Gestão de Contas de Funcionários"
+
+#: templates/users/user_list.html:18
+msgid "Search by name, user or email..."
+msgstr "Pesquisar por nome, usuário ou email..."
+
+#: templates/users/user_list.html:25
+msgid "All Roles"
+msgstr "Todos os Cargos"
+
+#: templates/users/user_list.html:37 templates/users/user_list.html:102
+msgid "Deactivated"
+msgstr ""
+
+#: templates/users/user_list.html:63
+#, fuzzy
+#| msgid "Staff Login"
+msgid "Staff Account"
+msgstr "Login do Pessoal"
+
+#: templates/users/user_list.html:64 users/models.py:22
+msgid "Role"
+msgstr ""
+
+#: templates/users/user_list.html:66
+msgid "Contact"
+msgstr "Contacto"
+
+#: templates/users/user_list.html:119
+msgid "Edit Account"
+msgstr "Editar Conta"
+
+#: templates/users/user_list.html:124
+#, fuzzy
+#| msgid "Password"
+msgid "Override Password"
+msgstr "Palavra-passe"
+
+#: templates/users/user_list.html:130
+msgid "Force logout this user session?"
+msgstr "Forçar a saída da sessão deste usuário?"
+
+#: templates/users/user_list.html:132
+msgid "Force Logout"
+msgstr "Forçar Saída"
+
+#: templates/users/user_list.html:138
+msgid "Are you sure you want to deactivate this account?"
+msgstr "Tem certeza de que deseja desativar esta conta?"
+
+#: templates/users/user_list.html:138
+msgid "Reactivate this account?"
+msgstr "Reativar esta conta?"
+
+#: templates/users/user_list.html:141 templates/weather/warning_list.html:108
+msgid "Deactivate"
+msgstr "Desativar"
+
+#: templates/users/user_list.html:141
+msgid "Reactivate"
+msgstr "Reativar"
+
+#: templates/users/user_list.html:153
+#, fuzzy
+#| msgid "No staff accounts found."
+msgid "No staff accounts found matching your search."
+msgstr "Nenhuma conta de funcionário encontrada."
+
+#: templates/weather/forecast_form.html:4
+#: templates/weather/forecast_form.html:14
+#, fuzzy
+#| msgid "Forecast"
+msgid "Edit Forecast"
+msgstr "Previsão"
+
+#: templates/weather/forecast_form.html:4
+#: templates/weather/forecast_list.html:16
+#, fuzzy
+#| msgid "Forecast"
+msgid "Publish Forecast"
+msgstr "Previsão"
+
+#: templates/weather/forecast_form.html:5
+#, fuzzy
+#| msgid "Forecast"
+msgid "Forecast Form"
+msgstr "Previsão"
+
+#: templates/weather/forecast_form.html:16
+msgid "Publish Municipal Weather Forecast"
+msgstr ""
+
+#: templates/weather/forecast_form.html:29
+#: templates/weather/forecast_list.html:77 weather/models.py:199
+#, fuzzy
+#| msgid "Forecast"
+msgid "Forecast Date"
+msgstr "Previsão"
+
+#: templates/weather/forecast_form.html:33 weather/models.py:200
+msgid "Min Temperature (°C)"
+msgstr ""
+
+#: templates/weather/forecast_form.html:37 weather/models.py:201
+msgid "Max Temperature (°C)"
+msgstr ""
+
+#: templates/weather/forecast_form.html:41 weather/models.py:172
+msgid "Condition Description"
+msgstr ""
+
+#: templates/weather/forecast_form.html:45
+msgid "Icon Class (Bootstrap Icon)"
+msgstr ""
+
+#: templates/weather/forecast_form.html:49
+#, python-format
+msgid "Rainfall Probability (%%)"
+msgstr ""
+
+#: templates/weather/forecast_form.html:53 weather/models.py:210
+msgid "Wind Summary"
+msgstr ""
+
+#: templates/weather/forecast_form.html:59
+#, fuzzy
+#| msgid "Forecast"
+msgid "Save Forecast"
+msgstr "Previsão"
+
+#: templates/weather/forecast_list.html:5
+msgid "Municipal Weather Forecast Management"
+msgstr ""
+
+#: templates/weather/forecast_list.html:11
+msgid "Daily meteorological forecasts per municipality"
+msgstr ""
+
+#: templates/weather/forecast_list.html:29
+msgid "Search condition, notes, staff..."
+msgstr ""
+
+#: templates/weather/forecast_list.html:36
+#: templates/weather/station_list.html:56
+msgid "All Municipalities"
+msgstr ""
+
+#: templates/weather/forecast_list.html:79
+msgid "Temp Min / Max"
+msgstr ""
+
+#: templates/weather/forecast_list.html:80
+#: templates/weather/observation_list.html:83 weather/models.py:202
+msgid "Condition"
+msgstr ""
+
+#: templates/weather/forecast_list.html:81
+msgid "Rain Prob."
+msgstr ""
+
+#: templates/weather/forecast_list.html:82
+#: templates/weather/warning_list.html:75 weather/models.py:217
+#: weather/models.py:260
+msgid "Issued By"
+msgstr ""
+
+#: templates/weather/forecast_list.html:110
+msgid "No municipal forecasts found matching your search."
+msgstr ""
+
+#: templates/weather/interactive_map.html:4
+#: templates/weather/interactive_map.html:146 weather/views.py:389
+msgid "10-Day ECMWF Forecast Map"
+msgstr ""
+
+#: templates/weather/interactive_map.html:4 weather/views.py:377
+#, fuzzy
+#| msgid "Real-time Observations"
+msgid "Live Weather Observations Map"
+msgstr "Observações em Tempo Real"
+
+#: templates/weather/interactive_map.html:148
+#, fuzzy
+#| msgid "Real-time Observations"
+msgid "Live Weather Observations"
+msgstr "Observações em Tempo Real"
+
+#: templates/weather/interactive_map.html:153
+msgid "Municipality-level ECMWF guidance for the next 10 days."
+msgstr ""
+
+#: templates/weather/interactive_map.html:155
+msgid "Current telemetry from the national weather-station network."
+msgstr ""
+
+#: templates/weather/interactive_map.html:163
+#, fuzzy
+#| msgid "Observations"
+msgid "Live Observations"
+msgstr "Observações"
+
+#: templates/weather/interactive_map.html:167
+#, fuzzy
+#| msgid "Forecast"
+msgid "10-Day Forecast"
+msgstr "Previsão"
+
+#: templates/weather/interactive_map.html:184
+msgid "ALL"
+msgstr ""
+
+#: templates/weather/interactive_map.html:187
+msgid "Buoy"
+msgstr ""
+
+#: templates/weather/interactive_map.html:196
+msgid "10-Day Regional Forecast Variable"
+msgstr ""
+
+#: templates/weather/interactive_map.html:299
+#: templates/weather/station_form.html:47 weather/models.py:53
+msgid "Longitude"
+msgstr ""
+
+#: templates/weather/interactive_map.html:308
+#: templates/weather/station_form.html:43 weather/models.py:52
+msgid "Latitude"
+msgstr ""
+
+#: templates/weather/interactive_map.html:317
+msgid "Source"
+msgstr ""
+
+#: templates/weather/interactive_map.html:326
+#, fuzzy
+#| msgid "Observations"
+msgid "Elevation"
+msgstr "Observações"
+
+#: templates/weather/interactive_map.html:338
+#: templates/weather/interactive_map.html:468
+msgid "Air Temperature [°C]"
+msgstr ""
+
+#: templates/weather/interactive_map.html:349
+msgid "Non Coordinate Pressure [mb / hPa]"
+msgstr ""
+
+#: templates/weather/interactive_map.html:360
+#: templates/weather/interactive_map.html:512
+#, python-format
+msgid "Relative Humidity [%%]"
+msgstr ""
+
+#: templates/weather/interactive_map.html:468
+#, fuzzy
+#| msgid "Timestamp"
+msgid "API timestamps"
+msgstr "Data e Hora"
+
+#: templates/weather/interactive_map.html:504
+msgid "Tide Level [mm]"
+msgstr ""
+
+#: templates/weather/interactive_map.html:508
+msgid "Significant Wave Height [m]"
+msgstr ""
+
+#: templates/weather/observation_form.html:4
+#, fuzzy
+#| msgid "Observations"
+msgid "Log Observation"
+msgstr "Observações"
+
+#: templates/weather/observation_form.html:5
+#, fuzzy
+#| msgid "Real-time Observations"
+msgid "New Weather Observation"
+msgstr "Observações em Tempo Real"
+
+#: templates/weather/observation_form.html:12
+#, fuzzy
+#| msgid "Real-time Observations"
+msgid "Record Weather Telemetry / Observation"
+msgstr "Observações em Tempo Real"
+
+#: templates/weather/observation_form.html:19 weather/models.py:79
+#, fuzzy
+#| msgid "Stations"
+msgid "Weather Station"
+msgstr "Estações"
+
+#: templates/weather/observation_form.html:23
+#, fuzzy
+#| msgid "Timestamp"
+msgid "Recorded Timestamp"
+msgstr "Data e Hora"
+
+#: templates/weather/observation_form.html:27 weather/models.py:98
+msgid "Temperature (°C)"
+msgstr ""
+
+#: templates/weather/observation_form.html:31
+#: templates/weather/observation_list.html:80
+#, python-format
+msgid "Humidity (%%)"
+msgstr ""
+
+#: templates/weather/observation_form.html:35
+#: templates/weather/observation_list.html:81 weather/models.py:106
+msgid "Rainfall (mm)"
+msgstr ""
+
+#: templates/weather/observation_form.html:39 weather/models.py:113
+msgid "Wind Speed (km/h)"
+msgstr ""
+
+#: templates/weather/observation_form.html:43 weather/models.py:115
+msgid "Wind Direction"
+msgstr ""
+
+#: templates/weather/observation_form.html:47 weather/models.py:121
+msgid "Pressure (hPa)"
+msgstr ""
+
+#: templates/weather/observation_form.html:51
+msgid "Wave Height (m - Marine)"
+msgstr ""
+
+#: templates/weather/observation_form.html:55
+msgid "Weather Condition Description"
+msgstr ""
+
+#: templates/weather/observation_form.html:61
+#, fuzzy
+#| msgid "Observations"
+msgid "Save Observation"
+msgstr "Observações"
+
+#: templates/weather/observation_list.html:4
+#: templates/weather/observation_list.html:10 weather/models.py:187
+#, fuzzy
+#| msgid "Real-time Observations"
+msgid "Weather Observations"
+msgstr "Observações em Tempo Real"
+
+#: templates/weather/observation_list.html:5
+msgid "Telemetry & Observational Data Log"
+msgstr ""
+
+#: templates/weather/observation_list.html:11
+msgid "Recent weather observations and telemetry records for all stations"
+msgstr ""
+
+#: templates/weather/observation_list.html:16
+#, fuzzy
+#| msgid "Observations"
+msgid "Log New Observation"
+msgstr "Observações"
+
+#: templates/weather/observation_list.html:29
+msgid "Search station, code, condition..."
+msgstr ""
+
+#: templates/weather/observation_list.html:36
+#, fuzzy
+#| msgid "Stations"
+msgid "All Stations"
+msgstr "Estações"
+
+#: templates/weather/observation_list.html:78 weather/models.py:91
+#, fuzzy
+#| msgid "Stations"
+msgid "Station"
+msgstr "Estações"
+
+#: templates/weather/observation_list.html:82
+msgid "Wind"
+msgstr ""
+
+#: templates/weather/observation_list.html:84
+msgid "Logged By"
+msgstr ""
+
+#: templates/weather/observation_list.html:103
+msgid "No weather observations found matching your search."
+msgstr ""
+
+#: templates/weather/station_form.html:4 templates/weather/station_form.html:14
+#, fuzzy
+#| msgid "Stations"
+msgid "Edit Station"
+msgstr "Estações"
+
+#: templates/weather/station_form.html:4
+#, fuzzy
+#| msgid "Latest Weather Bulletins"
+msgid "New Weather Station"
+msgstr "Boletins Meteorológicos Recentes"
+
+#: templates/weather/station_form.html:5
+msgid "Station Configuration"
+msgstr ""
+
+#: templates/weather/station_form.html:16
+#, fuzzy
+#| msgid "Register New Staff Account"
+msgid "Register New Weather Station"
+msgstr "Registrar Nova Conta de Funcionário"
+
+#: templates/weather/station_form.html:30 weather/models.py:45
+#, fuzzy
+#| msgid "Stations"
+msgid "Station Code"
+msgstr "Estações"
+
+#: templates/weather/station_form.html:39 weather/models.py:65
+#, fuzzy
+#| msgid "Stations"
+msgid "Station Type"
+msgstr "Estações"
+
+#: templates/weather/station_form.html:51
+msgid "Elevation (meters)"
+msgstr ""
+
+#: templates/weather/station_form.html:55
+#, fuzzy
+#| msgid "System Operational"
+msgid "Operational Status"
+msgstr "Sistema Operacional"
+
+#: templates/weather/station_form.html:59 weather/models.py:73
+msgid "Installed Date"
+msgstr ""
+
+#: templates/weather/station_form.html:65
+#, fuzzy
+#| msgid "Stations"
+msgid "Save Station"
+msgstr "Estações"
+
+#: templates/weather/station_list.html:5
+msgid "Automated Weather Stations (AWS) & Monitoring Sites"
+msgstr ""
+
+#: templates/weather/station_list.html:11
+#, fuzzy
+#| msgid ""
+#| "National Portal for Meteorological, Climate and Geophysical Information"
+msgid "Manage meteorological and geophysical observation network"
+msgstr "Portal Nacional de Informação Meteorológica, Climática e Geofísica"
+
+#: templates/weather/station_list.html:16
+#, fuzzy
+#| msgid "Register New Staff Account"
+msgid "Register Station"
+msgstr "Registrar Nova Conta de Funcionário"
+
+#: templates/weather/station_list.html:29
+#, fuzzy
+#| msgid "Search by name, user or email..."
+msgid "Search by station name or code..."
+msgstr "Pesquisar por nome, usuário ou email..."
+
+#: templates/weather/station_list.html:36
+#, fuzzy
+#| msgid "Stations"
+msgid "All Station Types"
+msgstr "Estações"
+
+#: templates/weather/station_list.html:85
+msgid "Coordinates"
+msgstr ""
+
+#: templates/weather/station_list.html:102
+msgid "Maintenance"
+msgstr ""
+
+#: templates/weather/station_list.html:119
+msgid "No weather stations found matching your search."
+msgstr ""
+
+#: templates/weather/warning_form.html:4 templates/weather/warning_form.html:15
+msgid "Edit Early Warning"
+msgstr ""
+
+#: templates/weather/warning_form.html:4 templates/weather/warning_list.html:16
+msgid "Issue Early Warning"
+msgstr ""
+
+#: templates/weather/warning_form.html:5
+msgid "Early Warning Editor"
+msgstr ""
+
+#: templates/weather/warning_form.html:17
+msgid "Issue Severe Early Warning / Hazard Alert"
+msgstr ""
+
+#: templates/weather/warning_form.html:26
+#: templates/weather/warning_list.html:71 weather/models.py:238
+msgid "Warning Title"
+msgstr ""
+
+#: templates/weather/warning_form.html:30 weather/models.py:243
+msgid "Severity Level"
+msgstr ""
+
+#: templates/weather/warning_form.html:34 weather/models.py:247
+msgid "Affected Region / Municipalities"
+msgstr ""
+
+#: templates/weather/warning_form.html:38
+msgid "Detailed Advisory Description"
+msgstr ""
+
+#: templates/weather/warning_form.html:42 weather/models.py:251
+msgid "Valid From"
+msgstr ""
+
+#: templates/weather/warning_form.html:46 weather/models.py:252
+msgid "Valid Until"
+msgstr ""
+
+#: templates/weather/warning_form.html:53
+msgid "Broadcast Live Alert on Public Website"
+msgstr ""
+
+#: templates/weather/warning_form.html:60
+msgid "Publish Warning"
+msgstr ""
+
+#: templates/weather/warning_list.html:5
+msgid "Hazard Early Warning System (EWS)"
+msgstr ""
+
+#: templates/weather/warning_list.html:10
+msgid "Early Warnings & Hazard Bulletins"
+msgstr ""
+
+#: templates/weather/warning_list.html:11
+msgid "Broadcast severe weather, cyclone, high wave, and landslide warnings"
+msgstr ""
+
+#: templates/weather/warning_list.html:29
+msgid "Search warning title, region, details..."
+msgstr ""
+
+#: templates/weather/warning_list.html:36
+msgid "All Severity Levels"
+msgstr ""
+
+#: templates/weather/warning_list.html:46
+msgid "All Broadcasting Statuses"
+msgstr ""
+
+#: templates/weather/warning_list.html:47
+msgid "Broadcasting Active"
+msgstr ""
+
+#: templates/weather/warning_list.html:48
+#, fuzzy
+#| msgid "Deactivate"
+msgid "Archived / Deactivated"
+msgstr "Desativar"
+
+#: templates/weather/warning_list.html:70
+msgid "Severity"
+msgstr ""
+
+#: templates/weather/warning_list.html:72
+msgid "Affected Region"
+msgstr ""
+
+#: templates/weather/warning_list.html:73
+msgid "Valid Period"
+msgstr ""
+
+#: templates/weather/warning_list.html:84
+msgid "Severe Red Alert"
+msgstr ""
+
+#: templates/weather/warning_list.html:86
+msgid "Warning Orange Alert"
+msgstr ""
+
+#: templates/weather/warning_list.html:88
+msgid "Advisory Blue"
+msgstr ""
+
+#: templates/weather/warning_list.html:96
+msgid "Broadcasting"
+msgstr ""
+
+#: templates/weather/warning_list.html:110
+#, fuzzy
+#| msgid "Active"
+msgid "Activate"
+msgstr "Ativo"
+
+#: templates/weather/warning_list.html:124
+msgid "No early warnings found matching your search."
+msgstr ""
+
+#: users/forms.py:93 users/forms.py:151
+msgid "Passwords do not match."
+msgstr ""
+
+#: users/models.py:7
+msgid "Super Administrator"
+msgstr ""
+
+#: users/models.py:8
+msgid "Administrator"
+msgstr ""
+
+#: users/models.py:9
+msgid "HR Officer"
+msgstr ""
+
+#: users/models.py:10
+msgid "Meteorologist"
+msgstr ""
+
+#: users/models.py:11
+msgid "Climate Officer"
+msgstr ""
+
+#: users/models.py:12
+msgid "Marine Officer"
+msgstr ""
+
+#: users/models.py:13
+msgid "Seismic Officer"
+msgstr ""
+
+#: users/models.py:14
+msgid "Editor"
+msgstr ""
+
+#: users/models.py:15
+msgid "Researcher"
+msgstr ""
+
+#: users/models.py:16
+msgid "Public User"
+msgstr ""
+
+#: users/models.py:38
+msgid "Users"
+msgstr ""
+
+#: users/models.py:110
+msgid "Audit Log"
+msgstr ""
+
+#: users/models.py:111
+msgid "Audit Logs"
+msgstr ""
+
+#: users/views.py:31
+msgid ""
+"Access denied. Public users do not have access to the administrative system."
+msgstr ""
+
+#: users/views.py:45
+msgid "Welcome back, {user.first_name or user.username}!"
+msgstr ""
+
+#: users/views.py:54
+msgid "You have logged out successfully."
+msgstr ""
+
+#: users/views.py:68
+msgid "Your profile has been updated successfully."
+msgstr ""
+
+#: users/views.py:79
+msgid "We have sent password reset instructions to your email address."
+msgstr ""
+
+#: users/views.py:92
+msgid ""
+"Your password has been reset successfully. You can now log in with your new "
+"password."
+msgstr ""
+
+#: users/views.py:252
+#, python-brace-format
+msgid "User account for '{self.object.username}' was created successfully."
+msgstr ""
+
+#: users/views.py:269
+#, python-brace-format
+msgid "User account for '{self.object.username}' was updated successfully."
+msgstr ""
+
+#: users/views.py:279
+msgid ""
+"Access denied. Administrators cannot toggle Super Administrator accounts."
+msgstr ""
+
+#: users/views.py:283
+msgid "Action invalid. You cannot deactivate your own account."
+msgstr ""
+
+#: users/views.py:290
+#, python-brace-format
+msgid "User account '{user.username}' was successfully {action_str}."
+msgstr ""
+
+#: users/views.py:314
+msgid "You cannot force logout your current session. Use logout."
+msgstr ""
+
+#: users/views.py:328
+#, python-brace-format
+msgid "Terminated {count} active session(s) for user '{user.username}'."
+msgstr ""
+
+#: users/views.py:346
+msgid ""
+"Access denied. Administrators cannot change password for Super "
+"Administrators."
+msgstr ""
+
+#: users/views.py:351
+#, python-brace-format
+msgid "Password for user '{user.username}' has been updated successfully."
+msgstr ""
+
+#: weather/forms.py:10
+msgid "e.g. Dili International Airport AWS"
+msgstr ""
+
+#: weather/forms.py:11
+msgid "e.g. DILI-AWS-01"
+msgstr ""
+
+#: weather/forms.py:53
+msgid "Scattered Showers"
+msgstr ""
+
+#: weather/forms.py:65
+msgid "Heavy Rainfall & Strong Wind Advisory"
+msgstr ""
+
+#: weather/forms.py:67
+msgid "Viqueque & Lautem Municipalities"
+msgstr ""
+
+#: weather/forms.py:68
+msgid "Detailed hazard information..."
+msgstr ""
+
+#: weather/models.py:6
+msgid "Aileu"
+msgstr ""
+
+#: weather/models.py:7
+msgid "Ainaro"
+msgstr ""
+
+#: weather/models.py:8
+msgid "Baucau"
+msgstr ""
+
+#: weather/models.py:9
+msgid "Bobonaro"
+msgstr ""
+
+#: weather/models.py:10
+msgid "Cova Lima"
+msgstr ""
+
+#: weather/models.py:11
+msgid "Dili"
+msgstr ""
+
+#: weather/models.py:12
+msgid "Ermera"
+msgstr ""
+
+#: weather/models.py:13
+msgid "Lautem"
+msgstr ""
+
+#: weather/models.py:14
+msgid "Liquica"
+msgstr ""
+
+#: weather/models.py:15
+msgid "Manatuto"
+msgstr ""
+
+#: weather/models.py:16
+msgid "Manufahi"
+msgstr ""
+
+#: weather/models.py:17
+msgid "Oecusse"
+msgstr ""
+
+#: weather/models.py:18
+msgid "Viqueque"
+msgstr ""
+
+#: weather/models.py:23
+msgid "Automated Weather Station (AWS)"
+msgstr ""
+
+#: weather/models.py:24
+msgid "Automated Weather Observing System (AWOS)"
+msgstr ""
+
+#: weather/models.py:25
+msgid "Synoptic Station"
+msgstr ""
+
+#: weather/models.py:26
+msgid "Tide Gauge Station"
+msgstr ""
+
+#: weather/models.py:27
+msgid "Marine Buoy Station"
+msgstr ""
+
+#: weather/models.py:28
+msgid "Agrometeorological Station"
+msgstr ""
+
+#: weather/models.py:29
+msgid "Hydrometeorological Station"
+msgstr ""
+
+#: weather/models.py:30
+msgid "Seismic Monitoring Station"
+msgstr ""
+
+#: weather/models.py:34
+msgid "Under Maintenance"
+msgstr ""
+
+#: weather/models.py:41
+msgid "API ID e.g., 15401"
+msgstr ""
+
+#: weather/models.py:42
+msgid "External API ID"
+msgstr ""
+
+#: weather/models.py:59
+msgid "Elevation (m)"
+msgstr ""
+
+#: weather/models.py:100
+msgid "Humidity (%)"
+msgstr ""
+
+#: weather/models.py:149
+msgid "Solar Radiation (W/m²)"
+msgstr ""
+
+#: weather/models.py:156
+msgid "Max Wind Gust (km/h)"
+msgstr ""
+
+#: weather/models.py:170
+msgid "Battery Voltage (V)"
+msgstr ""
+
+#: weather/models.py:180
+msgid "Recorded By"
+msgstr ""
+
+#: weather/models.py:186
+#, fuzzy
+#| msgid "Real-time Observations"
+msgid "Weather Observation"
+msgstr "Observações em Tempo Real"
+
+#: weather/models.py:206
+msgid "Icon Class (Bootstrap)"
+msgstr ""
+
+#: weather/models.py:207
+msgid "Bootstrap icon name e.g., sun, cloud-rain, cloud-lightning, cloud-sun"
+msgstr ""
+
+#: weather/models.py:209
+msgid "Rainfall Probability (%)"
+msgstr ""
+
+#: weather/models.py:225
+#, fuzzy
+#| msgid "Forecast"
+msgid "Weather Forecast"
+msgstr "Previsão"
+
+#: weather/models.py:234
+msgid "Information / Advisory"
+msgstr ""
+
+#: weather/models.py:235
+msgid "Warning (Orange Alert)"
+msgstr ""
+
+#: weather/models.py:236
+msgid "Severe Hazard Alert (Red Alert)"
+msgstr ""
+
+#: weather/models.py:248
+msgid "e.g., Viqueque & Lautem Municipalities, All Coastal Areas"
+msgstr ""
+
+#: weather/models.py:250
+msgid "Detailed Advisory Content"
+msgstr ""
+
+#: weather/models.py:253
+#, fuzzy
+#| msgid "Active"
+msgid "Is Active"
+msgstr "Ativo"
+
+#: weather/models.py:267
+msgid "Early Warning"
+msgstr ""
+
+#: weather/views.py:60
+msgid "Weather station '{form.cleaned_data['name']}' was created successfully."
+msgstr ""
+
+#: weather/views.py:71
+msgid "Weather station '{form.cleaned_data['name']}' was updated successfully."
+msgstr ""
+
+#: weather/views.py:123
+msgid "New weather observation recorded successfully."
+msgstr ""
+
+#: weather/views.py:172
+msgid "Forecast for {form.cleaned_data['municipality']} was published."
+msgstr ""
+
+#: weather/views.py:183
+msgid "Forecast details updated."
+msgstr ""
+
+#: weather/views.py:230
+msgid ""
+"Early Warning '{form.cleaned_data['title']}' has been issued successfully."
+msgstr ""
+
+#: weather/views.py:241
+msgid "Early Warning '{form.cleaned_data['title']}' updated."
+msgstr ""
+
+#: weather/views.py:250
+#, fuzzy
+#| msgid "Deactivate"
+msgid "activated"
+msgstr "Desativar"
+
+#: weather/views.py:250
+msgid "deactivated / archived"
+msgstr ""
+
+#: weather/views.py:251
+#, python-brace-format
+msgid "Early Warning status was {status_text}."
+msgstr ""
+
+#: weather/views.py:354
+msgid "ONLINE"
+msgstr ""
+
+#: weather/views.py:354
+msgid "OFFLINE"
+msgstr ""
+
+#: weather/views.py:402
+#, python-brace-format
+msgid ""
+"Successfully synchronized {synced_count}/15 stations with live DNMG API."
+msgstr ""
+
+#, fuzzy
+#~| msgid "Latest News"
+#~ msgid "Official Reports"
+#~ msgstr "Últimas Notícias"
+
+#, fuzzy
+#~| msgid "Stations"
+#~ msgid "Live Stations (15)"
+#~ msgstr "Estações"
+
+#~ msgid "Staff Portal"
+#~ msgstr "Portal do Pessoal"
+
+#~ msgid "Total Accounts"
+#~ msgstr "Contas Totais"

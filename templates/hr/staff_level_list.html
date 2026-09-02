@@ -1,0 +1,72 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Staff Levels" %}{% endblock %}
+{% block section_title %}{% translate "Staff Level Configuration" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-bold mb-0">{% translate "Staff Levels & Grades" %}</h5>
+                    <p class="text-muted small mb-0">{% translate "Configure and reorder organizational staff levels." %}</p>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">{% translate "Rank" %}</th>
+                            <th>{% translate "Level Name" %}</th>
+                            <th>{% translate "Code" %}</th>
+                            <th>{% translate "Status" %}</th>
+                            <th class="text-end pe-4">{% translate "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for level in staff_levels %}
+                        <tr>
+                            <td class="ps-4"><span class="badge bg-secondary-subtle text-secondary fw-bold">{{ level.rank }}</span></td>
+                            <td>
+                                <div class="fw-semibold text-dark">{{ level.name }}</div>
+                                {% if level.description %}<div class="text-muted small">{{ level.description|truncatechars:50 }}</div>{% endif %}
+                            </td>
+                            <td class="font-monospace small text-muted">{{ level.code }}</td>
+                            <td>
+                                <span class="badge rounded-pill {% if level.is_active %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-secondary{% endif %} small">
+                                    {% if level.is_active %}{% translate "Active" %}{% else %}{% translate "Inactive" %}{% endif %}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'hr:staff_level_update' level.pk %}" class="btn btn-sm btn-light border rounded-pill"><i class="bi bi-pencil"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-4 text-muted">{% translate "No staff levels configured yet." %}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+            <h6 class="fw-bold mb-3">{% translate "Add New Staff Level" %}</h6>
+            <form method="post" action="{% url 'hr:staff_level_create' %}">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    {% if field.help_text %}<div class="form-text text-muted small">{{ field.help_text }}</div>{% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary rounded-pill px-4 w-100"><i class="bi bi-plus-circle me-1"></i>{% translate "Add Level" %}</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

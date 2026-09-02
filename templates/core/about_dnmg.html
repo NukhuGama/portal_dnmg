@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "About DNMG" %}{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-primary text-white py-5 mb-5">
+    <div class="container py-3">
+        <h1 class="display-6 fw-bold mb-2">{% translate "About DNMG" %}</h1>
+        <p class="lead text-white-50 mb-0">{% translate "National Directorate of Meteorology and Geophysics" %}</p>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-12">
+            <section class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="profile-icon bg-primary-subtle text-primary"><i class="bi bi-bullseye"></i></span>
+                        <h2 class="h3 fw-bold text-dark mb-0">{% translate "Our Mission" %}</h2>
+                    </div>
+                    <p class="text-muted mb-0 lh-lg">{% translate "To provide reliable, responsible, and timely meteorological, climatological, and geophysical information and services to support public safety, contribute to national development, and actively participate in international activities and cooperation." %}</p>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-12">
+            <section class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="profile-icon bg-warning-subtle text-warning-emphasis"><i class="bi bi-eye"></i></span>
+                        <h2 class="h3 fw-bold text-dark mb-0">{% translate "Our Vision" %}</h2>
+                    </div>
+                    <p class="text-muted mb-4">{% translate "To achieve DNMG’s vision through a clear mission focused on the following key areas:" %}</p>
+                    <ol class="profile-vision-list mb-0">
+                        <li>{% translate "Analyze and understand meteorological, climatological, and geophysical phenomena." %}</li>
+                        <li>{% translate "Prepare and provide efficient, effective, and reliable meteorological, climatological, and geophysical data and information." %}</li>
+                        <li>{% translate "Fulfill and comply with international obligations and standards in the fields of meteorology, climatology, and geophysics." %}</li>
+                        <li>{% translate "Coordinate and facilitate activities related to meteorology, climatology, and geophysics." %}</li>
+                    </ol>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-12">
+            <section class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="profile-icon bg-info-subtle text-info"><i class="bi bi-broadcast"></i></span>
+                        <h2 class="h3 fw-bold text-dark mb-0">{% translate "Our Services" %}</h2>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <article class="profile-service-card">
+                                <i class="bi bi-clock-history text-primary fs-4"></i>
+                                <h3 class="h5 fw-bold mt-3">{% translate "24/7 Meteorological Monitoring" %}</h3>
+                                <p class="text-muted small mb-0">{% translate "Continuous monitoring of weather conditions to provide timely and reliable information." %}</p>
+                            </article>
+                        </div>
+                        <div class="col-md-6">
+                            <article class="profile-service-card">
+                                <i class="bi bi-exclamation-triangle text-danger fs-4"></i>
+                                <h3 class="h5 fw-bold mt-3">{% translate "Early Warnings" %}</h3>
+                                <p class="text-muted small mb-0">{% translate "Early warnings for hydrometeorological and seismic events to help communities and authorities prepare for potential hazards." %}</p>
+                            </article>
+                        </div>
+                        <div class="col-md-6">
+                            <article class="profile-service-card">
+                                <i class="bi bi-bar-chart-line text-success fs-4"></i>
+                                <h3 class="h5 fw-bold mt-3">{% translate "Historical Climate Data Analysis" %}</h3>
+                                <p class="text-muted small mb-0">{% translate "Analysis of historical climate data to support research, planning, decision-making, and climate-related assessments." %}</p>
+                            </article>
+                        </div>
+                        <div class="col-md-6">
+                            <article class="profile-service-card">
+                                <i class="bi bi-megaphone text-warning fs-4"></i>
+                                <h3 class="h5 fw-bold mt-3">{% translate "Extreme Event Alert System" %}</h3>
+                                <p class="text-muted small mb-0">{% translate "An alert system designed to provide timely information about extreme weather and other potentially hazardous events." %}</p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-md-6">
+            <section class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h2 class="h4 fw-bold text-dark mb-3"><i class="bi bi-people-fill text-primary me-2"></i>{% translate "Our Team" %}</h2>
+                    <p class="text-muted mb-0">{% translate "We have a team of qualified professionals specializing in meteorology, geophysics, and environmental sciences. Our team is committed to technical excellence, reliable information, and quality public service." %}</p>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-6">
+            <section class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h2 class="h4 fw-bold text-dark mb-3"><i class="bi bi-envelope-fill text-primary me-2"></i>{% translate "Contact Us" %}</h2>
+                    <p class="text-muted mb-0">{% translate "For more information, services, or inquiries, please contact DNMG." %}</p>
+                    <div class="mb-2"> 
+                        <i class="bi bi-envelope-fill text-primary me-2"></i> 
+                        <strong>{% translate "Email:" %}</strong> 
+                        <a href="mailto:info@dnmg.gov.tl" class="text-decoration-none"> info@dnmg.gov.tl </a> 
+                    </div> 
+                    <div> <i class="bi bi-telephone-fill text-primary me-2"></i> <strong>{% translate "Phone:" %}</strong> <a href="tel:+670 331 0102" class="text-decoration-none"> +670 331 0102 </a> 
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

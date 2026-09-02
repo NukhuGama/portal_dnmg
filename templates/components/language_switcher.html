@@ -1,0 +1,44 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% with dropdown_id=switcher_id|default:'langDropdown' %}
+<div class="dropdown language-switcher{% if compact %} language-switcher-compact{% endif %}">
+    <button class="btn language-switcher-toggle dropdown-toggle d-flex align-items-center gap-2 rounded-pill" type="button" id="{{ dropdown_id }}" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'Choose language' %}">
+        {% if LANGUAGE_CODE == 'en' %}
+            <span class="language-flag language-flag-gb" aria-hidden="true"></span><span class="language-code">EN</span><span class="language-label">English</span>
+        {% elif LANGUAGE_CODE == 'tet' %}
+            <span class="language-flag language-flag-tl" aria-hidden="true"></span><span class="language-code">TET</span><span class="language-label">Tetun</span>
+        {% elif LANGUAGE_CODE == 'pt' %}
+            <span class="language-flag language-flag-pt" aria-hidden="true"><span class="language-flag-crest"></span></span><span class="language-code">PT</span><span class="language-label">Português</span>
+        {% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 bg-dark language-switcher-menu" aria-labelledby="{{ dropdown_id }}">
+        <li>
+            <form action="/i18n/setlang/" method="post" class="language-option-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="en" class="dropdown-item language-option d-flex align-items-center gap-2 {% if LANGUAGE_CODE == 'en' %}fw-bold text-white{% endif %}">
+                    <span class="language-flag language-flag-gb" aria-hidden="true"></span> English
+                </button>
+            </form>
+        </li>
+        <li>
+            <form action="/i18n/setlang/" method="post" class="language-option-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="tet" class="dropdown-item language-option d-flex align-items-center gap-2 {% if LANGUAGE_CODE == 'tet' %}fw-bold text-white{% endif %}">
+                    <span class="language-flag language-flag-tl" aria-hidden="true"></span> Tetun
+                </button>
+            </form>
+        </li>
+        <li>
+            <form action="/i18n/setlang/" method="post" class="language-option-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="pt" class="dropdown-item language-option d-flex align-items-center gap-2 {% if LANGUAGE_CODE == 'pt' %}fw-bold text-white{% endif %}">
+                    <span class="language-flag language-flag-pt" aria-hidden="true"><span class="language-flag-crest"></span></span> Português
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
+{% endwith %}

@@ -1,0 +1,448 @@
+{% load i18n static portal_tags %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | DNMG Administrative Panel</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/font/bootstrap-icons.min.css' %}">
+
+    <!-- Local Google Fonts -->
+    <link rel="stylesheet" href="{% static 'vendor/fonts/fonts.css' %}">
+    
+    <!-- Custom Portal CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- HTMX -->
+    <script src="{% static 'vendor/htmx/htmx.min.js' %}"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="{% static 'vendor/alpinejs/cdn.min.js' %}"></script>
+
+    <!-- Chart.js -->
+    <script src="{% static 'vendor/chart.js/chart.umd.min.js' %}"></script>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-light">
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        });
+    </script>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar (Sticky left column) -->
+            <nav class="col-md-3 col-xl-2 d-md-block sidebar collapse" id="sidebarMenu">
+                <div class="sidebar-brand d-flex align-items-center gap-2">
+                    <!-- <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="48" fill="#0d3b66" stroke="#fbbf24" stroke-width="3"/>
+                        <path d="M50 15 L20 75 L50 60 L80 75 Z" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+                    </svg> -->
+                    <img src="{% static 'images/dnmg_logo.png' %}"
+                        alt="Logo"
+                        style="
+                            width:60px;
+                            height:60px;
+                            border-radius:50%;
+                            border:2px solid #e1ded6;
+                            
+                        ">
+                    <span>DNMG Admin</span>
+                </div>
+                
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column" id="sidebar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/auth/profile/' in request.path %}active{% endif %}"
+                               href="{% url 'users:profile' %}"
+                               hx-get="{% url 'users:profile' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-person-badge fs-5"></i>
+                                {% translate "My Profile" %}
+                            </a>
+                        </li>
+
+                        <!-- Placeholders for future phases as per the admin list -->
+                        <li class="nav-item">
+                            {% if user.role == 'HR_OFFICER' and not user.is_superuser %}
+                            <a class="nav-link {% if '/hr/' in request.path and 'employees' not in request.path and 'departments' not in request.path and 'contracts' not in request.path and 'reports' not in request.path and 'downloads' not in request.path and 'staff-levels' not in request.path %}active{% endif %}"
+                               href="{% url 'hr:dashboard' %}"
+                               hx-get="{% url 'hr:dashboard' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-speedometer2 fs-5"></i>
+                                {% translate "Dashboard" %}
+                            </a>
+                            {% else %}
+                            <a class="nav-link {% if 'dashboard' in request.path and '/hr/' not in request.path %}active{% endif %}"
+                               href="{% url 'users:dashboard' %}"
+                               hx-get="{% url 'users:dashboard' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-speedometer2 fs-5"></i>
+                                {% translate "Dashboard" %}
+                            </a>
+                            {% endif %}
+                        </li>
+                        
+                        <!-- CMS Management Menu Items -->
+                        {% if user|has_portal_permission:'news.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/cms/admin/news/' in request.path %}active{% endif %}"
+                               href="{% url 'cms:admin_news_list' %}"
+                               hx-get="{% url 'cms:admin_news_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-journal-richtext fs-5"></i>
+                                {% translate "News & Articles" %}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user|has_portal_permission:'bulletins.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/cms/admin/bulletins/' in request.path %}active{% endif %}"
+                               href="{% url 'cms:admin_bulletin_list' %}"
+                               hx-get="{% url 'cms:admin_bulletin_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-file-earmark-pdf fs-5"></i>
+                                {% translate "Official Bulletins" %}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user|has_portal_permission:'careers.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/cms/admin/careers/' in request.path %}active{% endif %}"
+                               href="{% url 'cms:admin_career_list' %}"
+                               hx-get="{% url 'cms:admin_career_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-briefcase fs-5"></i>
+                                {% translate "Career / Jobs" %}
+                            </a>
+                        </li>
+                        {% endif %}
+
+
+                        <!-- Early Warnings Menu Item -->
+                        {% if user|has_portal_permission:'early_warnings.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/weather/warnings/' in request.path %}active{% endif %}"
+                               href="{% url 'weather:warning_list' %}"
+                               hx-get="{% url 'weather:warning_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-exclamation-triangle fs-5"></i>
+                                {% translate "Early Warnings" %}
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Technical Weather Network Menu Items -->
+                        {% if user|has_portal_permission:'weather_stations.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/weather/stations/' in request.path %}active{% endif %}"
+                               href="{% url 'weather:station_list' %}"
+                               hx-get="{% url 'weather:station_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-gear-wide-connected fs-5"></i>
+                                {% translate "Weather Stations" %}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user|has_portal_permission:'observations.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/weather/observations/' in request.path %}active{% endif %}"
+                               href="{% url 'weather:observation_list' %}"
+                               hx-get="{% url 'weather:observation_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-activity fs-5"></i>
+                                {% translate "Observations" %}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user|has_portal_permission:'forecasts.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/weather/forecasts/' in request.path %}active{% endif %}"
+                               href="{% url 'weather:forecast_list' %}"
+                               hx-get="{% url 'weather:forecast_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-cloud-sun fs-5"></i>
+                                {% translate "Forecasts" %}
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- User Management -->
+                        {% if user|has_portal_permission:'users.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/users/users/' in request.path or request.path == '/users/users' %}active{% endif %}"
+                               href="{% url 'users:user_list' %}"
+                               hx-get="{% url 'users:user_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-shield-lock fs-5"></i>
+                                {% translate "User Management" %}
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/users/roles/' in request.path %}active{% endif %}" href="{% url 'users:role_list' %}">
+                                <i class="bi bi-shield-check fs-5"></i>{% translate "Role Management" %}
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Audit Trails -->
+                        {% if user|has_portal_permission:'audit_trails.view' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/users/audit-logs/' in request.path %}active{% endif %}"
+                               href="{% url 'users:audit_logs' %}"
+                               hx-get="{% url 'users:audit_logs' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-receipt fs-5"></i>
+                                {% translate "Audit Trails" %}
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- HR & Staff Management -->
+                        {% if user|has_portal_permission:'hr_dashboard.view' or user|has_portal_permission:'staff.view' or user|has_portal_permission:'departments.view' or user|has_portal_permission:'contracts.view' or user|has_portal_permission:'staff_levels.view' or user|has_portal_permission:'hr_dashboard.reports' or user|has_portal_permission:'downloads.view' %}
+                        <li class="nav-item mt-3">
+                            <span class="nav-label px-3 text-uppercase small fw-semibold" style="opacity:0.5;letter-spacing:0.08em;">{% translate "HR & Staff" %}</span>
+                        </li>
+                        {% if user|has_portal_permission:'hr_dashboard.view' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/' in request.path and 'employees' not in request.path and 'departments' not in request.path and 'contracts' not in request.path and 'reports' not in request.path and 'downloads' not in request.path and 'staff-levels' not in request.path %}active{% endif %}"
+                               href="{% url 'hr:dashboard' %}"
+                               hx-get="{% url 'hr:dashboard' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-people fs-5"></i>
+                                {% translate "HR Dashboard" %}
+                            </a>
+                        </li>{% endif %}
+                        {% if user|has_portal_permission:'staff.view' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/employees/' in request.path %}active{% endif %}"
+                               href="{% url 'hr:employee_list' %}"
+                               hx-get="{% url 'hr:employee_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-person-vcard fs-5"></i>
+                                {% translate "Staff Directory" %}
+                            </a>
+                        </li>{% endif %}
+                        {% if user|has_portal_permission:'departments.view' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/departments/' in request.path %}active{% endif %}"
+                               href="{% url 'hr:department_list' %}"
+                               hx-get="{% url 'hr:department_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-diagram-3 fs-5"></i>
+                                {% translate "Departments" %}
+                            </a>
+                        </li>{% endif %}
+                        {% if user|has_portal_permission:'contracts.view' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/contracts/' in request.path %}active{% endif %}"
+                               href="{% url 'hr:contract_monitoring' %}"
+                               hx-get="{% url 'hr:contract_monitoring' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-file-earmark-text fs-5"></i>
+                                {% translate "Contract Monitoring" %}
+                            </a>
+                        </li>{% endif %}
+                        {% if user|has_portal_permission:'staff_levels.view' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/staff-levels/' in request.path %}active{% endif %}"
+                               href="{% url 'hr:staff_level_list' %}"
+                               hx-get="{% url 'hr:staff_level_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-bar-chart-steps fs-5"></i>
+                                {% translate "Staff Levels" %}
+                            </a>
+                        </li>{% endif %}
+                        {% if user|has_portal_permission:'hr_dashboard.reports' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/reports/' in request.path %}active{% endif %}"
+                               href="{% url 'hr:reports' %}"
+                               hx-get="{% url 'hr:reports' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-file-earmark-bar-graph fs-5"></i>
+                                {% translate "HR Reports" %}
+                            </a>
+                        </li>{% endif %}
+                        {% if user|has_portal_permission:'downloads.view' %}<li class="nav-item">
+                            <a class="nav-link {% if '/hr/downloads/' in request.path %}active{% endif %}"
+                               href="{% url 'hr:download_list' %}"
+                               hx-get="{% url 'hr:download_list' %}"
+                               hx-target="#admin-main"
+                               hx-swap="innerHTML"
+                               hx-push-url="true"
+                               hx-indicator="#page-loader">
+                                <i class="bi bi-download fs-5"></i>
+                                {% translate "Downloads Hub" %}
+                            </a>
+                        </li>{% endif %}
+                        {% endif %}
+
+                        <li class="nav-item mt-4 pt-3 border-top border-secondary">
+                            <a class="nav-link text-warning" href="{% url 'core:home' %}">
+                                <i class="bi bi-globe fs-5"></i>
+                                {% translate "Public Website" %}
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="px-4 py-3 mt-5">
+                        <form action="{% url 'users:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger w-100 btn-sm d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>{% translate "Log Out" %}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main administrative dashboard viewport -->
+            <main class="col-md-9 ms-sm-auto col-xl-10 px-md-4 py-4" id="admin-main-wrapper">
+                <!-- Page loading indicator -->
+                <div id="page-loader" class="htmx-indicator position-fixed top-0 start-0 w-100" style="z-index:9999; height:3px;">
+                    <div style="height:100%; background:linear-gradient(90deg,#0d6efd,#6610f2); animation:htmx-loader 1s ease infinite;"></div>
+                </div>
+                <!-- Administrative Header -->
+                <header class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Toggle Sidebar for Mobile view -->
+                        <button class="btn btn-outline-dark d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="bi bi-list fs-3"></i>
+                        </button>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}" class="text-decoration-none"><i class="bi bi-arrow-left-circle me-1"></i>{% translate "Admin Portal" %}</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">{% block section_title %}Portal Staff Area{% endblock %}</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-secondary py-2 px-3 rounded-pill d-none d-sm-inline-block">
+                            <span class="pulse-indicator me-1"></span>
+                            Role: {{ user.get_effective_role_display }}
+                        </span>
+                        
+                        {% include 'components/language_switcher.html' %}
+                    </div>
+                </header>
+
+                <!-- Alerts Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm d-flex align-items-center gap-2" role="alert">
+                            {% if message.tags == 'success' %}
+                                <i class="bi bi-check-circle-fill fs-5"></i>
+                            {% else %}
+                                <i class="bi bi-info-circle-fill fs-5"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Content Area -->
+                <div class="container-fluid p-0" id="admin-main" hx-boost="true" hx-target="#admin-main" hx-swap="innerHTML">
+                    {% block admin_content %}{% endblock %}
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <style>
+    @keyframes htmx-loader {
+        0%   { width: 0%; opacity: 1; }
+        70%  { width: 90%; opacity: 1; }
+        100% { width: 100%; opacity: 0; }
+    }
+    .htmx-indicator { opacity: 0; transition: opacity 0.1s ease; pointer-events: none; }
+    .htmx-request .htmx-indicator, .htmx-indicator.htmx-request { opacity: 1; }
+    /* Highlight active nav link after HTMX swap */
+    #sidebar-nav .nav-link.active { background: rgba(255,255,255,0.12); border-radius: 8px; }
+    </style>
+
+    <script>
+    // After each HTMX content swap, update the active sidebar link based on URL
+    document.body.addEventListener('htmx:afterSettle', function() {
+        const path = window.location.pathname;
+        document.querySelectorAll('#sidebar-nav .nav-link').forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+            if (href && path.startsWith(href) && href !== '/') {
+                link.classList.add('active');
+            }
+        });
+        // Re-initialise Bootstrap components (dropdowns, tooltips etc.) after swap
+        if (typeof bootstrap !== 'undefined') {
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+        }
+    });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

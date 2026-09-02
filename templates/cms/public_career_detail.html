@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load i18n static portal_tags %}
+
+{% block title %}{{ job.title }} | {% translate "Careers" %} | DNMG{% endblock %}
+
+{% block content %}
+<div class="bg-primary text-white py-5 mb-5 shadow-sm">
+    <div class="container">
+        <a href="{% url 'cms:public_career_list' %}" class="btn btn-outline-light btn-sm mb-3">
+            <i class="bi bi-arrow-left me-1"></i>{% translate "Back to Careers" %}
+        </a>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-warning text-dark me-2">{{ job.get_employment_type_display }}</span>
+                {% if job.department %}
+                <span class="badge bg-secondary me-2">{{ job.department }}</span>
+                {% endif %}
+                <h1 class="fw-bold mt-2 mb-2">{{ job.title }}</h1>
+                <p class="lead mb-0 text-white-50">
+                    <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+                    {% if job.application_deadline %}
+                    &bull; <i class="bi bi-clock me-1"></i>{% translate "Deadline" %}: {{ job.application_deadline|date:"F d, Y" }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h4 class="fw-bold text-dark mb-3"><i class="bi bi-file-text me-2 text-primary"></i>{% translate "Job Description" %}</h4>
+                <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;">
+                    {{ job.description }}
+                </div>
+
+                {% if job.requirements %}
+                <hr class="my-4">
+                <h4 class="fw-bold text-dark mb-3"><i class="bi bi-check2-square me-2 text-primary"></i>{% translate "Requirements & Qualifications" %}</h4>
+                <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;">
+                    {{ job.requirements }}
+                </div>
+                {% endif %}
+
+                {% if job.how_to_apply %}
+                <hr class="my-4">
+                <h4 class="fw-bold text-dark mb-3"><i class="bi bi-send me-2 text-primary"></i>{% translate "How to Apply" %}</h4>
+                <div class="alert alert-info border-0 shadow-sm text-dark lh-lg" style="white-space: pre-line;">
+                    {{ job.how_to_apply }}
+                </div>
+                {% endif %}
+
+                {% if job.attachments.all %}
+                <hr class="my-4">
+                <h4 class="fw-bold text-dark mb-3"><i class="bi bi-paperclip me-2 text-primary"></i>{% translate "Job Documents" %}</h4>
+                <div class="list-group list-group-flush border rounded">
+                    {% for attachment in job.attachments.all %}
+                    {% if attachment.file|media_available %}
+                    <a href="{{ attachment.file.url }}" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-file-earmark-arrow-down me-2 text-primary"></i>{{ attachment.title|default:attachment.file.name }}</span>
+                        <i class="bi bi-download"></i>
+                    </a>
+                    {% else %}
+                    <div class="list-group-item text-muted"><i class="bi bi-folder2-open me-2"></i>{% translate "No files or data available." %}</div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <hr class="my-4">
+                <p class="text-muted mb-0"><i class="bi bi-folder2-open me-2"></i>{% translate "No files or data available." %}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold text-dark mb-3">{% translate "Summary" %}</h5>
+                <ul class="list-unstyled d-grid gap-3 mb-4">
+                    <li class="d-flex align-items-center gap-3">
+                        <i class="bi bi-briefcase fs-4 text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">{% translate "Employment Type" %}</small>
+                            <span class="fw-semibold">{{ job.get_employment_type_display }}</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3">
+                        <i class="bi bi-building fs-4 text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">{% translate "Department" %}</small>
+                            <span class="fw-semibold">{{ job.department|default:"DNMG General" }}</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3">
+                        <i class="bi bi-geo-alt fs-4 text-primary"></i>
+                        <div>
+                            <small class="text-muted d-block">{% translate "Location" %}</small>
+                            <span class="fw-semibold">{{ job.location }}</span>
+                        </div>
+                    </li>
+                    {% if job.application_deadline %}
+                    <li class="d-flex align-items-center gap-3">
+                        <i class="bi bi-calendar-event fs-4 text-warning"></i>
+                        <div>
+                            <small class="text-muted d-block">{% translate "Deadline" %}</small>
+                            <span class="fw-semibold text-danger">{{ job.application_deadline|date:"F d, Y" }}</span>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+                <a href="mailto:info@dnmg.gov.tl?subject=Application for {{ job.title }}" class="btn btn-primary w-100 fw-semibold py-2">
+                    <i class="bi bi-envelope me-1"></i>{% translate "Submit Application" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

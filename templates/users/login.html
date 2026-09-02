@@ -1,0 +1,132 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% translate "Staff Login" %} | Portal DNMG</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/font/bootstrap-icons.min.css' %}">
+
+    <!-- Local Google Fonts -->
+    <link rel="stylesheet" href="{% static 'vendor/fonts/fonts.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <style>
+        body {
+            background:
+                radial-gradient(circle at 15% 15%, rgba(41, 163, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(255, 193, 7, 0.10) 0%, transparent 40%),
+                linear-gradient(135deg, #0b3f8a 0%, #0f172a 75%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5 col-xl-4">
+                
+                <!-- Logo & Branding -->
+                <div class="text-center mb-4">
+                    <!-- <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                        <circle cx="50" cy="50" r="48" fill="#0f172a" stroke="#ffc107" stroke-width="3"/>
+                        <path d="M50 15 L20 75 L50 60 L80 75 Z" fill="#e63946" stroke="#ffffff" stroke-width="2"/>
+                        <circle cx="50" cy="45" r="10" fill="#ffc107"/>
+                    </svg> -->
+                    <img src="{% static 'images/dnmg_logo.png' %}"
+                        alt="Logo"
+                        style="
+                            width:100px;
+                            height:100px;
+                            border-radius:80%;
+                            border:2px solid #e1ded6;
+                            
+                        ">
+                    <h3 class="text-white fw-bold leading-tight" style="font-family: var(--font-heading);">Portal DNMG</h3>
+                    <p class="text-white-50 small text-uppercase tracking-wider">{% translate "National Staff Portal" %}</p>
+                </div>
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm text-start" role="alert">
+                            <small>{{ message }}</small>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Login Card -->
+                <div class="card glass-card-dark border-0 text-white p-4 shadow-lg">
+                    <div class="card-body p-2">
+                        <h4 class="card-title text-center text-white mb-4">{% translate "Staff Login" %}</h4>
+                        
+                        <form method="post" action="{% url 'users:login' %}">
+                            {% csrf_token %}
+                            
+                            <!-- Username field -->
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label text-white-50 small">{% translate "Username" %}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark-muted border-0"><i class="bi bi-person"></i></span>
+                                    <input type="text" name="username" autofocus maxlength="150" class="form-control bg-dark-muted border-0 py-2" placeholder="{% translate 'Username' %}" required id="id_username">
+                                </div>
+                            </div>
+                            
+                            <!-- Password field -->
+                            <div class="mb-3">
+                                <label for="id_password" class="form-label text-white-50 small">{% translate "Password" %}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark-muted border-0"><i class="bi bi-key"></i></span>
+                                    <input type="password" name="password" class="form-control bg-dark-muted border-0 py-2" placeholder="{% translate 'Password' %}" required id="id_password">
+                                </div>
+                            </div>
+
+                            <!-- Remember Me Checkbox -->
+                            <div class="row align-items-center mb-4">
+                                <div class="col-6">
+                                    <div class="form-check text-start">
+                                        <input type="checkbox" name="remember_me" class="form-check-input" id="id_remember_me">
+                                        <label class="form-check-label text-white-50 small" for="id_remember_me">
+                                            {% translate "Remember Me" %}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <a href="{% url 'users:password_reset' %}" class="text-warning text-decoration-none small">{% translate "Forgot Password?" %}</a>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-brand w-100 py-2.5 rounded-pill transition">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>{% translate "Log In" %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer Utilities -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{% url 'core:home' %}" class="text-white-50 text-decoration-none small hover-text-white transition">
+                        <i class="bi bi-arrow-left me-1"></i>{% translate "Back to Portal Home" %}
+                    </a>
+                    
+                    {% include 'components/language_switcher.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

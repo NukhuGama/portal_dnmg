@@ -1,0 +1,114 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+{% load portal_tags %}
+
+{% block title %}{% translate "Downloads Hub" %}{% endblock %}
+{% block section_title %}{% translate "Downloads Hub" %}{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold mb-0">{% translate "Downloads Hub" %}</h5>
+                <p class="text-muted small mb-0">{% translate "Internal staff documents, reports, and official files." %}</p>
+            </div>
+            {% if user|has_portal_permission:'downloads.upload' %}
+            <a href="{% url 'hr:download_create' %}" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-upload me-1"></i>{% translate "Upload File" %}
+            </a>
+            {% endif %}
+        </div>
+        <form method="get" action="{% url 'hr:download_list' %}" class="row g-2">
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control bg-light border-start-0" placeholder="{% translate 'Search title or tags...' %}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select form-select-sm bg-light">
+                    <option value="">{% translate "All Categories" %}</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="file_type" class="form-select form-select-sm bg-light">
+                    <option value="">{% translate "All Types" %}</option>
+                    {% for val, label in file_types %}
+                    <option value="{{ val }}" {% if request.GET.file_type == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel"></i></button>
+                <a href="{% url 'hr:download_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-circle"></i></a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">{% translate "File" %}</th>
+                        <th>{% translate "Category" %}</th>
+                        <th>{% translate "Type" %}</th>
+                        <th>{% translate "Version" %}</th>
+                        <th>{% translate "Access" %}</th>
+                        <th>{% translate "Downloads" %}</th>
+                        <th>{% translate "Uploaded" %}</th>
+                        <th class="text-end pe-4">{% translate "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in files %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi {% if f.file_type == 'PDF' %}bi-filetype-pdf text-danger{% elif f.file_type == 'EXCEL' %}bi-filetype-xlsx text-success{% elif f.file_type == 'WORD' %}bi-filetype-docx text-primary{% elif f.file_type == 'ZIP' %}bi-file-zip text-warning{% elif f.file_type == 'IMAGE' %}bi-image text-info{% else %}bi-file-earmark text-secondary{% endif %} fs-4"></i>
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ f.title }}</div>
+                                    <div class="text-muted small">{{ f.description|truncatechars:50|default:"" }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-muted small">{{ f.category.name|default:"–" }}</td>
+                        <td><span class="badge bg-secondary-subtle text-secondary small">{{ f.get_file_type_display }}</span></td>
+                        <td class="text-muted small">v{{ f.version }}</td>
+                        <td>
+                            <span class="badge {% if f.is_public %}bg-info-subtle text-info{% else %}bg-warning-subtle text-warning{% endif %} small">
+                                {% if f.is_public %}{% translate "Public" %}{% else %}{% translate "Staff Only" %}{% endif %}
+                            </span>
+                        </td>
+                        <td class="text-muted small text-center">{{ f.download_count }}</td>
+                        <td class="text-muted small">{{ f.created_at|date:"Y-m-d" }}</td>
+                        <td class="text-end pe-4">
+                            {% if f.file|media_available and user|has_portal_permission:'downloads.download' %}
+                            <a href="{% url 'hr:download_file' f.pk %}" target="_blank" hx-boost="false" class="btn btn-sm btn-primary rounded-pill me-1" title="{% translate 'Download' %}"><i class="bi bi-download"></i></a>
+                            {% else %}
+                            <span class="text-muted small me-1">{% translate "No files or data available." %}</span>
+                            {% endif %}
+                            {% if user|has_portal_permission:'downloads.edit' %}<a href="{% url 'hr:download_update' f.pk %}" class="btn btn-sm btn-light border rounded-pill me-1" title="{% translate 'Edit' %}"><i class="bi bi-pencil"></i></a>{% endif %}
+                            {% if user|has_portal_permission:'downloads.delete' %}<a href="{% url 'hr:download_delete' f.pk %}" class="btn btn-sm btn-light border border-danger text-danger rounded-pill" title="{% translate 'Delete' %}"><i class="bi bi-trash"></i></a>{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-folder2-open fs-1 d-block mb-3"></i>
+                            {% translate "No files or data available." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if is_paginated %}
+        <div class="card-footer bg-white border-0 py-3">{% include 'components/pagination.html' %}</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

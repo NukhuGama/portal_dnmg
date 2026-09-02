@@ -1,0 +1,65 @@
+/* Seismic explorer tokens and components are intentionally isolated from weather. */
+.seismic-page {
+    --seismic-ink: #12354b;
+    --seismic-muted: #61717d;
+    --seismic-surface: #fff;
+    --seismic-border: #e7edf0;
+    --seismic-shadow: 0 8px 26px rgba(20, 53, 74, .08);
+    --seismic-radius: 16px;
+    --risk-low: #198754;
+    --risk-moderate: #ffc107;
+    --risk-high: #0d6efd;
+    --risk-very-high: #fd7e14;
+    --risk-danger: #dc3545;
+}
+.seismic-hero { background: linear-gradient(120deg, #092c44, #155875); border-radius: var(--seismic-radius); color: #fff; }
+.seismic-hero .lead { color: rgba(255, 255, 255, .78); max-width: 46rem; }
+.seismic-card { border: 0; border-radius: var(--seismic-radius); box-shadow: var(--seismic-shadow); overflow: hidden; }
+.seismic-card .card-header { background: var(--seismic-surface); border-bottom: 1px solid var(--seismic-border); }
+.seismic-filter-label { color: var(--seismic-muted); display: block; font-size: .75rem; font-weight: 700; letter-spacing: .04em; margin-bottom: .45rem; text-transform: uppercase; }
+.scope-toggle .btn-check:checked + .btn { background: var(--seismic-ink); border-color: var(--seismic-ink); color: #fff; }
+.seismic-map { background: #e7eef1; height: 510px; }
+.seismic-count { color: var(--seismic-muted); font-size: .875rem; }
+.seismic-legend, .seismic-risk-options { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
+.seismic-legend-item, .seismic-risk-option { align-items: center; color: #46545e; display: inline-flex; font-size: .8rem; gap: .35rem; white-space: nowrap; }
+.seismic-risk-option { border: 1px solid var(--seismic-border); border-radius: .5rem; padding: .35rem .55rem; }
+.seismic-risk-option .form-check-input { margin-top: 0; }
+.risk-swatch { background: var(--risk-color); border-radius: 50%; display: inline-block; flex: 0 0 .75rem; height: .75rem; width: .75rem; }
+.risk-swatch--low { --risk-color: var(--risk-low); }
+.risk-swatch--moderate { --risk-color: var(--risk-moderate); }
+.risk-swatch--high { --risk-color: var(--risk-high); }
+.risk-swatch--very-high { --risk-color: var(--risk-very-high); }
+.risk-swatch--danger { --risk-color: var(--risk-danger); }
+.seismic-stat-card { background: var(--seismic-surface); border-radius: var(--seismic-radius); box-shadow: var(--seismic-shadow); display: flex; flex-direction: column; min-height: 7.25rem; padding: 1.15rem; }
+.seismic-stat-card span { color: var(--seismic-muted); font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.seismic-stat-card strong { color: var(--seismic-ink); font-size: 1.65rem; line-height: 1.2; margin-top: auto; }
+.seismic-stat-card--recent { border-top: 3px solid #ffc107; }
+.seismic-stat-card--recent span { color: #9a6700; }
+.seismic-risk-summary { align-items: center; background: var(--seismic-surface); border: 1px solid var(--seismic-border); border-radius: .75rem; display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; padding: .7rem 1rem; }
+.seismic-risk-summary__label { color: var(--seismic-muted); font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.seismic-risk-counts { display: flex; flex-wrap: wrap; gap: .45rem .85rem; }
+.seismic-risk-count { align-items: center; color: #46545e; display: inline-flex; font-size: .8rem; gap: .28rem; white-space: nowrap; }
+.seismic-risk-count strong { color: var(--risk-color); font-size: .95rem; }
+.seismic-chart-wrap { height: 230px; position: relative; }
+.seismic-table-search { max-width: 22rem; }
+.seismic-table th[data-sort] { cursor: pointer; user-select: none; white-space: nowrap; }
+.seismic-table th[data-sort]:hover { color: var(--bs-primary); }
+.seismic-table .table-location { max-width: 25rem; min-width: 14rem; }
+.seismic-table .magnitude-value { color: var(--seismic-ink); font-size: 1.05rem; font-weight: 800; }
+.seismic-risk-badge { background: var(--risk-color); border-radius: 999px; color: #fff; display: inline-block; font-size: .72rem; font-weight: 700; min-width: 5rem; padding: .27rem .6rem; text-align: center; }
+.seismic-empty-state { color: var(--seismic-muted); padding: 3.5rem 1.5rem; text-align: center; }
+.seismic-popup .leaflet-popup-content-wrapper { border-radius: .75rem; }
+.seismic-popup .leaflet-popup-content { margin: .9rem 1rem; min-width: 16rem; }
+.seismic-popup__title { color: var(--seismic-ink); font-size: 1rem; font-weight: 800; }
+.seismic-popup__place { font-size: .85rem; font-weight: 600; margin-top: .35rem; }
+.seismic-popup__details { color: #52616c; font-size: .78rem; line-height: 1.65; margin: .5rem 0 0; }
+.seismic-marker { cursor: pointer; transition: stroke-width .15s ease, fill-opacity .15s ease; }
+.seismic-marker:hover { fill-opacity: 1; stroke-width: 3; }
+.seismic-marker--recent { filter: drop-shadow(0 0 4px rgba(255, 193, 7, .9)); }
+.seismic-recent-event-ring { pointer-events: none; stroke-linecap: round; }
+.seismic-recent-event-pulse { pointer-events: none; stroke-linecap: round; }
+.seismic-recent-marker-star { background: transparent; border: 0; box-shadow: none; color: #fff; font-size: .82rem; font-weight: 700; margin: -8px 0 0 -6px; text-shadow: 0 1px 3px rgba(0, 0, 0, .72); }
+.seismic-recent-marker-star::before { display: none; }
+.seismic-recent-star { color: #d39e00; font-size: .75rem; margin-right: .3rem; }
+.seismic-event--recent td:first-child { color: var(--seismic-ink); font-weight: 600; }
+@media (max-width: 767.98px) { .seismic-hero { border-radius: .75rem; } .seismic-map { height: 420px; } .seismic-legend { gap: .35rem .7rem; } .seismic-table-search { max-width: none; width: 100%; } }

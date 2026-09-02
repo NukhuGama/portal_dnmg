@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate "Careers & Job Opportunities" %} | DNMG{% endblock %}
+
+{% block content %}
+<div class="bg-primary text-white py-5 mb-5 shadow-sm">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="fw-bold mb-2"><i class="bi bi-briefcase me-2"></i>{% translate "Careers & Opportunities" %}</h1>
+                <p class="lead mb-0 text-white-50">{% translate "Join the National Directorate of Meteorology and Geophysics (DNMG) of Timor-Leste." %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <!-- Search & Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm p-3">
+                <h5 class="fw-bold mb-3">{% translate "Search & Filter" %}</h5>
+                <form method="get" action="{% url 'cms:public_career_list' %}">
+                    <div class="mb-3">
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="{% translate 'Search jobs...' %}">
+                    </div>
+                    {% if employment_type_choices %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{% translate "Employment Type" %}</label>
+                        <select name="type" class="form-select" onchange="this.form.submit()">
+                            <option value="">{% translate "All Types" %}</option>
+                            {% for code, label in employment_type_choices %}
+                                <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-100">{% translate "Filter Openings" %}</button>
+                    {% if search_query or selected_type %}
+                    <a href="{% url 'cms:public_career_list' %}" class="btn btn-outline-secondary w-100 mt-2">{% translate "Reset" %}</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Job Cards Grid -->
+        <div class="col-lg-9">
+            <div class="row g-4">
+                {% for job in jobs %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm hover-shadow transition">
+                        <div class="card-body p-4">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2 mb-3">
+                                <div>
+                                    <span class="badge bg-primary mb-2">{{ job.get_employment_type_display }}</span>
+                                    <h4 class="card-title fw-bold text-dark mb-1">{{ job.title }}</h4>
+                                    <p class="text-muted mb-0 small">
+                                        {% if job.department %}<i class="bi bi-building me-1"></i>{{ job.department }} &bull; {% endif %}
+                                        <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+                                    </p>
+                                </div>
+                                {% if job.application_deadline %}
+                                <div class="text-md-end">
+                                    <span class="badge bg-warning text-dark px-3 py-2">
+                                        <i class="bi bi-clock me-1"></i>{% translate "Deadline" %}: {{ job.application_deadline|date:"M d, Y" }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <p class="card-text text-secondary mb-3">
+                                {{ job.description|truncatewords:40 }}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar3 me-1"></i>{% translate "Posted" %}: {{ job.created_at|date:"M d, Y" }}
+                                </small>
+                                <a href="{% url 'cms:public_career_detail' job.slug %}" class="btn btn-outline-primary fw-semibold">
+                                    {% translate "View Details & Apply" %} <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center text-muted">
+                    <i class="bi bi-briefcase fs-1 text-secondary d-block mb-3"></i>
+                    <p class="fs-5 mb-1">{% translate "No open job positions at this time." %}</p>
+                    <p class="small text-muted">{% translate "Please check back later for new career opportunities." %}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+            <div class="mt-4">
+                {% include 'components/pagination.html' %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

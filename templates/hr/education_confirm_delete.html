@@ -1,0 +1,8 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Delete Education" %}{% endblock %}
+{% block section_title %}{% translate "Delete Education" %}{% endblock %}
+{% block admin_content %}
+<div class="card shadow-sm border-0 rounded-4 mx-auto" style="max-width:560px;"><div class="card-body p-4"><h5 class="fw-bold text-danger">{% translate "Delete Education Record" %}</h5><p class="text-muted">{% blocktranslate with degree=object.degree %}Are you sure you want to delete “{{ degree }}”?{% endblocktranslate %}</p><form method="post">{% csrf_token %}<button class="btn btn-danger rounded-pill px-4">{% translate "Delete" %}</button><a href="{% url 'hr:employee_detail' object.employee_id %}#tab-education" class="btn btn-outline-secondary rounded-pill px-4">{% translate "Cancel" %}</a></form></div></div>
+{% endblock %}

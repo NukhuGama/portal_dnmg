@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate "Earthquake Activity" %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/seismic.css' %}">{% endblock %}
+
+{% block content %}
+<main class="container-fluid px-md-4 py-4 seismic-page" data-seismic-root data-api-url="{% url 'seismic:api_earthquakes' %}" data-default-start-date="{{ default_start_date }}" data-default-end-date="{{ default_end_date }}" data-recent-event-hours="{{ recent_event_hours }}">
+    <section class="seismic-hero p-4 p-lg-5 mb-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <div class="text-uppercase fw-semibold small text-info mb-2"><i class="bi bi-broadcast-pin me-1"></i>{% translate "USGS earthquake monitoring" %}</div>
+                <h1 class="h2 fw-bold mb-2"><i class="bi bi-activity me-2 text-warning"></i>{% translate "Earthquake Activity" %}</h1>
+                <p class="lead mb-0">{% translate "Recent earthquakes near Timor-Leste, with a global view for wider situational awareness." %}</p>
+            </div>
+            <a class="btn btn-outline-light btn-sm rounded-pill px-3 align-self-lg-start" href="https://earthquake.usgs.gov/earthquakes/search/" target="_blank" rel="noopener noreferrer">{% translate "USGS event search" %}<i class="bi bi-box-arrow-up-right ms-1"></i></a>
+        </div>
+    </section>
+
+    <section id="seismic_statistics" class="seismic-summary mb-4" aria-label="{% translate 'Earthquake statistics' %}">
+        <div class="row g-3">
+            <div class="col-6 col-lg-3"><article class="seismic-stat-card"><span>{% translate "Total events" %}</span><strong id="seismic_stat_total">0</strong></article></div>
+            <div class="col-6 col-lg-3"><article class="seismic-stat-card seismic-stat-card--recent"><span><i class="bi bi-star-fill me-1"></i>{% blocktranslate with hours=recent_event_hours %}Recent events ({{ hours }}h){% endblocktranslate %}</span><strong id="seismic_stat_recent">0</strong></article></div>
+            <div class="col-6 col-lg-3"><article class="seismic-stat-card"><span>{% translate "Strongest magnitude" %}</span><strong id="seismic_stat_max_magnitude">—</strong></article></div>
+            <div class="col-6 col-lg-3"><article class="seismic-stat-card"><span>{% translate "Near Timor-Leste" %}</span><strong id="seismic_stat_near_timor">0</strong></article></div>
+            <div class="col-12"><article class="seismic-risk-summary"><span class="seismic-risk-summary__label">{% translate "Risk level counts" %}</span><div id="seismic_risk_counts" class="seismic-risk-counts" aria-live="polite"></div></article></div>
+        </div>
+    </section>
+
+    <section class="card seismic-card mb-4" aria-labelledby="seismic_filters_heading">
+        <div class="card-body p-3 p-lg-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <div><h2 id="seismic_filters_heading" class="h5 fw-bold mb-1"><i class="bi bi-funnel me-2 text-primary"></i>{% translate "Earthquake filters" %}</h2><p class="small text-muted mb-0">{% translate "Combine filters to update the map, statistics, and event list together." %}</p></div>
+                <button id="seismic_reset" type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-counterclockwise me-1"></i>{% translate "Reset filters" %}</button>
+            </div>
+            <div class="row g-3">
+                <fieldset class="col-12 col-lg-4"><legend class="seismic-filter-label">{% translate "Coverage" %}</legend>
+                    <div class="scope-toggle btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="seismic_scope" id="scope_timor_leste" value="timor-leste" checked><label class="btn btn-outline-primary" for="scope_timor_leste"><i class="bi bi-geo-alt-fill me-1"></i>{% translate "Near Timor-Leste" %}</label>
+                        <input type="radio" class="btn-check" name="seismic_scope" id="scope_global" value="global"><label class="btn btn-outline-primary" for="scope_global"><i class="bi bi-globe2 me-1"></i>{% translate "Global" %}</label>
+                    </div><div class="form-text">{% translate "Near Timor-Leste covers a 550 km radius." %}</div>
+                </fieldset>
+                <div class="col-6 col-lg-2"><label for="seismic_start_date" class="seismic-filter-label">{% translate "From date" %}</label><input id="seismic_start_date" type="date" class="form-control" value="{{ default_start_date }}" max="{{ default_end_date }}"></div>
+                <div class="col-6 col-lg-2"><label for="seismic_end_date" class="seismic-filter-label">{% translate "To date" %}</label><input id="seismic_end_date" type="date" class="form-control" value="{{ default_end_date }}" max="{{ default_end_date }}"></div>
+                <div class="col-12 col-lg-4 d-grid align-content-end"><button id="seismic_apply_dates" type="button" class="btn btn-primary"><i class="bi bi-cloud-download me-1"></i>{% translate "Load date range" %}</button></div>
+
+                <div class="col-6 col-lg-2"><label for="seismic_magnitude_min" class="seismic-filter-label">{% translate "Minimum magnitude" %}</label><input id="seismic_magnitude_min" data-filter="magnitudeMin" type="number" min="0" max="10" step="0.1" class="form-control" placeholder="e.g. 5.0"></div>
+                <div class="col-6 col-lg-2"><label for="seismic_magnitude_max" class="seismic-filter-label">{% translate "Maximum magnitude" %}</label><input id="seismic_magnitude_max" data-filter="magnitudeMax" type="number" min="0" max="10" step="0.1" class="form-control" placeholder="e.g. 6.9"></div>
+                <div class="col-6 col-lg-2"><label for="seismic_depth_min" class="seismic-filter-label">{% translate "Minimum depth (km)" %}</label><input id="seismic_depth_min" data-filter="depthMin" type="number" min="0" step="1" class="form-control" placeholder="0"></div>
+                <div class="col-6 col-lg-2"><label for="seismic_depth_max" class="seismic-filter-label">{% translate "Maximum depth (km)" %}</label><input id="seismic_depth_max" data-filter="depthMax" type="number" min="0" step="1" class="form-control" placeholder="e.g. 100"></div>
+                <div class="col-6 col-lg-2"><label for="seismic_distance_min" class="seismic-filter-label">{% translate "Minimum distance (km)" %}</label><input id="seismic_distance_min" data-filter="distanceMin" type="number" min="0" step="10" class="form-control" placeholder="0"></div>
+                <div class="col-6 col-lg-2"><label for="seismic_distance_max" class="seismic-filter-label">{% translate "Maximum distance (km)" %}</label><input id="seismic_distance_max" data-filter="distanceMax" type="number" min="0" step="10" class="form-control" placeholder="e.g. 500"></div>
+                <div class="col-12 col-lg-3"><label for="seismic_location" class="seismic-filter-label">{% translate "Location / region" %}</label><input id="seismic_location" data-filter="location" type="search" class="form-control" placeholder="e.g. Banda Sea"></div>
+                <fieldset class="col-12 col-lg-9"><legend class="seismic-filter-label mb-2">{% translate "Risk level" %}</legend><div class="seismic-risk-options">
+                    {% for risk in risk_levels %}<div class="form-check seismic-risk-option"><input class="form-check-input" data-filter-risk type="checkbox" value="{{ risk.code }}" id="risk_{{ risk.code }}" checked><label class="form-check-label" for="risk_{{ risk.code }}"><span class="risk-swatch risk-swatch--{{ risk.code }}"></span>{{ risk.label }} <small class="text-muted">{{ risk.range }}</small></label></div>{% endfor %}
+                </div></fieldset>
+            </div>
+            <div id="seismic_error" class="alert alert-danger mt-3 mb-0 d-none" role="alert"></div>
+        </div>
+    </section>
+
+    <section class="card seismic-card mb-4"><div class="card-header p-3 p-lg-4 d-flex flex-wrap align-items-center justify-content-between gap-3"><div><h2 class="h5 fw-bold mb-1"><i class="bi bi-map me-2 text-primary"></i>{% translate "Earthquake map" %}</h2><span id="seismic_count" class="seismic-count" aria-live="polite">{% translate "Loading earthquake activity…" %}</span></div><div class="seismic-legend" aria-label="{% translate 'Magnitude and risk legend' %}">{% for risk in risk_levels %}<span class="seismic-legend-item"><i class="risk-swatch risk-swatch--{{ risk.code }}"></i>{{ risk.range }} {{ risk.label }}</span>{% endfor %}</div></div><div id="seismic_map" class="seismic-map" aria-label="{% translate 'Interactive earthquake map' %}"></div></section>
+
+    <section class="card seismic-card"><div class="card-header p-3 p-lg-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3"><div><h2 class="h5 fw-bold mb-1"><i class="bi bi-list-ul me-2 text-primary"></i>{% translate "Earthquake events" %}</h2><span class="seismic-count">{% translate "Use the event list to access nearby or overlapping markers." %}</span></div><div class="input-group seismic-table-search"><span class="input-group-text bg-white"><i class="bi bi-search"></i></span><input id="seismic_text_search" data-filter="textSearch" type="search" class="form-control" placeholder="{% translate 'Search event name, ID, or use >= 5' %}"></div></div>
+        <div class="table-responsive"><table class="table table-hover align-middle mb-0 seismic-table" id="seismic_table"><thead class="table-light"><tr><th data-sort="time">{% translate "Date & time" %} <i class="bi bi-arrow-down-up small"></i></th><th data-sort="magnitude">{% translate "Magnitude" %} <i class="bi bi-arrow-down-up small"></i></th><th data-sort="risk">{% translate "Risk level" %} <i class="bi bi-arrow-down-up small"></i></th><th data-sort="place">{% translate "Location" %} <i class="bi bi-arrow-down-up small"></i></th><th data-sort="depth">{% translate "Depth" %} <i class="bi bi-arrow-down-up small"></i></th><th data-sort="distance">{% translate "Distance from Timor-Leste" %} <i class="bi bi-arrow-down-up small"></i></th><th class="text-end"><span class="visually-hidden">{% translate "Map event" %}</span></th></tr></thead><tbody id="seismic_table_body"></tbody></table></div>
+        <div id="seismic_empty" class="seismic-empty-state d-none"><i class="bi bi-search fs-2 d-block mb-2"></i>{% translate "No earthquakes matched these filters." %}</div>
+    </section>
+
+    <section class="row g-3 mt-1" aria-label="{% translate 'Earthquake distribution analysis' %}">
+        <div class="col-12 col-lg-6"><article class="card seismic-card h-100"><div class="card-body"><h2 class="h6 fw-bold">{% translate "Magnitude distribution" %}</h2><div class="seismic-chart-wrap"><canvas id="seismic_magnitude_chart"></canvas></div></div></article></div>
+        <div class="col-12 col-lg-6"><article class="card seismic-card h-100"><div class="card-body"><h2 class="h6 fw-bold">{% translate "Depth distribution" %}</h2><div class="seismic-chart-wrap"><canvas id="seismic_depth_chart"></canvas></div></div></article></div>
+    </section>
+</main>
+{{ risk_levels|json_script:"seismic-risk-levels" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vendor/chart.js/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/seismic.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,300 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n portal_tags %}
+{% load portal_tags %}
+
+{% block title %}{% translate "Staff Directory" %}{% endblock %}
+{% block section_title %}{% translate "Staff Directory" %}{% endblock %}
+
+{% block admin_content %}
+<form id="filterForm" method="get" action="{% url 'hr:employee_list' %}">
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white border-0 pt-4 pb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">{% translate "Employee Directory" %}</h5>
+                    <p class="text-muted small mb-0">{% translate "All staff members of DNMG" %}</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span id="selectedCountBadge" class="badge bg-primary rounded-pill d-none">0 {% translate "selected" %}</span>
+                    {% if user|has_portal_permission:'staff.export' %}
+                    <div>
+                        <button class="btn btn-outline-success rounded-pill px-3" type="button" data-bs-toggle="modal" data-bs-target="#directoryExportModal">
+                            <i class="bi bi-download me-1"></i>{% translate "Export Staff Data" %}
+                        </button>
+                    </div>
+                    {% endif %}{% if user|has_portal_permission:'staff.create' %}<a href="{% url 'hr:employee_create' %}" hx-boost="false" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-person-plus me-1"></i>{% translate "Add Employee" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="row g-2">
+                <div class="col-lg-3 col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control bg-light border-start-0" placeholder="{% translate 'Search name, number, position...' %}">
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <select name="department" class="form-select form-select-sm bg-light">
+                        <option value="">{% translate "All Departments" %}</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}" {% if selected_dept == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <select name="section" class="form-select form-select-sm bg-light">
+                        <option value="">{% translate "All Sections" %}</option>
+                        {% for section in sections %}
+                        <option value="{{ section.id }}" {% if selected_section == section.id|stringformat:"s" %}selected{% endif %}>{{ section.department.code }} · {{ section.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <select name="employment_type" class="form-select form-select-sm bg-light">
+                        <option value="">{% translate "All Types" %}</option>
+                        {% for val, label in employment_types %}
+                        <option value="{{ val }}" {% if selected_type == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <select name="employment_status" class="form-select form-select-sm bg-light">
+                        <option value="">{% translate "All Statuses" %}</option>
+                        {% for val, label in employment_statuses %}
+                        <option value="{{ val }}" {% if selected_status == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2">
+                    <select name="gender" class="form-select form-select-sm bg-light">
+                        <option value="">{% translate "All" %}</option>
+                        {% for val, label in genders %}
+                        <option value="{{ val }}" {% if selected_gender == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-12 row g-2 mt-0">
+                    <div class="col-lg-3 col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light">{% translate "Education" %}</span>
+                            <input type="text" name="education" value="{{ selected_education }}" class="form-control bg-light" aria-label="{% translate 'Education level or qualification' %}" placeholder="{% translate 'Level, degree or field...' %}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4">
+                        <input type="text" name="position" value="{{ selected_position }}" class="form-control form-control-sm bg-light" placeholder="{% translate 'Filter by position...' %}">
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <select name="staff_level" class="form-select form-select-sm bg-light">
+                            <option value="">{% translate "All Staff Levels" %}</option>
+                            {% for level in staff_levels %}
+                            <option value="{{ level.id }}" {% if selected_staff_level == level.id|stringformat:"s" %}selected{% endif %}>{{ level.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-1 d-flex gap-1">
+                    <button type="submit" class="btn btn-sm btn-primary w-100" title="{% translate 'Filter' %}"><i class="bi bi-funnel"></i><span class="visually-hidden">{% translate "Apply filters" %}</span></button>
+                    <a href="{% url 'hr:employee_list' %}" class="btn btn-sm btn-outline-secondary" title="{% translate 'Reset' %}"><i class="bi bi-x-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            {% if user|has_portal_permission:'staff.export' %}
+                            <th class="ps-4" style="width:40px;">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-check-input" onclick="toggleSelectAll(this)">
+                            </th>
+                            {% endif %}
+                            <th class="{% if not user|has_portal_permission:'staff.export' %}ps-4{% endif %}">{% translate "Employee" %}</th>
+                            <th>{% translate "Department" %}</th>
+                            <th>{% translate "Section" %}</th>
+                            <th>{% translate "Position" %}</th>
+                            <th>{% translate "Education" %}</th>
+                            <th>{% translate "Type" %}</th>
+                            <th>{% translate "Level" %}</th>
+                            <th>{% translate "Status" %}</th>
+                            {% if user|has_portal_permission:'staff.edit' or user|has_portal_permission:'staff.delete' %}<th class="text-end pe-4">{% translate "Actions" %}</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                        <tr>
+                            {% if user|has_portal_permission:'staff.export' %}
+                            <td class="ps-4">
+                                <input type="checkbox" form="exportForm" name="selected_ids" value="{{ emp.id }}" class="form-check-input emp-checkbox" onclick="updateSelectionBadge()">
+                            </td>
+                            {% endif %}
+                            <td class="{% if not user|has_portal_permission:'staff.export' %}ps-4{% endif %}">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if emp.photo|media_available %}
+                                        <img src="{{ emp.photo.url }}" alt="{{ emp.full_name }}" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">
+                                    {% else %}
+                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px;font-size:.9rem;">
+                                            {{ emp.full_name|slice:":1" }}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-semibold text-dark">
+                                            <a href="{% url 'hr:employee_detail' emp.pk %}" class="text-decoration-none text-dark">{{ emp.full_name }}</a>
+                                        </div>
+                                        <div class="text-muted small font-monospace">{{ emp.employee_number }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted small">{{ emp.department.name|default:"–" }}</td>
+                            <td class="text-muted small">{{ emp.section.name|default:"–" }}</td>
+                            <td class="text-muted small">{{ emp.position }}</td>
+                            <td class="text-muted small">
+                                {% with education_records=emp.education_records.all %}
+                                    {% if education_records %}
+                                        <span title="{{ education_records.0.degree }}">{{ education_records.0.degree|truncatechars:26 }}</span>
+                                        {% if education_records|length > 1 %}<span class="badge bg-secondary-subtle text-secondary ms-1">+{{ education_records|length|add:'-1' }}</span>{% endif %}
+                                    {% else %}–{% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill
+                                    {% if emp.employment_type == 'PERMANENT' %}bg-success-subtle text-success
+                                    {% elif emp.employment_type == 'CONTRACT' %}bg-warning-subtle text-warning
+                                    {% elif emp.employment_type == 'CONSULTANT' %}bg-info-subtle text-info
+                                    {% else %}bg-secondary-subtle text-secondary{% endif %} small">
+                                    {{ emp.get_employment_type_display }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">{{ emp.staff_level.name|default:"–" }}</td>
+                            <td>
+                                <span class="badge rounded-pill
+                                    {% if emp.employment_status == 'ACTIVE' %}bg-success-subtle text-success
+                                    {% elif emp.employment_status == 'ON_LEAVE' %}bg-warning-subtle text-warning
+                                    {% elif emp.employment_status == 'TERMINATED' or emp.employment_status == 'RESIGNED' %}bg-danger-subtle text-danger
+                                    {% else %}bg-secondary-subtle text-secondary{% endif %} small">
+                                    {{ emp.get_employment_status_display }}
+                                </span>
+                            </td>
+                            {% if user|has_portal_permission:'staff.edit' or user|has_portal_permission:'staff.delete' %}
+                            <td class="text-end pe-4">
+                                <a href="{% url 'hr:employee_detail' emp.pk %}" class="btn btn-sm btn-light border rounded-pill me-1" title="{% translate 'View' %}"><i class="bi bi-eye"></i></a>
+                                {% if user|has_portal_permission:'staff.edit' %}<a href="{% url 'hr:employee_update' emp.pk %}" class="btn btn-sm btn-light border rounded-pill me-1" title="{% translate 'Edit' %}"><i class="bi bi-pencil"></i></a>{% endif %}
+                                {% if user|has_portal_permission:'staff.delete' %}<a href="{% url 'hr:employee_delete' emp.pk %}" class="btn btn-sm btn-light border border-danger text-danger rounded-pill" title="{% translate 'Delete' %}"><i class="bi bi-trash"></i></a>{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center py-5 text-muted">
+                                <i class="bi bi-people fs-1 d-block mb-3 text-secondary"></i>
+                                {% translate "No employees found matching your filters." %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if is_paginated %}
+            <div class="card-footer bg-white border-0 py-3">
+                {% include 'components/pagination.html' %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<form id="exportForm" method="post" action="{% url 'hr:report_export' %}" target="_blank" hx-boost="false">
+    {% csrf_token %}
+    <input type="hidden" name="format" id="exportFormatInput" value="excel">
+    <input type="hidden" name="q" value="{{ search_query }}">
+    <input type="hidden" name="department" value="{{ selected_dept }}">
+    <input type="hidden" name="employment_type" value="{{ selected_type }}">
+    <input type="hidden" name="employment_status" value="{{ selected_status }}">
+    <input type="hidden" name="gender" value="{{ selected_gender }}">
+    <input type="hidden" name="section" value="{{ selected_section }}">
+    <input type="hidden" name="staff_level" value="{{ selected_staff_level }}">
+    <input type="hidden" name="position" value="{{ selected_position }}">
+    <input type="hidden" name="education" value="{{ selected_education }}">
+    <input type="hidden" name="data_sections" value="staff_directory">
+</form>
+
+<div class="modal fade" id="directoryExportModal" tabindex="-1" aria-labelledby="directoryExportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content border-0 shadow">
+        <div class="modal-header"><div><h5 class="modal-title fw-bold" id="directoryExportModalLabel">{% translate "Customize Staff Export" %}</h5><p class="text-muted small mb-0">{% translate "Choose the staff records and columns before downloading." %}</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button></div>
+        <div class="modal-body">
+            <h6 class="fw-bold small text-primary mb-2">{% translate "Records to include" %}</h6>
+            <div class="d-flex flex-wrap gap-3 mb-4">
+                <div class="form-check"><input class="form-check-input" type="radio" name="directory_export_scope" id="exportFiltered" value="filtered" checked><label class="form-check-label" for="exportFiltered">{% translate "All staff matching the current filters" %}</label></div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="directory_export_scope" id="exportSelected" value="selected"><label class="form-check-label" for="exportSelected">{% translate "Only selected staff" %} <span id="exportSelectedCount">(0)</span></label></div>
+            </div>
+            <h6 class="fw-bold small text-primary mb-2">{% translate "Staff Directory columns" %}</h6>
+            <p class="text-muted small">{% translate "Education is included by default as a summary of every qualification for each staff member." %}</p>
+            <div class="row g-2 mb-4">
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:employee_number" id="dirEmployeeNumber" checked><label class="form-check-label" for="dirEmployeeNumber">{% translate "Employee Number" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:full_name" id="dirName" checked><label class="form-check-label" for="dirName">{% translate "Name" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:department" id="dirDepartment" checked><label class="form-check-label" for="dirDepartment">{% translate "Department" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:section" id="dirSection" checked><label class="form-check-label" for="dirSection">{% translate "Section" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:position" id="dirPosition" checked><label class="form-check-label" for="dirPosition">{% translate "Position" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:education_summary" id="dirEducation" checked><label class="form-check-label fw-semibold" for="dirEducation">{% translate "Education" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:employment_type" id="dirType"><label class="form-check-label" for="dirType">{% translate "Employment Type" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:staff_level" id="dirLevel"><label class="form-check-label" for="dirLevel">{% translate "Staff Level" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:employment_status" id="dirStatus" checked><label class="form-check-label" for="dirStatus">{% translate "Employment Status" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:phone" id="dirPhone"><label class="form-check-label" for="dirPhone">{% translate "Phone" %}</label></div></div>
+                <div class="col-md-4"><div class="form-check"><input form="exportForm" class="form-check-input directory-field" type="checkbox" name="export_fields" value="staff_directory:email" id="dirEmail"><label class="form-check-label" for="dirEmail">{% translate "Email" %}</label></div></div>
+            </div>
+            <div class="form-check border rounded-3 p-3 bg-light"><input class="form-check-input" type="checkbox" id="includeEducationDetails" checked><label class="form-check-label" for="includeEducationDetails"><span class="fw-semibold">{% translate "Include detailed Education Information" %}</span><span class="d-block text-muted small">{% translate "Adds a separate table with one row for every qualification, so no education records are lost." %}</span></label></div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between"><a href="{% url 'hr:reports' %}" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-sliders me-1"></i>{% translate "More HR Report Options" %}</a><div class="d-flex gap-2"><button type="button" class="btn btn-outline-success rounded-pill" onclick="submitDirectoryExport('excel')">{% translate "Excel" %}</button><button type="button" class="btn btn-outline-danger rounded-pill" onclick="submitDirectoryExport('pdf')">{% translate "PDF" %}</button><button type="button" class="btn btn-primary rounded-pill" onclick="submitDirectoryExport('csv')">{% translate "CSV" %}</button></div></div>
+    </div></div>
+</div>
+
+<script>
+function toggleSelectAll(master) {
+    const checkboxes = document.querySelectorAll('.emp-checkbox');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+    updateSelectionBadge();
+}
+
+function submitDirectoryExport(fmt) {
+    const form = document.getElementById('exportForm');
+    const selectedOnly = document.getElementById('exportSelected').checked;
+    const selected = Array.from(document.querySelectorAll('.emp-checkbox:checked'));
+    if (selectedOnly && !selected.length) {
+        window.alert('{% translate "Select at least one staff member, or choose all filtered staff." %}');
+        return;
+    }
+    document.querySelectorAll('.emp-checkbox').forEach((checkbox) => checkbox.disabled = !selectedOnly);
+    form.querySelectorAll('input[name="data_sections"][value="education_information"]').forEach((input) => input.remove());
+    form.querySelectorAll('input[name="export_fields"][value^="education_information:"]').forEach((input) => input.remove());
+    if (document.getElementById('includeEducationDetails').checked) {
+        const section = document.createElement('input'); section.type = 'hidden'; section.name = 'data_sections'; section.value = 'education_information'; form.appendChild(section);
+        ['employee_number', 'employee_name', 'department', 'degree', 'institution', 'field_of_study', 'year_completed'].forEach((field) => {
+            const input = document.createElement('input'); input.type = 'hidden'; input.name = 'export_fields'; input.value = 'education_information:' + field; form.appendChild(input);
+        });
+    }
+    document.getElementById('exportFormatInput').value = fmt;
+    form.submit();
+    window.setTimeout(() => {
+        document.querySelectorAll('.emp-checkbox').forEach((checkbox) => checkbox.disabled = false);
+    }, 250);
+}
+
+function updateSelectionBadge() {
+    const checked = document.querySelectorAll('.emp-checkbox:checked');
+    const badge = document.getElementById('selectedCountBadge');
+    const exportCount = document.getElementById('exportSelectedCount');
+    if (exportCount) exportCount.textContent = '(' + checked.length + ')';
+    if (checked.length > 0) {
+        badge.textContent = checked.length + ' {% translate "selected" %}';
+        badge.classList.remove('d-none');
+    } else {
+        badge.classList.add('d-none');
+    }
+}
+</script>
+{% endblock %}

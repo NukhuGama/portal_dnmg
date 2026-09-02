@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "DNMG Structure" %}{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-primary text-white py-5 mb-5">
+    <div class="container py-3">
+        <h1 class="display-6 fw-bold mb-2">{% translate "DNMG Structure" %}</h1>
+        <p class="lead text-white-50 mb-0">{% translate "DNMG's organisational hierarchy" %}</p>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                <div>
+                    <h2 class="h4 fw-bold text-dark mb-1">{% translate "Organisational Structure" %}</h2>
+                    <!-- <p class="text-muted mb-0">{% translate "Departments are maintained by the HR Admin Portal and update here automatically." %}</p> -->
+                </div>
+                {% if structure_uses_mock_data %}
+                    <span class="badge text-bg-warning rounded-pill px-3 py-2">{% translate "Temporary structure data" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="org-chart" aria-label="{% translate "DNMG organisational chart" %}">
+                <div class="org-director-wrap">
+                    <div class="org-node org-node-director">
+                        <i class="bi bi-person-badge-fill fs-3"></i>
+                        <span>{% translate "Director" %}</span>
+                    </div>
+                </div>
+                <div class="org-departments">
+                    {% for department in departments %}
+                        <article class="org-node org-node-department">
+                            <i class="bi bi-building fs-4 text-primary"></i>
+                            <h3 class="h6 fw-bold mb-1">{{ department.name }}</h3>
+                            <!-- {% if department.code %}<span class="org-code">{{ department.code }}</span>{% endif %} -->
+                            {% if department.description %}<p class="small text-muted mb-0 mt-2">{{ department.description }}</p>{% endif %}
+                            {% if department.head %}
+                                <p class="small text-muted mb-0 mt-2"><i class="bi bi-person me-1"></i>{% translate "Head of Department" %}: {{ department.head.full_name }}</p>
+                            {% endif %}
+                            {% if department.sections.all %}
+                            <div class="mt-3 pt-2 border-top">
+                                <div class="small fw-semibold text-dark mb-1">{% translate "Sections" %}</div>
+                                <ul class="list-unstyled small text-muted mb-0">
+                                    {% for section in department.sections.all %}<li><i class="bi bi-diagram-2 me-1"></i>{{ section.name }}{% if section.description %}<span class="d-block ms-3">{{ section.description }}</span>{% endif %}</li>{% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

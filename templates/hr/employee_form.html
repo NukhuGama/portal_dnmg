@@ -1,0 +1,156 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block section_title %}{{ page_title }}{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <h5 class="fw-bold mb-0">{{ page_title }}</h5>
+        <p class="text-muted small mb-0">{% translate "Fill in the employee details below. All fields marked * are required." %}</p>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" action="{% if employee %}{% url 'hr:employee_update' employee.pk %}{% else %}{% url 'hr:employee_create' %}{% endif %}" hx-boost="false">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger rounded-3">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <!-- Personal Information -->
+            <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-person-badge me-2"></i>{% translate "Personal Information" %}</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">{% translate "Employee Number" %} *</label>
+                    {{ form.employee_number }}
+                    {% if form.employee_number.errors %}<div class="text-danger small">{{ form.employee_number.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Full Name" %} *</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}<div class="text-danger small">{{ form.full_name.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">{% translate "Gender" %} *</label>
+                    {{ form.gender }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">{% translate "Date of Birth" %}</label>
+                    {{ form.date_of_birth }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">{% translate "Nationality" %}</label>
+                    {{ form.nationality }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">{% translate "Phone Number" %}</label>
+                    {{ form.phone }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Email Address" %}</label>
+                    {{ form.email }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">{% translate "Profile Photo" %}</label>
+                    {{ form.photo }}
+                </div>
+            </div>
+
+            <!-- Employment Details -->
+            <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-briefcase me-2"></i>{% translate "Employment Details" %}</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Department" %}</label>
+                    {{ form.department }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Section" %}</label>
+                    {{ form.section }}
+                    {% if form.section.errors %}<div class="text-danger small">{{ form.section.errors }}</div>{% endif %}
+                    <div class="form-text">{% translate "Select a section that belongs to the chosen department." %}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Position / Job Title" %} *</label>
+                    {{ form.position }}
+                    {% if form.position.errors %}<div class="text-danger small">{{ form.position.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Employment Type" %} *</label>
+                    {{ form.employment_type }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Staff Level / Grade" %}</label>
+                    {{ form.staff_level }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">{% translate "Employment Status" %}</label>
+                    {{ form.employment_status }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Linked User Account" %}</label>
+                    {{ form.user_account }}
+                </div>
+            </div>
+
+            <!-- Education Information -->
+            <div class="border rounded-3 bg-light p-3 mb-4" id="education-information">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div>
+                        <h6 class="fw-bold text-primary mb-1"><i class="bi bi-mortarboard me-2"></i>{% translate "Education Information" %}</h6>
+                        <p class="text-muted small mb-0">{% translate "Add each qualification separately: Bachelor’s, Master’s, PhD, Diploma, or another qualification." %}</p>
+                    </div>
+                    {% if employee %}
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addEducationModal">
+                        <i class="bi bi-plus-circle me-1"></i>{% translate "Add Education" %}
+                    </button>
+                    {% else %}
+                    <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>{% translate "Save the staff profile first, then add education records." %}</span>
+                    {% endif %}
+                </div>
+                {% if employee and education_records %}
+                <div class="row g-2 mt-2">
+                    {% for education in education_records %}
+                    <div class="col-md-6"><div class="bg-white border rounded-3 p-2 h-100 d-flex justify-content-between gap-2"><div><div class="fw-semibold small">{{ education.degree }}</div><div class="text-muted small">{{ education.institution }}{% if education.year_completed %} · {{ education.year_completed }}{% endif %}</div></div><div class="btn-group btn-group-sm"><a href="{% url 'hr:education_update' education.pk %}" class="btn btn-light border" title="{% translate 'Edit education' %}"><i class="bi bi-pencil"></i></a><a href="{% url 'hr:education_delete' education.pk %}" class="btn btn-light border border-danger text-danger" title="{% translate 'Delete education' %}"><i class="bi bi-trash"></i></a></div></div></div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Contract Dates -->
+            <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-calendar-range me-2"></i>{% translate "Contract Dates" %}</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Start Date" %} *</label>
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">{% translate "Contract End Date" %} <span class="text-muted fw-normal">({% translate "leave blank if permanent" %})</span></label>
+                    {{ form.contract_end_date }}
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="bi bi-sticky me-2"></i>{% translate "Notes" %}</h6>
+            <div class="mb-4">{{ form.notes }}</div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary rounded-pill px-4"><i class="bi bi-check-circle me-1"></i>{% translate "Save Employee" %}</button>
+                <a href="{% url 'hr:employee_list' %}" class="btn btn-outline-secondary rounded-pill px-4">{% translate "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% if employee %}
+<div class="modal fade" id="addEducationModal" tabindex="-1" aria-labelledby="addEducationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content border-0 shadow">
+        <div class="modal-header"><div><h5 class="modal-title fw-bold" id="addEducationModalLabel">{% translate "Add Education" %}</h5><p class="text-muted small mb-0">{% translate "Add one qualification at a time for this staff member." %}</p></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button></div>
+        <form method="post" action="{% url 'hr:education_create' employee.pk %}">
+            {% csrf_token %}<input type="hidden" name="next" value="{% url 'hr:employee_update' employee.pk %}#education-information">
+            <div class="modal-body"><div class="row g-3"><div class="col-md-6"><label class="form-label small fw-semibold">{{ education_form.degree.label }} *</label>{{ education_form.degree }}</div><div class="col-md-6"><label class="form-label small fw-semibold">{{ education_form.institution.label }} *</label>{{ education_form.institution }}</div><div class="col-md-6"><label class="form-label small fw-semibold">{{ education_form.field_of_study.label }}</label>{{ education_form.field_of_study }}</div><div class="col-md-6"><label class="form-label small fw-semibold">{{ education_form.year_completed.label }}</label>{{ education_form.year_completed }}</div></div></div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">{% translate "Cancel" %}</button><button type="submit" class="btn btn-primary rounded-pill"><i class="bi bi-plus-circle me-1"></i>{% translate "Save Education" %}</button></div>
+        </form>
+    </div></div>
+</div>
+{% endif %}
+{% endblock %}

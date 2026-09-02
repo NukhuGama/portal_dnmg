@@ -1,0 +1,18 @@
+/* Compact Home-page entry point into the dedicated seismic explorer. */
+.home-seismic-summary { --home-seismic-risk: var(--primary); background: #fff; border: 1px solid var(--gray-border); border-radius: 1rem; box-shadow: 0 8px 26px rgba(20, 53, 74, .07); padding: 1.25rem; }
+.home-seismic-summary__header { align-items: flex-start; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; margin-bottom: 1rem; }
+.home-seismic-summary__eyebrow { color: var(--primary); font-size: .72rem; font-weight: 700; letter-spacing: .06em; margin: 0 0 .25rem; text-transform: uppercase; }
+.home-seismic-summary__metric, .home-seismic-summary__latest { background: #f8fafc; border: 1px solid var(--gray-border); border-radius: .75rem; height: 100%; }
+.home-seismic-summary__metric { display: flex; flex-direction: column; min-height: 5.8rem; padding: .85rem 1rem; }
+.home-seismic-summary__metric span, .home-seismic-summary__latest-label { color: #64748b; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.home-seismic-summary__metric strong { color: var(--dark); font-size: 1.5rem; line-height: 1.25; margin-top: auto; }
+.home-seismic-summary__metric small { color: #64748b; font-size: .72rem; }
+.home-seismic-summary__metric--recent { border-top: 3px solid var(--accent); }
+.home-seismic-summary__latest { align-items: center; border-left: 4px solid var(--home-seismic-risk); display: flex; gap: .75rem; padding: .8rem 1rem; }
+.home-seismic-summary__latest-icon { align-items: center; background: color-mix(in srgb, var(--home-seismic-risk) 15%, white); border-radius: 50%; color: var(--home-seismic-risk); display: flex; flex: 0 0 2.4rem; height: 2.4rem; justify-content: center; }
+.home-seismic-summary__latest strong, .home-seismic-summary__latest small { display: block; }
+.home-seismic-summary__latest strong { color: var(--dark); font-size: .93rem; line-height: 1.35; }
+.home-seismic-summary__latest small { color: #64748b; font-size: .78rem; margin-top: .15rem; }
+.home-seismic-summary__magnitude { color: var(--home-seismic-risk); font-size: 1.35rem; font-weight: 800; margin-left: auto; white-space: nowrap; }
+.home-seismic-summary__status { color: #64748b; font-size: .76rem; min-height: 1.2em; }
+@media (max-width: 575.98px) { .home-seismic-summary { padding: 1rem; } .home-seismic-summary__header .btn { width: 100%; } }

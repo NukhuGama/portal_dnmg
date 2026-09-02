@@ -1,0 +1,68 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Log Observation" %}{% endblock %}
+{% block section_title %}{% translate "New Weather Observation" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">{% translate "Record Weather Telemetry / Observation" %}</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Weather Station" %}</label>
+                            {{ form.station }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Recorded Timestamp" %}</label>
+                            {{ form.recorded_at }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Temperature (°C)" %}</label>
+                            {{ form.temperature }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Humidity (%)" %}</label>
+                            {{ form.humidity }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Rainfall (mm)" %}</label>
+                            {{ form.rainfall_mm }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Wind Speed (km/h)" %}</label>
+                            {{ form.wind_speed_kmh }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Wind Direction" %}</label>
+                            {{ form.wind_direction }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Pressure (hPa)" %}</label>
+                            {{ form.pressure_hpa }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Wave Height (m - Marine)" %}</label>
+                            {{ form.wave_height_m }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Weather Condition Description" %}</label>
+                            {{ form.condition_text }}
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a href="{% url 'weather:observation_list' %}" class="btn btn-outline-secondary">{% translate "Cancel" %}</a>
+                        <button type="submit" class="btn btn-primary px-4">{% translate "Save Observation" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

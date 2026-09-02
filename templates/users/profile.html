@@ -1,0 +1,168 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{% translate "My Profile" %}{% endblock %}
+
+{% block section_title %}{% translate "My Profile" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row g-4">
+    <!-- Profile Edit Form Panel -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="card-title fw-bold text-dark mb-0">{% translate "Edit Personal Details" %}</h5>
+                <p class="text-muted small">{% translate "Update your contact information and profile picture." %}</p>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'users:profile' %}" enctype="multipart/form-data" hx-boost="false">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="id_first_name" class="form-label fw-semibold small text-muted">{% translate "First Name" %}</label>
+                            {{ profile_form.first_name }}
+                            {% if profile_form.first_name.errors %}
+                                <div class="text-danger small mt-1">{{ profile_form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_last_name" class="form-label fw-semibold small text-muted">{% translate "Last Name" %}</label>
+                            {{ profile_form.last_name }}
+                            {% if profile_form.last_name.errors %}
+                                <div class="text-danger small mt-1">{{ profile_form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_email" class="form-label fw-semibold small text-muted">{% translate "Email Address" %}</label>
+                            {{ profile_form.email }}
+                            {% if profile_form.email.errors %}
+                                <div class="text-danger small mt-1">{{ profile_form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_phone_number" class="form-label fw-semibold small text-muted">{% translate "Phone Number" %}</label>
+                            {{ profile_form.phone_number }}
+                            {% if profile_form.phone_number.errors %}
+                                <div class="text-danger small mt-1">{{ profile_form.phone_number.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <label for="id_profile_picture" class="form-label fw-semibold small text-muted">{% translate "Profile Picture" %}</label>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if user.profile_picture|media_available %}
+                                    <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle border border-2 border-warning" width="60" height="60" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center border border-2 border-warning" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-person-fill fs-3"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    {{ profile_form.profile_picture }}
+                                    <small class="text-muted d-block mt-1">{% translate "Accepted formats: PNG, JPG, JPEG. Max size 2MB." %}</small>
+                                </div>
+                            </div>
+                            {% if profile_form.profile_picture.errors %}
+                                <div class="text-danger small mt-1">{{ profile_form.profile_picture.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                        <button type="submit" class="btn btn-warning fw-semibold px-4 text-dark rounded-pill">
+                            <i class="bi bi-floppy me-1"></i>{% translate "Save Changes" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 mt-4">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="card-title fw-bold text-dark mb-0"><i class="bi bi-key me-2 text-warning"></i>{% translate "Update Password" %}</h5>
+                <p class="text-muted small">{% translate "Use your current password to set a new password for your account." %}</p>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'users:profile_password_change' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        {% for field in password_form %}
+                        <div class="col-12">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-muted">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<small class="text-muted d-block mt-1">{{ field.help_text|safe }}</small>{% endif %}
+                            {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                        <button type="submit" class="btn btn-warning fw-semibold px-4 text-dark rounded-pill"><i class="bi bi-key-fill me-1"></i>{% translate "Update Password" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Permissions Panel -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 rounded-4 bg-gradient-dark text-white mb-4">
+            <div class="card-body p-4 text-center">
+                {% if user.profile_picture|media_available %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle mb-3 border border-3 border-warning shadow" width="100" height="100" style="object-fit: cover;">
+                {% else %}
+                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 border border-3 border-warning shadow" style="width: 100px; height: 100px;">
+                        <i class="bi bi-person-fill fs-1"></i>
+                    </div>
+                {% endif %}
+                <h5 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                <p class="text-white-50 small mb-3">@{{ user.username }}</p>
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold text-uppercase fs-7">
+                    {{ user.get_effective_role_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-shield-check me-2 text-success"></i>{% translate "Access Permissions" %}</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>{% translate "Administrative Panel" %}</span>
+                        <span class="badge bg-success-subtle text-success py-1.5 px-2.5">{% translate "Granted" %}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>{% translate "Weather Observations Write" %}</span>
+                        {% if user|has_portal_permission:'observations.create' or user|has_portal_permission:'observations.edit' %}
+                            <span class="badge bg-success-subtle text-success py-1.5 px-2.5">{% translate "Granted" %}</span>
+                        {% else %}
+                            <span class="badge bg-light text-muted py-1.5 px-2.5">{% translate "Read Only" %}</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>{% translate "HR Records Read/Write" %}</span>
+                        {% if user|has_portal_permission:'staff.create' or user|has_portal_permission:'staff.edit' %}
+                            <span class="badge bg-success-subtle text-success py-1.5 px-2.5">{% translate "Granted" %}</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger py-1.5 px-2.5">{% translate "Denied" %}</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>{% translate "News & CMS Publishing" %}</span>
+                        {% if user|has_portal_permission:'news.publish' or user|has_portal_permission:'bulletins.publish' %}
+                            <span class="badge bg-success-subtle text-success py-1.5 px-2.5">{% translate "Granted" %}</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger py-1.5 px-2.5">{% translate "Denied" %}</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

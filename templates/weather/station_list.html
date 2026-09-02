@@ -1,0 +1,132 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{% translate "Weather Stations" %}{% endblock %}
+{% block section_title %}{% translate "Automated Weather Stations (AWS) & Monitoring Sites" %}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">{% translate "Weather Stations" %}</h3>
+        <p class="text-muted small mb-0">{% translate "Manage meteorological and geophysical observation network" %}</p>
+    </div>
+    {% if user|has_portal_permission:'weather_stations.create' %}
+    <a href="{% url 'weather:station_create' %}" class="btn btn-primary shadow-sm d-flex align-items-center gap-2">
+        <i class="bi bi-plus-lg"></i>
+        <span>{% translate "Register Station" %}</span>
+    </a>
+    {% endif %}
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="get" action="{% url 'weather:station_list' %}" class="row g-3 align-items-center">
+            <!-- Keyword search -->
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control bg-light border-start-0" placeholder="{% translate 'Search by station name or code...' %}">
+                </div>
+            </div>
+
+            <!-- Station Type Filter -->
+            <div class="col-md-3">
+                <select name="station_type" class="form-select form-select-sm bg-light">
+                    <option value="">{% translate "All Station Types" %}</option>
+                    {% for code, label in station_type_choices %}
+                        <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="col-md-2">
+                <select name="status" class="form-select form-select-sm bg-light">
+                    <option value="">{% translate "All Statuses" %}</option>
+                    {% for code, label in status_choices %}
+                        <option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Municipality Filter -->
+            <div class="col-md-2">
+                <select name="municipality" class="form-select form-select-sm bg-light">
+                    <option value="">{% translate "All Municipalities" %}</option>
+                    {% for code, label in municipality_choices %}
+                        <option value="{{ code }}" {% if selected_municipality == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary w-100 fw-semibold">
+                    <i class="bi bi-funnel me-1"></i>{% translate "Filter" %}
+                </button>
+                <a href="{% url 'weather:station_list' %}" class="btn btn-sm btn-outline-secondary" title="{% translate 'Reset Filters' %}">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>{% translate "Station Name" %}</th>
+                    <th>{% translate "Code" %}</th>
+                    <th>{% translate "Municipality" %}</th>
+                    <th>{% translate "Type" %}</th>
+                    <th>{% translate "Coordinates" %}</th>
+                    <th>{% translate "Status" %}</th>
+                    <th class="text-end">{% translate "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for station in stations %}
+                <tr>
+                    <td class="fw-semibold">{{ station.name }}</td>
+                    <td><code>{{ station.code }}</code></td>
+                    <td>{{ station.get_municipality_display }}</td>
+                    <td><span class="badge bg-secondary">{{ station.get_station_type_display }}</span></td>
+                    <td class="small text-muted">{{ station.latitude }}, {{ station.longitude }}</td>
+                    <td>
+                        {% if station.status == 'ACTIVE' %}
+                            <span class="badge bg-success">{% translate "Active" %}</span>
+                        {% elif station.status == 'MAINTENANCE' %}
+                            <span class="badge bg-warning text-dark">{% translate "Maintenance" %}</span>
+                        {% else %}
+                            <span class="badge bg-danger">{% translate "Inactive" %}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if user|has_portal_permission:'weather_stations.edit' %}
+                        <a href="{% url 'weather:station_update' station.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil me-1"></i>{% translate "Edit" %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                        <i class="bi bi-geo-alt fs-2 d-block mb-2 text-secondary"></i>
+                        {% translate "No weather stations found matching your search." %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if is_paginated %}
+    <div class="card-footer bg-white border-0 py-3">
+        {% include 'components/pagination.html' %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

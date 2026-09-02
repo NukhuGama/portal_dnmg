@@ -1,0 +1,94 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% translate "Edit Job Opening" %}{% else %}{% translate "New Job Opening" %}{% endif %}{% endblock %}
+{% block section_title %}{% translate "Job Opening Editor" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">
+                    {% if object %}
+                        {% translate "Edit Job Opening" %}: {{ object.title }}
+                    {% else %}
+                        {% translate "Post New Job Opportunity" %}
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">{% translate "Job Title" %}</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Department" %}</label>
+                            {{ form.department }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Location" %}</label>
+                            {{ form.location }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Employment Type" %}</label>
+                            {{ form.employment_type }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Status" %}</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Application Deadline" %}</label>
+                            {{ form.application_deadline }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">{% translate "Job Description" %}</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">{% translate "Requirements & Qualifications" %}</label>
+                            {{ form.requirements }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">{% translate "How to Apply (Instructions)" %}</label>
+                            {{ form.how_to_apply }}
+                        </div>
+                    </div>
+                    <section class="mt-4 pt-4 border-top">
+                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-paperclip me-2 text-primary"></i>{% translate "Job Documents" %}</h6>
+                        <p class="small text-muted mb-3">{% translate "Upload job descriptions, application forms, or other supporting files. Images are not accepted here." %}</p>
+                        {{ attachment_formset.management_form }}
+                        {{ attachment_formset.non_form_errors }}
+                        {% for attachment_form in attachment_formset %}
+                        <div class="row g-3 align-items-end border rounded p-3 mb-3 bg-light">
+                            {{ attachment_form.id }}
+                            <div class="col-md-5">
+                                <label class="form-label small fw-semibold">{% translate "File" %}</label>
+                                {{ attachment_form.file }}
+                                {{ attachment_form.file.errors }}
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label small fw-semibold">{% translate "File Title" %}</label>
+                                {{ attachment_form.title }}
+                                {{ attachment_form.title.errors }}
+                            </div>
+                            {% if attachment_form.instance.pk %}
+                            <div class="col-md-2"><div class="form-check">{{ attachment_form.DELETE }} <label class="form-check-label">{% translate "Remove" %}</label></div></div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </section>
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a href="{% url 'cms:admin_career_list' %}" class="btn btn-outline-secondary">{% translate "Cancel" %}</a>
+                        <button type="submit" class="btn btn-primary px-4">{% translate "Save Job Opening" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

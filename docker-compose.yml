@@ -1,0 +1,60 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      DJANGO_DEBUG: "true"
+      REDIS_URL: redis://redis:6379/1
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./media:/app/media
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["/bin/sh", "/app/scripts/sync-loop.sh"]
+    env_file:
+      - .env
+    environment:
+      DJANGO_DEBUG: "true"
+      REDIS_URL: redis://redis:6379/1
+      SYNC_INTERVAL_SECONDS: "300"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./media:/app/media
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys, time; from pathlib import Path; p = Path('/tmp/dnmg-last-successful-sync'); sys.exit(0 if p.exists() and time.time() - p.stat().st_mtime <= 900 else 1)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 5m
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:

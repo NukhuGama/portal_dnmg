@@ -1,0 +1,608 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate "Staff Dashboard" %}{% endblock %}
+
+{% block section_title %}{% translate "Dashboard" %}{% endblock %}
+
+{% block admin_content %}
+{% if user.role == 'SUPER_ADMIN' or user.role == 'ADMIN' or user.is_superuser %}
+<!-- Top Summary Metric Cards -->
+<div class="row g-4 mb-4">
+    <!-- Live Stations Metric Card -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3 bg-white h-100 border-start border-4 border-primary">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-semibold d-block">{% translate "Network Stations" %}</span>
+                    <h3 class="fw-bold text-dark mt-1 mb-0">{{ total_stations_count }}</h3>
+                </div>
+                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-broadcast-pin fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2.5">
+                <span class="badge bg-success-subtle text-success py-1 px-2 rounded-pill"><i class="bi bi-check-circle me-1"></i>{{ synced_stations_count }}/{{ total_stations_count }} {% translate "Active Data" %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Staff Accounts -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3 bg-white h-100 border-start border-4 border-info">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-semibold d-block">{% translate "Staff Accounts" %}</span>
+                    <h3 class="fw-bold text-dark mt-1 mb-0">{{ total_users }}</h3>
+                </div>
+                <div class="bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-people fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2.5">
+                <span class="badge bg-info-subtle text-info py-1 px-2 rounded-pill">{{ active_users }} {% translate "Active" %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Online Active Sessions -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-semibold d-block">{% translate "Online Sessions" %}</span>
+                    <h3 class="fw-bold text-dark mt-1 mb-0">{{ online_users }}</h3>
+                </div>
+                <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-wifi fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2.5">
+                <span class="badge bg-success-subtle text-success py-1 px-2 rounded-pill"><span class="pulse-indicator me-1"></span>{% translate "Real-time" %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Logs Counter -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-semibold d-block">{% translate "Audit Log Count" %}</span>
+                    <h3 class="fw-bold text-dark mt-1 mb-0">{{ recent_logs.count }}</h3>
+                </div>
+                <div class="bg-warning-subtle text-warning-emphasis rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="bi bi-shield-check fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2.5">
+                <a href="{% url 'users:audit_logs' %}" class="text-primary text-decoration-none small">{% translate "View logs" %}<i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if user.can_access_technical_weather %}
+<!-- LIVE TELEMETRY DASHBOARD SECTION -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4 bg-white p-3.5">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom">
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">
+                        <i class="bi bi-broadcast me-2 text-primary"></i>{% translate "Live Station Telemetry & Coordinates — Last 24 Hours" %}
+                    </h5>
+                    <p class="text-muted small mb-0">
+                        {% translate "Live data ingestion from DNMG API (https://ms-obs.dnmg.gov.tl/station-data/{id}). Coordinates saved in backend." %}
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button id="btn_sync_api" type="button" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-1.5" onclick="triggerApiSync()">
+                        <i class="bi bi-arrow-repeat" id="sync_icon"></i>
+                        <span>{% translate "Sync Live API Now" %}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs & Status Filter Buttons -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                <ul class="nav nav-pills gap-2 mb-0" id="stationTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-3.5 py-1.5 font-monospace small" id="aws-tab" data-bs-toggle="tab" data-bs-target="#aws-pane" type="button" role="tab">
+                            <i class="bi bi-cloud-sun me-1"></i>{% translate "AWS Stations" %} ({{ aws_stations|length }})
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-3.5 py-1.5 font-monospace small" id="tide-tab" data-bs-toggle="tab" data-bs-target="#tide-pane" type="button" role="tab">
+                            <i class="bi bi-water me-1"></i>{% translate "Tide Gauges" %} ({{ tide_stations|length }})
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-3.5 py-1.5 font-monospace small" id="buoy-tab" data-bs-toggle="tab" data-bs-target="#buoy-pane" type="button" role="tab">
+                            <i class="bi bi-life-preserver me-1"></i>{% translate "Marine Buoy" %} ({{ buoy_stations|length }})
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Online / Offline Filter -->
+                <div class="btn-group btn-group-sm font-monospace" role="group" aria-label="Station Status Filter">
+                    <button type="button" class="btn btn-outline-secondary active status-filter-btn" data-status-filter="all" onclick="filterStations('all', this)">
+                        <i class="bi bi-funnel me-1"></i>{% translate "All Status" %}
+                    </button>
+                    <button type="button" class="btn btn-outline-success status-filter-btn" data-status-filter="online" onclick="filterStations('online', this)">
+                        <i class="bi bi-record-fill me-1"></i>{% translate "Online Only" %}
+                    </button>
+                    <button type="button" class="btn btn-outline-danger status-filter-btn" data-status-filter="offline" onclick="filterStations('offline', this)">
+                        <i class="bi bi-exclamation-circle me-1"></i>{% translate "Offline Only" %}
+                    </button>
+                </div>
+            </div>
+
+            <div class="tab-content" id="stationTabContent">
+                <!-- 1. AWS STATIONS TABLE -->
+                <div class="tab-pane fade show active" id="aws-pane" role="tabpanel" tabindex="0">
+                    <div class="table-responsive rounded-3 border">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-uppercase font-monospace text-muted" style="font-size: 0.72rem;">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>{% translate "Station Name" %}</th>
+                                    <th>{% translate "Status" %}</th>
+                                    <th>{% translate "Coordinates (Lat, Lon)" %}</th>
+                                    <th class="text-center">{% translate "Temp (°C)" %}</th>
+                                    <th class="text-center">{% translate "Humidity" %}</th>
+                                    <th class="text-center">{% translate "Wind Speed" %}</th>
+                                    <th class="text-center">{% translate "Pressure" %}</th>
+                                    <th class="text-center">{% translate "Rain Today" %}</th>
+                                    <th class="text-center">{% translate "Solar Rad" %}</th>
+                                    <th class="text-end">{% translate "Recorded At" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for st in aws_stations %}
+                                    <tr class="station-row" data-status="{% if st.is_online %}online{% else %}offline{% endif %}">
+                                        <td><span class="badge bg-dark-subtle text-dark font-monospace">{{ st.external_id }}</span></td>
+                                        <td>
+                                            <strong class="text-dark d-block">{{ st.name }}</strong>
+                                            <span class="text-muted text-uppercase" style="font-size: 0.68rem;">{{ st.municipality }} • {{ st.code }}</span>
+                                        </td>
+                                        <td>
+                                            {% if st.is_online %}
+                                                <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold"><i class="bi bi-record-fill me-1"></i>ONLINE</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>OFFLINE</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-primary font-monospace border px-2 py-1">
+                                                <i class="bi bi-geo-alt me-1"></i>{{ st.latitude|floatformat:6 }}, {{ st.longitude|floatformat:6 }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.temperature != None %}
+                                                <span class="fw-bold text-danger">{{ st.obs.temperature|floatformat:2 }} °C</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.humidity != None %}
+                                                <span class="fw-semibold text-info">{{ st.obs.humidity|floatformat:2 }}%</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.wind_speed_kmh != None %}
+                                                <span class="fw-semibold">{{ st.obs.wind_speed_kmh|floatformat:2 }} km/h {{ st.obs.wind_direction }}</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.pressure_hpa != None %}
+                                                <span>{{ st.obs.pressure_hpa|floatformat:2 }} hPa</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.rainfall_mm != None %}
+                                                <span class="badge bg-info-subtle text-info font-monospace">{{ st.obs.rainfall_mm|floatformat:2 }} mm</span>
+                                            {% else %}
+                                                <span class="text-muted">0.00 mm</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.solar_radiation != None %}
+                                                <span class="text-warning-emphasis fw-semibold">{{ st.obs.solar_radiation|floatformat:2 }} W/m²</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end text-muted font-monospace" style="font-size: 0.72rem;">
+                                            {% if st.obs %}
+                                                {{ st.obs.recorded_at|date:"H:i, M d" }}
+                                            {% else %}
+                                                {% translate "No Data" %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="11" class="text-center py-4 text-muted">{% translate "No AWS stations found." %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. TIDE GAUGES TABLE -->
+                <div class="tab-pane fade" id="tide-pane" role="tabpanel" tabindex="0">
+                    <div class="table-responsive rounded-3 border">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-uppercase font-monospace text-muted" style="font-size: 0.72rem;">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>{% translate "Station Name" %}</th>
+                                    <th>{% translate "Municipality" %}</th>
+                                    <th>{% translate "Coordinates (Lat, Lon)" %}</th>
+                                    <th class="text-center">{% translate "Air Temp (°C)" %}</th>
+                                    <th class="text-center">{% translate "Barometer (hPa)" %}</th>
+                                    <th class="text-center">{% translate "Tide Level (mm)" %}</th>
+                                    <th class="text-center">{% translate "Status" %}</th>
+                                    <th class="text-end">{% translate "Recorded At" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for st in tide_stations %}
+                                    <tr class="station-row" data-status="{% if st.is_online %}online{% else %}offline{% endif %}">
+                                        <td><span class="badge bg-info text-white font-monospace">{{ st.external_id }}</span></td>
+                                        <td>
+                                            <strong class="text-dark d-block">{{ st.name }}</strong>
+                                            <span class="text-muted text-uppercase" style="font-size: 0.68rem;">{{ st.code }}</span>
+                                        </td>
+                                        <td>{{ st.municipality }}</td>
+                                        <td>
+                                            <span class="badge bg-light text-primary font-monospace border px-2 py-1">
+                                                <i class="bi bi-geo-alt me-1"></i>{{ st.latitude|floatformat:6 }}, {{ st.longitude|floatformat:6 }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.temperature != None %}
+                                                <span class="fw-bold text-danger">{{ st.obs.temperature|floatformat:2 }} °C</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.pressure_hpa != None %}
+                                                <span>{{ st.obs.pressure_hpa|floatformat:2 }} hPa</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.tide_level_mm != None %}
+                                                <span class="badge bg-primary fs-7 font-monospace px-2.5 py-1.5">{{ st.obs.tide_level_mm|floatformat:2 }} mm</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.is_online %}
+                                                <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold"><i class="bi bi-record-fill me-1"></i>ONLINE</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>OFFLINE</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end text-muted font-monospace" style="font-size: 0.72rem;">
+                                            {% if st.obs %}
+                                                {{ st.obs.recorded_at|date:"H:i, M d" }}
+                                            {% else %}
+                                                {% translate "No Data" %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4 text-muted">{% translate "No Tide Gauge stations found." %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. MARINE BUOY TABLE -->
+                <div class="tab-pane fade" id="buoy-pane" role="tabpanel" tabindex="0">
+                    <div class="table-responsive rounded-3 border">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-uppercase font-monospace text-muted" style="font-size: 0.72rem;">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>{% translate "Station Name" %}</th>
+                                    <th>{% translate "Municipality" %}</th>
+                                    <th>{% translate "Coordinates (Lat, Lon)" %}</th>
+                                    <th class="text-center">{% translate "Wave Height (m)" %}</th>
+                                    <th class="text-center">{% translate "Peak Period (s)" %}</th>
+                                    <th class="text-center">{% translate "Sea Surface Temp (°C)" %}</th>
+                                    <th class="text-center">{% translate "Battery Status" %}</th>
+                                    <th class="text-center">{% translate "Status" %}</th>
+                                    <th class="text-end">{% translate "Recorded At" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for st in buoy_stations %}
+                                    <tr class="station-row" data-status="{% if st.is_online %}online{% else %}offline{% endif %}">
+                                        <td><span class="badge bg-dark text-white font-monospace">{{ st.external_id }}</span></td>
+                                        <td>
+                                            <strong class="text-dark d-block">{{ st.name }}</strong>
+                                            <span class="text-muted text-uppercase" style="font-size: 0.68rem;">{{ st.code }}</span>
+                                        </td>
+                                        <td>{{ st.municipality }}</td>
+                                        <td>
+                                            <span class="badge bg-light text-primary font-monospace border px-2 py-1">
+                                                <i class="bi bi-geo-alt me-1"></i>{{ st.latitude|floatformat:6 }}, {{ st.longitude|floatformat:6 }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.wave_height_m != None %}
+                                                <span class="badge bg-info text-dark font-monospace fs-7 px-2.5 py-1.5">{{ st.obs.wave_height_m|floatformat:2 }} m</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.peak_period_s != None %}
+                                                <span class="fw-semibold">{{ st.obs.peak_period_s|floatformat:2 }} s</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.sea_surface_temp != None %}
+                                                <span class="fw-bold text-danger">{{ st.obs.sea_surface_temp|floatformat:2 }} °C</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.obs and st.obs.battery_voltage != None %}
+                                                <span class="badge bg-success-subtle text-success">{{ st.obs.battery_voltage|floatformat:2 }} V</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-muted border">OK</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if st.is_online %}
+                                                <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold"><i class="bi bi-record-fill me-1"></i>ONLINE</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1 fw-bold"><i class="bi bi-exclamation-circle me-1"></i>OFFLINE</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end text-muted font-monospace" style="font-size: 0.72rem;">
+                                            {% if st.obs %}
+                                                {{ st.obs.recorded_at|date:"H:i, M d" }}
+                                            {% else %}
+                                                {% translate "No Data" %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="10" class="text-center py-4 text-muted">{% translate "No Marine Buoy stations found." %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if user.role == 'SUPER_ADMIN' or user.role == 'ADMIN' or user.is_superuser %}
+<div class="row g-4 mb-4">
+    <!-- Chart Visual: Role Distribution -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4 bg-white p-3 h-100">
+            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>{% translate "Staff Distribution by Role" %}</h6>
+            <div class="chart-container d-flex justify-content-center" style="position: relative; height:280px; width:100%">
+                <canvas id="roleChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent System Audit Trails -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4 bg-white p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-activity me-2 text-primary"></i>{% translate "Recent System Logs" %}</h6>
+                <a href="{% url 'users:audit_logs' %}" class="btn btn-light btn-sm rounded-pill border">{% translate "See All" %}</a>
+            </div>
+            <div class="list-group list-group-flush overflow-y-auto" style="max-height: 280px;">
+                {% for log in recent_logs %}
+                    <div class="list-group-item px-0 py-2.5 d-flex align-items-start justify-content-between border-0 border-bottom">
+                        <div class="d-flex gap-2">
+                            <span class="badge {% if 'USER_LOGIN' in log.action %}bg-success{% elif 'FAILED' in log.action %}bg-danger{% else %}bg-secondary{% endif %} rounded-circle p-1.5 mt-1 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                                <i class="bi {% if 'USER_LOGIN' in log.action %}bi-box-arrow-in-right{% elif 'FAILED' in log.action %}bi-exclamation-circle{% else %}bi-receipt{% endif %} text-white" style="font-size: 0.75rem;"></i>
+                            </span>
+                            <div>
+                                <span class="fw-semibold text-dark small d-block">
+                                    {{ log.user.username|default:"Anonymous" }} - {{ log.action }}
+                                </span>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">{{ log.timestamp|date:"Y-m-d H:i:s" }} | IP: {{ log.ip_address|default:"-" }}</small>
+                            </div>
+                        </div>
+                        <span class="text-muted" style="font-size: 0.65rem;">{{ log.timestamp|timesince }} ago</span>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-receipt-cutoff fs-2 mb-2 d-block"></i>
+                        {% translate "No logs recorded yet." %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Quick Shortcuts Card -->
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4 bg-white p-3">
+            <h6 class="fw-bold text-dark mb-3">{% translate "Staff Quick Actions" %}</h6>
+            <div class="row g-3">
+                {% if user.role == 'SUPER_ADMIN' or user.role == 'ADMIN' or user.is_superuser %}
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'users:user_create' %}" class="btn btn-outline-primary w-100 p-3 rounded-3 d-flex flex-column align-items-center gap-2">
+                        <i class="bi bi-person-plus fs-3"></i>
+                        <span class="small font-weight-bold">{% translate "Add Staff User" %}</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'users:user_list' %}" class="btn btn-outline-secondary w-100 p-3 rounded-3 d-flex flex-column align-items-center gap-2">
+                        <i class="bi bi-people fs-3"></i>
+                        <span class="small font-weight-bold">{% translate "Manage Users" %}</span>
+                    </a>
+                </div>
+                {% endif %}
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'weather:station_list' %}" class="btn btn-outline-info w-100 p-3 rounded-3 d-flex flex-column align-items-center gap-2">
+                        <i class="bi bi-gear-wide-connected fs-3"></i>
+                        <span class="small font-weight-bold">{% translate "Manage Stations" %}</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'users:profile' %}" class="btn btn-outline-dark w-100 p-3 rounded-3 d-flex flex-column align-items-center gap-2">
+                        <i class="bi bi-person-circle fs-3"></i>
+                        <span class="small font-weight-bold">{% translate "Edit My Profile" %}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .spin-animation {
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterStations(status, btn) {
+        document.querySelectorAll('.status-filter-btn').forEach(function(b) {
+            b.classList.remove('active');
+        });
+        if (btn) btn.classList.add('active');
+
+        var rows = document.querySelectorAll('.station-row');
+        rows.forEach(function(row) {
+            var rowStatus = row.getAttribute('data-status');
+            if (status === 'all' || rowStatus === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        document.cookie.split(';').forEach(function(cookie) {
+            var trimmedCookie = cookie.trim();
+            if (trimmedCookie.indexOf(name + '=') === 0) {
+                cookieValue = decodeURIComponent(trimmedCookie.substring(name.length + 1));
+            }
+        });
+        return cookieValue;
+    }
+
+    function triggerApiSync() {
+        var btn = document.getElementById('btn_sync_api');
+        var icon = document.getElementById('sync_icon');
+        if (!btn || !icon) return;
+        btn.disabled = true;
+        icon.classList.add('spin-animation');
+        fetch("{% url 'weather:api_sync_stations' %}", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/json"
+            }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function() { window.location.reload(); })
+        .catch(function(err) {
+            console.error("Sync failed:", err);
+            btn.disabled = false;
+            icon.classList.remove('spin-animation');
+            alert("Error synchronizing API stations. Please try again.");
+        });
+    }
+
+    (function() {
+        var roleLabels = [];
+        var roleCounts = [];
+        {% for item in role_stats %}
+            roleLabels.push("{{ item.label|escapejs }}");
+            roleCounts.push({{ item.count }});
+        {% endfor %}
+
+        function renderRoleChart() {
+            var canvas = document.getElementById('roleChart');
+            if (!canvas) return;
+            var existing = Chart.getChart(canvas);
+            if (existing) { existing.destroy(); }
+            new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: roleLabels,
+                    datasets: [{
+                        data: roleCounts,
+                        backgroundColor: [
+                            '#0d3b66', '#185a9d', '#f4d35e', '#ef4444', '#fb6f92',
+                            '#10b981', '#6366f1', '#8b5cf6', '#ec4899', '#6b7280'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // extra_js block is at the bottom of <body> — DOM is already painted.
+        // Call directly (no DOMContentLoaded needed).
+        renderRoleChart();
+
+        // Re-render on browser back/forward cache restore
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) { renderRoleChart(); }
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% translate "Edit Forecast" %}{% else %}{% translate "Publish Forecast" %}{% endif %}{% endblock %}
+{% block section_title %}{% translate "Forecast Form" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">
+                    {% if object %}
+                        {% translate "Edit Forecast" %}: {{ object.get_municipality_display }} ({{ object.forecast_date }})
+                    {% else %}
+                        {% translate "Publish Municipal Weather Forecast" %}
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Municipality" %}</label>
+                            {{ form.municipality }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Forecast Date" %}</label>
+                            {{ form.forecast_date }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Min Temperature (°C)" %}</label>
+                            {{ form.temp_min }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Max Temperature (°C)" %}</label>
+                            {{ form.temp_max }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Condition Description" %}</label>
+                            {{ form.condition }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Icon Class (Bootstrap Icon)" %}</label>
+                            {{ form.icon }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Rainfall Probability (%)" %}</label>
+                            {{ form.rain_probability }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Wind Summary" %}</label>
+                            {{ form.wind_summary }}
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a href="{% url 'weather:forecast_list' %}" class="btn btn-outline-secondary">{% translate "Cancel" %}</a>
+                        <button type="submit" class="btn btn-primary px-4">{% translate "Save Forecast" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

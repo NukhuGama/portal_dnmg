@@ -1,0 +1,226 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% translate "Edit Article" %}{% else %}{% translate "New Article" %}{% endif %}{% endblock %}
+{% block section_title %}{% translate "Article Editor" %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">
+                    {% if object %}
+                        {% translate "Edit Article" %}: {{ object.title }}
+                    {% else %}
+                        {% translate "Create New News Article" %}
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">{% translate "Article Title" %}</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{% translate "Category" %}</label>
+                            {{ form.category }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">{% translate "Excerpt / Summary" %}</label>
+                            {{ form.excerpt }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">{% translate "Full Article Body" %}</label>
+                            {{ form.content.as_hidden }}
+                            <div class="article-editor border rounded overflow-hidden" id="article_editor_wrap">
+                                <div class="article-editor-toolbar d-flex flex-wrap align-items-center gap-1 p-2 border-bottom bg-light">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="bold" title="{% translate 'Bold' %}"><i class="bi bi-type-bold"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="italic" title="{% translate 'Italic' %}"><i class="bi bi-type-italic"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="insertUnorderedList" title="{% translate 'Bullet list' %}"><i class="bi bi-list-ul"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-editor-command="formatBlock" data-editor-value="h2" title="{% translate 'Heading' %}"><i class="bi bi-type-h2"></i></button>
+                                    <label class="btn btn-sm btn-outline-primary mb-0" title="{% translate 'Insert image with caption' %}">
+                                        <i class="bi bi-image me-1"></i>{% translate "Insert Image" %}
+                                        <input type="file" id="inline_article_image_picker" accept="image/*" class="d-none">
+                                    </label>
+                                    <label class="btn btn-sm btn-outline-primary mb-0" title="{% translate 'Attach a supporting document' %}">
+                                        <i class="bi bi-paperclip me-1"></i>{% translate "Attach File" %}
+                                        <input type="file" id="inline_article_attachment_picker" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.rtf,.txt,.csv,.zip" class="d-none">
+                                    </label>
+                                </div>
+                                <div id="article_content_editor" class="article-editor-surface" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="{% translate 'Write the article. Place the cursor between paragraphs to insert an image.' %}"></div>
+                                <div id="inline_article_uploads" class="d-none"></div>
+                            </div>
+                            <div class="form-text">{% translate "Insert captioned images or attach supporting documents anywhere between paragraphs." %}</div>
+                            {{ form.content.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">{% translate "Featured Image" %}</label>
+                            {{ form.featured_image }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{% translate "Status" %}</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{% translate "Publication Date" %}</label>
+                            {{ form.published_at }}
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                        <a href="{% url 'cms:admin_news_list' %}" class="btn btn-outline-secondary">{% translate "Cancel" %}</a>
+                        <button type="submit" class="btn btn-primary px-4">{% translate "Save Article" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function initialiseArticleEditor() {
+    var editor = document.getElementById('article_content_editor');
+    var contentField = document.getElementById('id_content');
+    var uploads = document.getElementById('inline_article_uploads');
+    var picker = document.getElementById('inline_article_image_picker');
+    var attachmentPicker = document.getElementById('inline_article_attachment_picker');
+    var savedRange = null;
+
+    if (!editor || !contentField || editor.dataset.initialised === 'true') return;
+    editor.dataset.initialised = 'true';
+
+    editor.innerHTML = contentField.value || '';
+
+    function saveSelection() {
+        var selection = window.getSelection();
+        if (selection.rangeCount && editor.contains(selection.anchorNode)) savedRange = selection.getRangeAt(0).cloneRange();
+    }
+
+    function restoreSelection() {
+        editor.focus();
+        if (!savedRange) return;
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(savedRange);
+    }
+
+    function syncContent() {
+        editor.querySelectorAll('figure[data-upload-key]').forEach(function (figure) {
+            var key = figure.getAttribute('data-upload-key');
+            var caption = figure.querySelector('figcaption');
+            var captionField = document.querySelector('[name="inline_image_caption_' + key + '"]');
+            if (captionField && caption) captionField.value = caption.innerText.trim();
+        });
+        contentField.value = editor.innerHTML;
+    }
+
+    function escapeHtml(value) {
+        return value.replace(/[&<>'"]/g, function (character) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character];
+        });
+    }
+
+    document.querySelectorAll('[data-editor-command]').forEach(function (button) {
+        button.addEventListener('mousedown', function (event) { event.preventDefault(); });
+        button.addEventListener('click', function () {
+            restoreSelection();
+            document.execCommand(this.dataset.editorCommand, false, this.dataset.editorValue || null);
+            saveSelection();
+        });
+    });
+    editor.addEventListener('keyup', saveSelection);
+    editor.addEventListener('mouseup', saveSelection);
+    editor.addEventListener('input', saveSelection);
+
+    function bindImagePicker(input) {
+        input.addEventListener('click', saveSelection);
+        input.addEventListener('change', function () {
+        var file = input.files[0];
+        if (!file) return;
+        var caption = window.prompt('{% translate "Image caption or label" %}', '') || '';
+        var key = 'inline_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        var pickerLabel = input.closest('label');
+        var freshPicker = input.cloneNode(false);
+        freshPicker.removeAttribute('name');
+        pickerLabel.appendChild(freshPicker);
+        input.name = 'inline_image_' + key;
+        uploads.appendChild(input);
+        bindImagePicker(freshPicker);
+        var captionInput = document.createElement('input');
+        captionInput.type = 'hidden';
+        captionInput.name = 'inline_image_caption_' + key;
+        captionInput.value = caption;
+        var keyInput = document.createElement('input');
+        keyInput.type = 'hidden';
+        keyInput.name = 'inline_image_keys';
+        keyInput.value = key;
+        uploads.append(captionInput, keyInput);
+
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            restoreSelection();
+            var safeCaption = escapeHtml(caption);
+            var figure = '<figure class="article-inline-image article-inline-image-preview" data-upload-key="' + key + '">' +
+                '<img src="' + event.target.result + '" alt="' + safeCaption + '">' +
+                '<figcaption>' + safeCaption + '</figcaption></figure><p><br></p>';
+            document.execCommand('insertHTML', false, figure);
+            syncContent();
+        };
+        reader.readAsDataURL(file);
+        });
+    }
+
+    function bindAttachmentPicker(input) {
+        input.addEventListener('click', saveSelection);
+        input.addEventListener('change', function () {
+        var file = input.files[0];
+        if (!file) return;
+        var title = window.prompt('{% translate "Document title" %}', file.name);
+        if (title === null) {
+            input.value = '';
+            return;
+        }
+        var key = 'attachment_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        var pickerLabel = input.closest('label');
+        var freshPicker = input.cloneNode(false);
+        freshPicker.removeAttribute('name');
+        pickerLabel.appendChild(freshPicker);
+        input.name = 'inline_attachment_' + key;
+        uploads.appendChild(input);
+        bindAttachmentPicker(freshPicker);
+        var titleInput = document.createElement('input');
+        titleInput.type = 'hidden';
+        titleInput.name = 'inline_attachment_title_' + key;
+        titleInput.value = title || file.name;
+        var keyInput = document.createElement('input');
+        keyInput.type = 'hidden';
+        keyInput.name = 'inline_attachment_keys';
+        keyInput.value = key;
+        uploads.append(titleInput, keyInput);
+
+        restoreSelection();
+        var figure = '<figure class="article-inline-attachment article-inline-attachment-preview" data-attachment-upload-key="' + key + '">' +
+            '<figcaption>{% translate "Attached file" %}: ' + escapeHtml(title || file.name) + '</figcaption></figure><p><br></p>';
+        document.execCommand('insertHTML', false, figure);
+        syncContent();
+        });
+    }
+
+    bindImagePicker(picker);
+    bindAttachmentPicker(attachmentPicker);
+
+    editor.closest('form').addEventListener('submit', syncContent);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialiseArticleEditor);
+} else {
+    initialiseArticleEditor();
+}
+</script>
+{% endblock %}

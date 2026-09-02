@@ -1,0 +1,630 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate "Home" %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/seismic-home-summary.css' %}">{% endblock %}
+
+{% block content %}
+<!-- Welcome Hero Banner -->
+<section class="bg-gradient-primary text-white py-5 mb-5 position-relative overflow-hidden">
+    <!-- Vector decorations representing atmosphere curves -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: radial-gradient(circle at 80% 20%, #ffffff 0%, transparent 40%); pointer-events: none;"></div>
+    <div class="container py-3 position-relative">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <h1 class="display-8 fw-bold mb-2 text-uppercase" style="font-family: var(--font-heading); letter-spacing: 0.5px;">
+                    {% translate "National Portal for Meteorological, Climate and Geophysical Information" %}
+                </h1>
+                <p class="lead text-white-50 mb-0">
+                    {% translate "Official weather forecasts, climate summaries, marine advisories, and seismic warnings for the Democratic Republic of Timor-Leste." %}
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="badge bg-warning text-dark py-2.5 px-3 rounded-pill fw-bold text-uppercase fs-7 shadow-sm">
+                    <span class="pulse-indicator me-1"></span>
+                    {% translate "System Operational" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <!-- Priority safety area: every active warning remains visible above dashboard summaries. -->
+    {% if alerts %}
+        <section class="home-priority-alerts mb-4" aria-labelledby="home_alerts_heading">
+            <div class="home-priority-alerts__heading">
+                <h2 id="home_alerts_heading" class="h5 fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>{% blocktranslate with count=alerts|length %}Active Safety Alerts ({{ count }}){% endblocktranslate %}</h2>
+                <span class="badge text-bg-danger rounded-pill"><i class="bi bi-broadcast me-1"></i>{% translate "Priority information" %}</span>
+            </div>
+            <div id="activeAlertsCarousel" class="carousel slide home-priority-alerts__carousel" data-bs-ride="carousel" data-bs-interval="7000" aria-label="{% translate 'Active safety alerts' %}">
+                <div class="carousel-inner">
+                    {% for alert in alerts %}
+                        <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                            <article class="card border-0 shadow-sm rounded-3 alert-severity-{{ alert.severity }} glass-card home-priority-alert">
+                                <div class="card-body p-3 px-md-5">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                        <h3 class="h6 fw-bold text-dark mb-0">{{ alert.title }}</h3>
+                                        <span class="badge {% if alert.severity == 'danger' %}bg-danger{% else %}bg-warning text-dark{% endif %} rounded-pill font-monospace small px-2.5">{{ alert.period }}</span>
+                                    </div>
+                                    <p class="small text-muted mb-1"><strong>{% translate "Affected Areas:" %}</strong> {{ alert.region }}</p>
+                                    <p class="small mb-0 text-dark-muted">{{ alert.description }}</p>
+                                </div>
+                            </article>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if alerts|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#activeAlertsCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">{% translate "Previous alert" %}</span></button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#activeAlertsCarousel" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">{% translate "Next alert" %}</span></button>
+                    <div class="carousel-indicators home-priority-alerts__indicators">{% for alert in alerts %}<button type="button" data-bs-target="#activeAlertsCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="{% blocktranslate with number=forloop.counter %}Alert {{ number }}{% endblocktranslate %}"></button>{% endfor %}</div>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="home-seismic-summary home-secondary-dashboard mb-4" data-seismic-home-summary data-api-url="{% url 'seismic:home_summary' %}" data-loading-message="{% translate 'Loading recent earthquake activity…' %}" data-unavailable-message="{% translate 'Earthquake information is temporarily unavailable.' %}" data-no-events-message="{% translate 'No nearby earthquakes were reported for the current period.' %}" aria-labelledby="home_seismic_heading">
+        <div class="home-seismic-summary__header">
+            <div>
+                <p class="home-seismic-summary__eyebrow"><i class="bi bi-broadcast-pin me-1"></i>{% translate "USGS monitoring" %}</p>
+                <h2 id="home_seismic_heading" class="h5 fw-bold mb-1">{% translate "Recent Earthquakes Near Timor-Leste" %}</h2>
+                <p class="small text-muted mb-0">{% translate "A compact update; explore the Seismic page for the map, filters, and full analysis." %}</p>
+            </div>
+            <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="{% url 'seismic:earthquakes' %}">{% translate "View seismic activity" %}<i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+        <div class="row g-3 align-items-stretch">
+            <div class="col-6 col-lg-2"><article class="home-seismic-summary__metric"><span>{% translate "Nearby events" %}</span><strong data-seismic-total>—</strong><small>{% translate "last 7 days" %}</small></article></div>
+            <div class="col-6 col-lg-2"><article class="home-seismic-summary__metric home-seismic-summary__metric--recent"><span><i class="bi bi-star-fill me-1"></i>{% translate "Recent" %}</span><strong data-seismic-recent>—</strong><small>{% translate "last 24 hours" %}</small></article></div>
+            <div class="col-12 col-lg-8"><article class="home-seismic-summary__latest" data-seismic-latest aria-live="polite"><div class="home-seismic-summary__latest-icon"><i class="bi bi-activity"></i></div><div><span class="home-seismic-summary__latest-label">{% translate "Latest event" %}</span><strong data-seismic-place>{% translate "Loading recent earthquake activity…" %}</strong><small data-seismic-details></small></div><span class="home-seismic-summary__magnitude" data-seismic-magnitude>—</span></article></div>
+        </div>
+        <p class="home-seismic-summary__status mb-0 mt-2" data-seismic-status role="status">{% translate "Loading recent earthquake activity…" %}</p>
+    </section>
+
+
+    <!-- 10-Day ECMWF Forecast: Full-width section -->
+    <div class="row g-0 mb-4" id="forecast">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="home-forecast-header px-4 pt-3 pb-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <h5 class="fw-bold text-white mb-0">
+                            <i class="bi bi-calendar3-week me-2 text-warning"></i>{% translate "10-Day Municipal Weather Forecast — CDIS-ECMWF-IFS" %}
+                        </h5>
+                        <small class="text-white-50">{% translate "Municipality-level daily forecast — click any day card or municipality polygon for details." %}</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Variable Pills -->
+                        <div class="home-var-pills" id="home_var_pills">
+                            <button class="home-var-btn active" data-var="tp">
+                                <i class="bi bi-cloud-rain-fill me-1"></i>Rainfall
+                            </button>
+                            <button class="home-var-btn" data-var="heat">
+                                <i class="bi bi-thermometer-high me-1"></i>Heat
+                            </button>
+                            <button class="home-var-btn" data-var="cold">
+                                <i class="bi bi-thermometer-snow me-1"></i>Cold
+                            </button>
+                            <button class="home-var-btn" data-var="wind">
+                                <i class="bi bi-wind me-1"></i>Wind
+                            </button>
+                            <button class="home-var-btn" data-var="rh">
+                                <i class="bi bi-droplet-half me-1"></i>Humidity
+                            </button>
+                            <button class="home-var-btn" data-var="thi">
+                                <i class="bi bi-activity me-1"></i>THI
+                            </button>
+                        </div>
+                        <a href="{% url 'weather:forecast_map' %}" class="btn btn-sm btn-warning rounded-pill px-3 fw-semibold text-dark">
+                            <i class="bi bi-fullscreen me-1"></i>{% translate "Full Map" %}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Map and day selector -->
+                <div class="home-forecast-layout">
+
+                    <!-- Choropleth Map -->
+                    <div class="home-forecast-map-wrap">
+                        <div id="home_forecast_map"></div>
+                        <!-- Legend overlay -->
+                        <div class="home-forecast-legend">
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#94CB55;display:inline-block;"></span>Low</span>
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#F3EB12;display:inline-block;"></span>Moderate</span>
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#F39B3A;display:inline-block;"></span>High</span>
+                                <span class="d-flex align-items-center gap-1"><span style="width:10px;height:10px;border-radius:3px;background:#EF4444;display:inline-block;"></span>Danger</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10 Day Cards Scroll Panel -->
+                    <aside class="home-forecast-days" aria-label="{% translate '10-day forecast selector' %}">
+                        <div class="px-3 py-3">
+                            <div class="home-day-selector-title">{% translate "Select a forecast day" %}</div>
+                            <div id="home_day_cards_container" class="home-day-cards">
+                                <!-- Populated by JS -->
+                                <div class="text-center text-muted py-5" style="font-size:0.8rem;">
+                                    <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                                    <div>Loading forecast…</div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Stations Location Map & Module Summaries -->
+    <div class="row g-4 mb-5">
+        <!-- Interactive Leaflet Map -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-2">
+                <div class="card-body">
+                    <div class="home-stations-header d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <div>
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-map-fill me-2 text-primary"></i>{% translate "National Meteorological Station Network" %}</h5>
+                            <small class="text-muted">{% translate "Live telemetry from 15 active network stations across Timor-Leste" %}</small>
+                        </div>
+                        <!-- Filter Category Buttons -->
+                        <div class="btn-group btn-group-sm home-station-filters" role="group" id="map_filter_group">
+                            <button type="button" class="btn btn-primary active" data-filter="ALL">{% translate "All" %} (15)</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="AWS">{% translate "AWS" %}</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="TIDE_GAUGE">{% translate "Tide Gauge" %}</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="BUOY">{% translate "Marine Buoy" %}</button>
+                        </div>
+                    </div>
+                    <div id="tl_map" class="home-station-map shadow-inner position-relative"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Quick Bulletins & Downloads -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-2">
+                <div class="card-body">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-file-pdf me-2 text-danger"></i>{% translate "Latest Weather Bulletins" %}</h5>
+                    <div class="list-group list-group-flush small">
+                        {% for bulletin in bulletins %}
+                            {% if bulletin.slug %}
+                            <a href="{% url 'cms:public_bulletin_detail' bulletin.slug %}" class="list-group-item list-group-item-action px-0 py-2.5 d-flex align-items-center justify-content-between border-0 border-bottom home-bulletin-item">
+                            {% else %}
+                            <a href="{% url 'cms:public_bulletin_list' %}" class="list-group-item list-group-item-action px-0 py-2.5 d-flex align-items-center justify-content-between border-0 border-bottom home-bulletin-item">
+                            {% endif %}
+                                <div class="d-flex align-items-center gap-2 home-bulletin-content">
+                                    <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
+                                    <div class="home-bulletin-copy">
+                                        <span class="fw-semibold text-dark d-block text-truncate home-bulletin-title">{{ bulletin.title }}</span>
+                                        <small class="text-muted">{{ bulletin.date }}</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-light text-muted border py-1.5 px-2 rounded home-bulletin-type">{{ bulletin.type }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public Resources Downloads Quick Link -->
+            <div class="card border-0 shadow-sm rounded-4 p-2 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-download me-2 text-primary"></i>{% translate "Quick Downloads" %}</h6>
+                    <p class="small text-muted mb-3">{% translate "Access historical climate archives, marine advisories, and bulletins." %}</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'cms:public_bulletin_list' %}" class="btn btn-outline-primary btn-sm rounded-pill py-2">
+                            <i class="bi bi-file-earmark-arrow-down me-1"></i>{% translate "Official Bulletins (PDF)" %}
+                        </a>
+                        <!-- <a href="{% url 'weather:interactive_map' %}" class="btn btn-primary btn-sm rounded-pill py-2">
+                            <i class="bi bi-geo-alt me-1"></i>{% translate "Open GIS Explorer Map" %}
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Triple Module Cards (Marine, Climate, Seismic) -->
+    
+    <!-- Decision Support Systems (DSS) Modules -->
+    <div class="row g-4 mb-5" id="dss">
+        <div class="col-12">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-cpu me-2 text-primary"></i>{% translate "Decision Support Systems (DSS)" %}</h4>
+            <p class="text-muted small mb-4">{% translate "Specialized meteorological decision suites for disaster management, ocean safety, climate impact for public health, and agriculture." %}</p>
+        </div>
+        <div class="col-md-6 col-lg-3" id="dss-drr">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-2 border-top border-4 border-danger">
+                <div class="card-body">
+                    <div class="badge bg-danger-subtle text-danger mb-2">DRR</div>
+                    <h5 class="fw-bold text-dark mb-2">{% translate "Disaster Risk Reduction" %}</h5>
+                    <p class="small text-muted">{% translate "Early warning integration for flash floods, landslides, and heavy rainfall risks." %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3" id="dss-osfas">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-2 border-top border-4 border-info">
+                <div class="card-body">
+                    <div class="badge bg-info-subtle text-info mb-2">OSFAS</div>
+                    <h5 class="fw-bold text-dark mb-2">{% translate "Ocean State Forecasting" %}</h5>
+                    <p class="small text-muted">{% translate "High-resolution wave, tide, and coastal surge forecasting for shipping lanes." %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3" id="dss-crish">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-2 border-top border-4 border-warning">
+                <div class="card-body">
+                    <div class="badge bg-warning-subtle text-warning-emphasis mb-2">CRISH</div>
+                    <h5 class="fw-bold text-dark mb-2">{% translate "Climate Risk Info for Public Health" %}</h5>
+                    <p class="small text-muted">{% translate "Climate Risk Information System for Public Health: Early Warning and Health Resilience for Diarrhea, Dengue, and ARI(Accute Respiratory Infection)" %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3" id="dss-adss">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-2 border-top border-4 border-success">
+                <div class="card-body">
+                    <div class="badge bg-success-subtle text-success mb-2">ADSS</div>
+                    <h5 class="fw-bold text-dark mb-2">{% translate "Agricultural DSS" %}</h5>
+                    <p class="small text-muted">{% translate "Agro-meteorological advisories for  rice, and corn farming seasonal planning." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About DNMG Section -->
+    <!-- <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-gradient-dark text-white" id="about">
+        <div class="card-body">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <h4 class="fw-bold text-warning mb-2">{% translate "About DNMG Timor-Leste" %}</h4>
+                    <p class="text-white-50 mb-0">
+                        {% translate "The National Directorate of Meteorology and Geophysics (Direção Nacional de Meteorologia e Geofísica - DNMG) operates under the Ministry of Transport and Communications of Timor-Leste. We provide vital weather, oceanographic, and seismic monitoring services to protect lives, property, and national infrastructure." %}
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{% url 'core:about_dnmg' %}" class="btn btn-outline-warning rounded-pill px-4">
+                        {% translate "Learn More" %} <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- News Headlines CMS Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold text-dark mb-0"><i class="bi bi-newspaper me-2 text-primary"></i>{% translate "Latest News" %}</h4>
+                <a href="{% url 'cms:public_news_list' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                    {% translate "View All News" %} <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="row g-4">
+                {% for item in news_headlines %}
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-2">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary rounded-pill font-monospace small px-2.5">{{ item.category }}</span>
+                                    <small class="text-muted">{{ item.date }}</small>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">{{ item.title }}</h5>
+                                <p class="small text-muted mb-3 flex-grow-1">{{ item.summary }}</p>
+                                {% if item.slug %}
+                                    <a href="{% url 'cms:public_news_detail' item.slug %}" class="btn btn-sm btn-link p-0 text-primary text-decoration-none fw-semibold align-self-start">
+                                        {% translate "Read Full Article" %} <i class="bi bi-chevron-right ms-1"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'cms:public_news_list' %}" class="btn btn-sm btn-link p-0 text-primary text-decoration-none fw-semibold align-self-start">
+                                        {% translate "Read Full Article" %} <i class="bi bi-chevron-right ms-1"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/seismic-home-summary.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Leaflet map centered on Timor-Leste
+        var map = L.map('tl_map').setView([-8.65, 125.75], 8);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        var markersLayer = L.layerGroup().addTo(map);
+        var allFeatures = [];
+        var activeFilter = "ALL";
+
+        // Custom HTML DivIcon generator based on station type and online status
+        function getStationIcon(type, isOnline) {
+            var iconHtml = '';
+            var bgClass = isOnline ? 'bg-primary' : 'bg-danger';
+            
+            if (type === 'TIDE_GAUGE') {
+                iconHtml = '<i class="bi bi-water text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-info' : 'bg-danger';
+            } else if (type === 'BUOY') {
+                iconHtml = '<i class="bi bi-life-preserver text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-dark' : 'bg-danger';
+            } else if (type === 'AWOS') {
+                iconHtml = '<i class="bi bi-airplane-engines text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-purple' : 'bg-danger';
+            } else {
+                iconHtml = '<i class="bi bi-cloud-sun text-white fs-6"></i>';
+                bgClass = isOnline ? 'bg-primary' : 'bg-danger';
+            }
+
+            var borderColor = isOnline ? '#22c55e' : '#ef4444';
+
+            return L.divIcon({
+                className: 'custom-leaflet-marker',
+                html: '<div class="d-flex align-items-center justify-content-center rounded-circle shadow-sm ' + bgClass + '" style="width:34px; height:34px; border:2px solid ' + borderColor + ';">' + iconHtml + '</div>',
+                iconSize: [34, 34],
+                iconAnchor: [17, 17],
+                popupAnchor: [0, -17]
+            });
+        }
+
+        function formatTelemetryValue(value) {
+            if (value === null || value === undefined || value === '') {
+                return 'N/A';
+            }
+            var numericValue = Number(value);
+            return Number.isFinite(numericValue) ? numericValue.toFixed(2) : 'N/A';
+        }
+
+        function formatCoordinate(value) {
+            var numericValue = Number(value);
+            return Number.isFinite(numericValue) ? numericValue.toFixed(6) : 'N/A';
+        }
+
+        function renderMarkers() {
+            markersLayer.clearLayers();
+            allFeatures.forEach(function(feat) {
+                var props = feat.properties;
+                var coords = feat.geometry.coordinates;
+                var stType = props.station_type;
+                var isOnline = props.is_online;
+
+                if (activeFilter !== "ALL" && stType !== activeFilter) {
+                    return;
+                }
+
+                var marker = L.marker([coords[1], coords[0]], { icon: getStationIcon(stType, isOnline) });
+                
+                // Build popup details
+                var obs = props.observation || {};
+                var statusBadgeBg = isOnline ? 'bg-success' : 'bg-danger';
+                var statusLabel = isOnline ? 'ONLINE' : 'OFFLINE';
+                var popupHtml = '<div class="p-1" style="min-width:210px;">' +
+                    '<div class="d-flex justify-content-between align-items-center mb-1">' +
+                        '<span class="badge bg-primary-subtle text-primary font-monospace small px-2 py-0.5">' + props.station_type_display + '</span>' +
+                        '<span class="badge ' + statusBadgeBg + ' rounded-pill" style="font-size:0.65rem;">' + statusLabel + '</span>' +
+                    '</div>' +
+                    '<h6 class="fw-bold mb-1 text-dark">' + props.name + '</h6>' +
+                    '<small class="text-muted d-block mb-1"><i class="bi bi-geo-alt me-1"></i>' + props.municipality_display + ' (ID: ' + (props.external_id || props.code) + ')</small>' +
+                    '<small class="text-muted d-block mb-2 font-monospace">' + formatCoordinate(props.latitude) + ', ' + formatCoordinate(props.longitude) + '</small>';
+
+                if (stType === 'TIDE_GAUGE') {
+                    popupHtml += '<div class="bg-light p-2 rounded mb-1 border small">' +
+                        '<div class="d-flex justify-content-between"><span>Tide Height:</span><strong class="text-primary">' + formatTelemetryValue(obs.tide_level) + ' mm</strong></div>' +
+                        '<div class="d-flex justify-content-between"><span>Water Temp:</span><strong>' + formatTelemetryValue(obs.temp) + '°C</strong></div>' +
+                        '</div>';
+                } else if (stType === 'BUOY') {
+                    popupHtml += '<div class="bg-light p-2 rounded mb-1 border small">' +
+                        '<div class="d-flex justify-content-between"><span>Sig. Wave Height:</span><strong class="text-primary">' + formatTelemetryValue(obs.wave_height) + ' m</strong></div>' +
+                        '<div class="d-flex justify-content-between"><span>Peak Period:</span><strong>' + formatTelemetryValue(obs.peak_period) + ' s</strong></div>' +
+                        '<div class="d-flex justify-content-between"><span>Sea Surface Temp:</span><strong class="text-danger">' + formatTelemetryValue(obs.sea_surface_temp) + '°C</strong></div>' +
+                        // '<div class="d-flex justify-content-between"><span>Wind:</span><strong>' + formatTelemetryValue(obs.wind_speed) + ' km/h ' + (obs.wind_direction || '') + '</strong></div>' +
+                        '</div>';
+                } else {
+                    popupHtml += '<div class="bg-light p-2 rounded mb-1 border small">' +
+                        '<div class="d-flex justify-content-between"><span>Temperature:</span><strong class="text-danger">' + formatTelemetryValue(obs.temp) + '°C</strong></div>' +
+                        '<div class="d-flex justify-content-between"><span>Humidity:</span><strong>' + formatTelemetryValue(obs.humidity) + '%</strong></div>' +
+                        '<div class="d-flex justify-content-between"><span>Rainfall:</span><strong>' + formatTelemetryValue(obs.rainfall) + ' mm</strong></div>' +
+                        '<div class="d-flex justify-content-between"><span>Wind:</span><strong>' + formatTelemetryValue(obs.wind_speed) + ' km/h</strong></div>' +
+                        '</div>';
+                }
+
+                popupHtml += '<small class="text-muted" style="font-size:0.65rem;"><i class="bi bi-clock me-1"></i>' + (obs.condition || 'Live Sync') + '</small></div>';
+
+                marker.bindPopup(popupHtml);
+                markersLayer.addLayer(marker);
+            });
+        }
+
+        // Fetch live station GeoJSON
+        fetch("{% url 'weather:api_live_stations' %}")
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.features) {
+                    allFeatures = data.features;
+                    renderMarkers();
+                }
+            })
+            .catch(function(err) {
+                console.error("Map GeoJSON fetch error:", err);
+            });
+
+        // Filter button clicks
+        var btnGroup = document.getElementById('map_filter_group');
+        if (btnGroup) {
+            btnGroup.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON') {
+                    Array.from(btnGroup.children).forEach(function(btn) {
+                        btn.classList.remove('btn-primary', 'active');
+                        btn.classList.add('btn-outline-primary');
+                    });
+                    e.target.classList.remove('btn-outline-primary');
+                    e.target.classList.add('btn-primary', 'active');
+                    activeFilter = e.target.getAttribute('data-filter');
+                    renderMarkers();
+                }
+            });
+        }
+        // -----------------------------------------------
+        // 10-Day ECMWF Forecast Choropleth Map (home page)
+        // -----------------------------------------------
+        var homeForecastMap = L.map('home_forecast_map', { zoomControl: false, scrollWheelZoom: false }).setView([-8.75, 125.85], 8);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 18
+        }).addTo(homeForecastMap);
+
+        var homeForecastLayer = null;
+        var homeForecastData = null;
+        var homeActiveVar = 'tp';
+        var homeActiveDay = 1;
+
+        // Counts municipalities at each alert level for a given day index
+        function alertCounts(dayIdx) {
+            if (!homeForecastData) return {};
+            var counts = { low: 0, moderate: 0, high: 0, danger: 0, other: 0 };
+            homeForecastData.features.forEach(function(f) {
+                var d = (f.properties.forecast_days || [])[dayIdx] || {};
+                var al = (d.alert_level || '').toLowerCase();
+                if (al.includes('low') || al === 'normal') counts.low++;
+                else if (al.includes('moderate') || al.includes('medium')) counts.moderate++;
+                else if (al.includes('high')) counts.high++;
+                else if (al.includes('danger') || al.includes('extreme') || al.includes('very high')) counts.danger++;
+                else counts.other++;
+            });
+            return counts;
+        }
+
+        function buildDayCards() {
+            if (!homeForecastData || !homeForecastData.features.length) return;
+            var sampleDays = homeForecastData.features[0].properties.forecast_days || [];
+            var container = document.getElementById('home_day_cards_container');
+            container.innerHTML = '';
+
+            sampleDays.forEach(function(dayObj, idx) {
+                var dayNum = idx + 1;
+                var counts = alertCounts(idx);
+                var total = homeForecastData.features.length || 1;
+                var isActive = (dayNum === homeActiveDay);
+
+                // Determine dominant alert color for the card accent
+                var dominantColor = '#94CB55';
+                if (counts.danger > 2) dominantColor = '#EF4444';
+                else if (counts.high > 2) dominantColor = '#F39B3A';
+                else if (counts.moderate > 2) dominantColor = '#F3EB12';
+
+                var card = document.createElement('button');
+                card.type = 'button';
+                card.className = 'home-day-card' + (isActive ? ' active' : '');
+                card.setAttribute('data-day', dayNum);
+                card.style.setProperty('--day-accent', dominantColor);
+                card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+                // Date header row
+                var dateRow = '<div class="home-day-card-heading">' +
+                    '<span class="home-day-number">Day ' + dayNum + '</span>' +
+                    '<span class="home-day-date">' + (dayObj.date_label || dayObj.period_start || '') + '</span>' +
+                '</div>';
+
+                // Alert level bar (proportional colored segments)
+                var barHtml = '<div class="home-day-alert-bar">';
+                if (counts.low > 0)      barHtml += '<span style="flex:' + counts.low + ';background:#94CB55;"></span>';
+                if (counts.moderate > 0) barHtml += '<span style="flex:' + counts.moderate + ';background:#F3EB12;"></span>';
+                if (counts.high > 0)     barHtml += '<span style="flex:' + counts.high + ';background:#F39B3A;"></span>';
+                if (counts.danger > 0)   barHtml += '<span style="flex:' + counts.danger + ';background:#EF4444;"></span>';
+                barHtml += '</div>';
+
+                // Mini counts
+                var countsHtml = '<div class="home-day-counts">';
+                if (counts.low > 0)      countsHtml += '<span class="forecast-count-low">' + counts.low + ' Low</span>';
+                if (counts.moderate > 0) countsHtml += '<span class="forecast-count-moderate">' + counts.moderate + ' Mod</span>';
+                if (counts.high > 0)     countsHtml += '<span class="forecast-count-high">' + counts.high + ' High</span>';
+                if (counts.danger > 0)   countsHtml += '<span class="forecast-count-danger">' + counts.danger + ' Danger</span>';
+                countsHtml += '</div>';
+
+                card.innerHTML = dateRow + barHtml + countsHtml;
+                card.addEventListener('click', function() {
+                    homeActiveDay = parseInt(this.getAttribute('data-day'));
+                    renderHomeChoropleth();
+                    buildDayCards(); // re-render to update active highlight
+                });
+                container.appendChild(card);
+            });
+        }
+
+        function renderHomeChoropleth() {
+            if (!homeForecastData) return;
+            if (homeForecastLayer) { homeForecastMap.removeLayer(homeForecastLayer); }
+
+            var dayIdx = homeActiveDay - 1;
+            homeForecastLayer = L.geoJSON(homeForecastData, {
+                style: function(feature) {
+                    var d = (feature.properties.forecast_days || [])[dayIdx] || {};
+                    return { fillColor: d.color_code || '#94CB55', weight: 1.5, color: '#fff', fillOpacity: 0.80 };
+                },
+                onEachFeature: function(feature, layer) {
+                    var props = feature.properties;
+                    layer.on({
+                        mouseover: function(e) { e.target.setStyle({ weight: 3, color: '#1e293b', fillOpacity: 0.95 }); e.target.bringToFront(); },
+                        mouseout: function(e) { homeForecastLayer.resetStyle(e.target); },
+                        click: function(e) {
+                            var days = props.forecast_days || [];
+                            var d = days[dayIdx] || {};
+                            var val = (d.aggregate_value !== null && d.aggregate_value !== undefined) ? d.aggregate_value + ' ' + props.unit : 'N/A';
+                            L.popup().setLatLng(e.latlng).setContent(
+                                '<div style="min-width:160px;">' +
+                                '<strong style="font-size:0.9rem;">' + props.municipality_name + '</strong><br>' +
+                                '<small style="color:#64748b;">' + props.variable_name + ' &bull; ' + (d.date_label || '') + '</small><br>' +
+                                '<span style="font-size:1.2rem;font-weight:700;color:#1e293b;">' + val + '</span><br>' +
+                                '<span style="display:inline-block;margin-top:3px;padding:2px 8px;border-radius:20px;font-size:0.68rem;font-weight:600;background:' + (d.color_code || '#94CB55') + ';color:#fff;">' + (d.alert_level || 'Normal') + '</span>' +
+                                '</div>'
+                            ).openOn(homeForecastMap);
+                        }
+                    });
+                    var d = (props.forecast_days || [])[dayIdx] || {};
+                    var val = (d.aggregate_value !== null && d.aggregate_value !== undefined) ? d.aggregate_value + ' ' + props.unit : 'N/A';
+                    layer.bindTooltip('<strong>' + props.municipality_name + '</strong><br>' + val + ' — ' + (d.alert_level || ''), { sticky: true });
+                }
+            }).addTo(homeForecastMap);
+        }
+
+        function loadHomeForecast(varCode) {
+            homeActiveVar = varCode;
+            var container = document.getElementById('home_day_cards_container');
+            container.innerHTML = '<div class="text-center text-muted py-5" style="font-size:0.8rem;"><div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div><div>Loading…</div></div>';
+            fetch('/weather/api/10day-forecast-map/?variable=' + varCode)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    homeForecastData = data;
+                    renderHomeChoropleth();
+                    buildDayCards();
+                });
+        }
+
+        // Initial load
+        loadHomeForecast('tp');
+
+        // Variable pills — toggle active state using inline styles (dark header)
+        document.querySelectorAll('.home-var-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.home-var-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                loadHomeForecast(this.getAttribute('data-var'));
+            });
+        });
+    });
+</script>
+{% endblock %}

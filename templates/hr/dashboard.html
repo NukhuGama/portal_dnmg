@@ -1,0 +1,275 @@
+{% extends admin_base|default:'admin_base.html' %}
+{% load i18n portal_tags %}
+
+{% block title %}{% translate "HR Dashboard" %}{% endblock %}
+{% block section_title %}{% translate "HR & Staff Management Dashboard" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-card { border: none; border-radius: 16px; transition: transform .2s, box-shadow .2s; }
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,.10); }
+.stat-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 1.4rem; }
+.chart-card { border: none; border-radius: 16px; }
+.contract-badge { font-size: .7rem; }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">{% translate "HR Dashboard" %}</h4>
+        <p class="text-muted small mb-0">{% translate "Real-time overview of DNMG workforce statistics." %}</p>
+    </div>
+    {% if user|has_portal_permission:'staff.create' %}
+    <a href="{% url 'hr:employee_create' %}" class="btn btn-primary rounded-pill px-4">
+        <i class="bi bi-person-plus me-1"></i> {% translate "Add Employee" %}
+    </a>
+    {% endif %}
+</div>
+
+<!-- KPI Statistics Row 1 -->
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary mb-2"><i class="bi bi-people-fill"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.total_employees }}</div>
+            <div class="text-muted small">{% translate "Total Staff" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-success bg-opacity-10 text-success mb-2"><i class="bi bi-person-check-fill"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.active_employees }}</div>
+            <div class="text-muted small">{% translate "Active" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-info bg-opacity-10 text-info mb-2"><i class="bi bi-briefcase-fill"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.permanent }}</div>
+            <div class="text-muted small">{% translate "Permanent" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning mb-2"><i class="bi bi-file-earmark-text-fill"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.contract }}</div>
+            <div class="text-muted small">{% translate "Contract" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-purple bg-opacity-10 text-purple mb-2" style="background-color:#ede9fe;color:#7c3aed;"><i class="bi bi-person-workspace"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.consultants }}</div>
+            <div class="text-muted small">{% translate "Consultants" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon mb-2" style="background-color:#fce7f3;color:#db2777;"><i class="bi bi-mortarboard-fill"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.interns }}</div>
+            <div class="text-muted small">{% translate "Interns" %}</div>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Statistics Row 2 -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary mb-2"><i class="bi bi-gender-male"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.male }}</div>
+            <div class="text-muted small">{% translate "Male" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon mb-2" style="background-color:#fce7f3;color:#db2777;"><i class="bi bi-gender-female"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.female }}</div>
+            <div class="text-muted small">{% translate "Female" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-secondary bg-opacity-10 text-secondary mb-2"><i class="bi bi-hourglass-split"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.on_leave }}</div>
+            <div class="text-muted small">{% translate "On Leave" %}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card shadow-sm h-100 p-3">
+            <div class="stat-icon bg-danger bg-opacity-10 text-danger mb-2"><i class="bi bi-door-open-fill"></i></div>
+            <div class="fs-2 fw-bold text-dark">{{ stats.retired|add:stats.resigned|add:stats.terminated }}</div>
+            <div class="text-muted small">{% translate "Retired/Resigned/Terminated" %}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Contract Alerts Banner -->
+{% if user|has_portal_permission:'contracts.view' %}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="card border-0 rounded-4 shadow-sm" style="background: linear-gradient(135deg,#1e3a5f,#0d3b66);">
+            <div class="card-body d-flex flex-wrap gap-3 align-items-center p-3 p-md-4">
+                <i class="bi bi-calendar-event-fill text-white fs-3"></i>
+                <div class="text-white flex-grow-1">
+                    <div class="fw-bold fs-6">{% translate "Contract Expiry Alerts" %}</div>
+                    <div class="small opacity-75">{% translate "Click to manage contract renewals" %}</div>
+                </div>
+                <a href="{% url 'hr:contract_monitoring' %}" class="btn btn-light btn-sm rounded-pill me-2">
+                    <span class="badge bg-danger me-1">{{ expiring_30 }}</span> {% translate "≤30 days" %}
+                </a>
+                <a href="{% url 'hr:contract_monitoring' %}" class="btn btn-light btn-sm rounded-pill me-2">
+                    <span class="badge bg-warning text-dark me-1">{{ expiring_60 }}</span> {% translate "≤60 days" %}
+                </a>
+                <a href="{% url 'hr:contract_monitoring' %}" class="btn btn-light btn-sm rounded-pill me-2">
+                    <span class="badge bg-info text-dark me-1">{{ expiring_90 }}</span> {% translate "≤90 days" %}
+                </a>
+                <a href="{% url 'hr:contract_monitoring' %}" class="btn btn-outline-light btn-sm rounded-pill">
+                    <span class="badge bg-secondary me-1">{{ expired_count }}</span> {% translate "Expired" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Charts Row 1 -->
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-gender-ambiguous me-2 text-primary"></i>{% translate "Gender Distribution" %}</h6>
+            <canvas id="genderChart" height="200"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-briefcase me-2 text-warning"></i>{% translate "Employment Type" %}</h6>
+            <canvas id="empTypeChart" height="200"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-activity me-2 text-success"></i>{% translate "Employment Status" %}</h6>
+            <canvas id="statusChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-diagram-3 me-2 text-info"></i>{% translate "Staff by Department" %}</h6>
+            <canvas id="deptChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-bar-chart-steps me-2 text-purple"></i>{% translate "Staff Level Distribution" %}</h6>
+            <canvas id="levelChart" height="220"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 3 -->
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-person-badge me-2 text-danger"></i>{% translate "Age Distribution" %}</h6>
+            <canvas id="ageChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card chart-card shadow-sm h-100 p-3">
+            <h6 class="fw-semibold text-dark mb-3"><i class="bi bi-graph-up-arrow me-2 text-success"></i>{% translate "Staff Growth (12 months)" %}</h6>
+            <canvas id="growthChart" height="220"></canvas>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ gender_chart|json_script:"gender-chart-data" }}
+{{ employment_type_chart|json_script:"employment-type-chart-data" }}
+{{ department_chart|json_script:"department-chart-data" }}
+{{ staff_level_chart|json_script:"staff-level-chart-data" }}
+{{ status_chart|json_script:"status-chart-data" }}
+{{ age_chart|json_script:"age-chart-data" }}
+{{ growth_chart|json_script:"growth-chart-data" }}
+<script>
+(function() {
+    function renderHRCharts() {
+        const chartIds = ['genderChart', 'empTypeChart', 'statusChart', 'deptChart', 'levelChart', 'ageChart', 'growthChart'];
+        chartIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const existing = Chart.getChart(el);
+                if (existing) existing.destroy();
+            }
+        });
+
+        const GENDER = JSON.parse(document.getElementById('gender-chart-data').textContent);
+        const EMP_TYPE = JSON.parse(document.getElementById('employment-type-chart-data').textContent);
+        const DEPT = JSON.parse(document.getElementById('department-chart-data').textContent);
+        const LEVEL = JSON.parse(document.getElementById('staff-level-chart-data').textContent);
+        const STATUS = JSON.parse(document.getElementById('status-chart-data').textContent);
+        const AGE = JSON.parse(document.getElementById('age-chart-data').textContent);
+        const GROWTH = JSON.parse(document.getElementById('growth-chart-data').textContent);
+
+        const PIE_OPTS = { responsive: true, plugins: { legend: { position: 'bottom' } } };
+        const BAR_OPTS = () => ({
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        });
+
+        if (document.getElementById('genderChart')) {
+            new Chart(document.getElementById('genderChart'), {
+                type: 'doughnut', data: { labels: GENDER.labels, datasets: [{ data: GENDER.data, backgroundColor: GENDER.colors, borderWidth: 2 }] }, options: PIE_OPTS
+            });
+        }
+        if (document.getElementById('empTypeChart')) {
+            new Chart(document.getElementById('empTypeChart'), {
+                type: 'pie', data: { labels: EMP_TYPE.labels, datasets: [{ data: EMP_TYPE.data, backgroundColor: EMP_TYPE.colors, borderWidth: 2 }] }, options: PIE_OPTS
+            });
+        }
+        if (document.getElementById('statusChart')) {
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut', data: { labels: STATUS.labels, datasets: [{ data: STATUS.data, backgroundColor: STATUS.colors, borderWidth: 2 }] }, options: PIE_OPTS
+            });
+        }
+        if (document.getElementById('deptChart')) {
+            new Chart(document.getElementById('deptChart'), {
+                type: 'bar', data: { labels: DEPT.labels, datasets: [{ label: 'Staff', data: DEPT.data, backgroundColor: '#3b82f6', borderRadius: 6 }] }, options: { ...BAR_OPTS(), indexAxis: 'y' }
+            });
+        }
+        if (document.getElementById('levelChart')) {
+            new Chart(document.getElementById('levelChart'), {
+                type: 'bar', data: { labels: LEVEL.labels, datasets: [{ label: 'Staff', data: LEVEL.data, backgroundColor: '#8b5cf6', borderRadius: 6 }] }, options: BAR_OPTS()
+            });
+        }
+        if (document.getElementById('ageChart')) {
+            new Chart(document.getElementById('ageChart'), {
+                type: 'bar', data: { labels: AGE.labels, datasets: [{ label: 'Staff', data: AGE.data, backgroundColor: '#ef4444', borderRadius: 6 }] }, options: BAR_OPTS()
+            });
+        }
+        if (document.getElementById('growthChart')) {
+            new Chart(document.getElementById('growthChart'), {
+                type: 'line', data: { labels: GROWTH.labels, datasets: [{ label: '{% translate "Total Staff" %}', data: GROWTH.data, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.08)', tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#10b981' }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } }
+            });
+        }
+    }
+
+    // extra_js block is at the bottom of <body> — DOM is already painted.
+    // Call directly (no DOMContentLoaded needed).
+    renderHRCharts();
+
+    // Re-render on browser back/forward cache restore
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) { renderHRCharts(); }
+    });
+})();
+</script>
+{% endblock %}
